@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Chips & filters</title>
+<style>
+  body { padding: 22px 24px; gap: 12px; }
+  .lbl { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-family: var(--font-display); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--border-strong); background: #fff; color: var(--ejg-ink); display: inline-flex; align-items: center; gap: 6px; }
+  .chip.on { background: var(--ejg-ink); color: var(--ejg-kertas); border-color: var(--ejg-ink); }
+  .chip.sun { background: var(--ejg-matahari); color: var(--ejg-ink); border-color: var(--ejg-matahari); }
+  .chip.soft { background: var(--ejg-matahari-50); color: var(--ejg-ink); border-color: var(--ejg-matahari-100); }
+</style></head>
+<body>
+  <div class="lbl">Filter chips</div>
+  <div class="row">
+    <span class="chip on">Semua</span>
+    <span class="chip">Private trip</span>
+    <span class="chip">Open trip</span>
+    <span class="chip">Glamping</span>
+    <span class="chip">Corporate</span>
+  </div>
+  <div class="lbl">Metadata tags</div>
+  <div class="row">
+    <span class="chip soft">🏕️ Gunung</span>
+    <span class="chip soft">🏝️ Pantai</span>
+    <span class="chip sun">🔥 Popular</span>
+    <span class="chip soft">3H2M</span>
+    <span class="chip soft">Max 12 orang</span>
+  </div>
+</body></html>

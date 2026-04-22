@@ -1,0 +1,47 @@
+/* Shared styles for preview cards — used by all files in preview/ */
+@import url("../colors_and_type.css");
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg-2);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+body {
+  width: 700px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pv-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.pv-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pv-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+.pv-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-3);
+}

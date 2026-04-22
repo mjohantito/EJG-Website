@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Brand mark</title>
+<style>
+  body { background: var(--bg); }
+  .wrap { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 12px; align-items: stretch; }
+  .tile {
+    border-radius: 20px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 170px; border: 1px solid var(--border);
+  }
+  .tile.kertas { background: var(--ejg-kertas); }
+  .tile.putih  { background: var(--ejg-putih); }
+  .tile.sun    { background: var(--ejg-matahari); border-color: transparent; }
+  .tile.ink    { background: var(--ejg-ink);    color: #F3D543; border-color: transparent; }
+  .tile img { width: 44px; height: 50px; display: block; }
+  /* Recolor the black SVG mark to matahari yellow #F3D543 on the ink tile */
+  .tile.ink img { filter: brightness(0) saturate(100%) invert(79%) sepia(56%) saturate(624%) hue-rotate(5deg) brightness(103%) contrast(92%); }
+  .name { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: -0.01em; line-height: 1.1; color: var(--ejg-ink); }
+  .tile.ink .name { color: #F3D543; }
+  .caption { font-family: var(--font-display); font-size: 10px; font-weight:700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; color: inherit; }
+</style></head>
+<body>
+  <div class="wrap">
+    <div class="tile kertas">
+      <img src="../assets/ejg-mark-primary.svg" alt="">
+      <div>
+        <div class="caption" style="color: var(--fg-3); margin-bottom:6px;">Primary · on kertas</div>
+        <div class="name">EH! JADI GA?</div>
+      </div>
+    </div>
+    <div class="tile sun">
+      <img src="../assets/ejg-mark-primary.svg" alt="">
+      <div>
+        <div class="caption" style="color: var(--ejg-ink); margin-bottom:6px;">On matahari</div>
+        <div class="name">EH! JADI GA?</div>
+      </div>
+    </div>
+    <div class="tile ink">
+      <img src="../assets/ejg-mark-primary.svg" alt="">
+      <div>
+        <div class="caption" style="margin-bottom:6px;">On ink</div>
+        <div class="name">EH! JADI GA?</div>
+      </div>
+    </div>
+  </div>
+</body></html>

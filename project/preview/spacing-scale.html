@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Spacing scale</title>
+<style>
+  body { padding: 20px; gap: 10px; }
+  .scale { display: flex; flex-direction: column; gap: 4px; }
+  .r { display: grid; grid-template-columns: 70px 1fr 80px; align-items: center; gap: 12px; }
+  .bar { height: 14px; background: var(--ejg-ink); border-radius: 3px; }
+  .lbl { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--fg-1); }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); text-align: right; }
+</style></head>
+<body>
+  <div class="scale">
+    <div class="r"><span class="lbl">sp-1</span><div class="bar" style="width:4px"></div><span class="meta">4px</span></div>
+    <div class="r"><span class="lbl">sp-2</span><div class="bar" style="width:8px"></div><span class="meta">8px</span></div>
+    <div class="r"><span class="lbl">sp-3</span><div class="bar" style="width:12px"></div><span class="meta">12px</span></div>
+    <div class="r"><span class="lbl">sp-4</span><div class="bar" style="width:16px"></div><span class="meta">16px</span></div>
+    <div class="r"><span class="lbl">sp-6</span><div class="bar" style="width:24px"></div><span class="meta">24px</span></div>
+    <div class="r"><span class="lbl">sp-8</span><div class="bar" style="width:32px"></div><span class="meta">32px</span></div>
+    <div class="r"><span class="lbl">sp-12</span><div class="bar" style="width:48px"></div><span class="meta">48px</span></div>
+    <div class="r"><span class="lbl">sp-16</span><div class="bar" style="width:64px"></div><span class="meta">64px</span></div>
+    <div class="r"><span class="lbl">sp-24</span><div class="bar" style="width:96px"></div><span class="meta">96px</span></div>
+  </div>
+</body></html>

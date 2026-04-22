@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Badges & pills</title>
+<style>
+  body { padding: 22px; gap: 12px; }
+  .lbl { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .badge { font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; }
+  .b-ink { background: var(--ejg-ink); color: var(--ejg-kertas); }
+  .b-sun { background: var(--ejg-matahari); color: var(--ejg-ink); }
+  .b-outline { background: #fff; color: var(--ejg-ink); border: 1.5px solid var(--ejg-ink); }
+  .b-kertas { background: var(--ejg-kertas-2); color: var(--ejg-ink); }
+  .b-success { background: #E8F3E6; color: #3E7A35; }
+  .b-warn    { background: #FFF4D6; color: #8A5A00; }
+  .b-danger  { background: #FADBD6; color: #C23B2A; }
+  .status { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
+</style></head>
+<body>
+  <div class="lbl">Product badges</div>
+  <div class="row">
+    <span class="badge b-ink">Private trip</span>
+    <span class="badge b-sun">Open trip</span>
+    <span class="badge b-outline">Glamping</span>
+    <span class="badge b-kertas">Corporate</span>
+  </div>
+  <div class="lbl">Status</div>
+  <div class="row">
+    <span class="badge b-success status"><span class="dot"></span>Booking masuk</span>
+    <span class="badge b-warn status"><span class="dot"></span>Nunggu DP</span>
+    <span class="badge b-danger status"><span class="dot"></span>Slot full</span>
+  </div>
+</body></html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Support colors</title>
+<style>
+  body { padding: 20px; }
+  .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sw { border-radius: 14px; padding: 14px; height: 140px; display: flex; flex-direction: column; justify-content: space-between; color: #fff; }
+  .label { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.82; }
+  .n { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.015em; }
+  .meta { font-family: var(--font-mono); font-size: 11px; opacity: 0.82; }
+  .usage { font-size: 11px; opacity: 0.82; line-height: 1.3; }
+</style></head>
+<body>
+  <div class="row">
+    <div class="sw" style="background: var(--ejg-forest-500);">
+      <span class="label">Primary</span>
+      <div><div class="n">forest</div><div class="meta">#235A1E</div></div>
+      <div class="usage">Buttons, logo fill, nav.</div>
+    </div>
+    <div class="sw" style="background: var(--ejg-api-400);">
+      <span class="label">Accent</span>
+      <div><div class="n">api</div><div class="meta">#F26A1E</div></div>
+      <div class="usage">Spark. One per screen.</div>
+    </div>
+    <div class="sw" style="background: var(--ejg-langit-400);">
+      <span class="label">Secondary</span>
+      <div><div class="n">langit</div><div class="meta">#1F6B83</div></div>
+      <div class="usage">Open trips, water.</div>
+    </div>
+    <div class="sw" style="background: var(--ejg-tanah);">
+      <span class="label">Support</span>
+      <div><div class="n">tanah</div><div class="meta">#B5553B</div></div>
+      <div class="usage">Glamping, corporate.</div>
+    </div>
+  </div>
+</body></html>

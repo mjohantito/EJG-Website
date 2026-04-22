@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Form · Inputs</title>
+<style>
+  body { padding: 22px 24px; gap: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label { font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--ejg-ink); }
+  .input, .select {
+    font-family: var(--font-body); font-size: 15px; color: var(--ejg-ink);
+    background: #fff; border: 1.5px solid var(--border-strong); border-radius: 14px; padding: 12px 14px;
+  }
+  .input.focus { border-color: var(--ejg-ink); box-shadow: 0 0 0 3px rgba(243,213,67,0.55); outline: none; }
+  .input.err { border-color: #C23B2A; }
+  .hint { font-size: 12px; color: var(--fg-3); }
+  .err-msg { font-size: 12px; color: #C23B2A; font-weight: 500; }
+  .select { appearance: none; padding-right: 36px; }
+</style></head>
+<body>
+  <div class="grid">
+    <div class="field"><label>Nama lengkap</label><input class="input" value="Manuel Johan Tito"></div>
+    <div class="field"><label>Email</label><input class="input focus" value="manuel@"><span class="hint">Kita kabari konfirmasi di sini.</span></div>
+    <div class="field"><label>No. WhatsApp</label><input class="input err" value="08ixx"><span class="err-msg">Waduh, format-nya kurang pas.</span></div>
+    <div class="field"><label>Destinasi</label><select class="select"><option>Bromo, Jawa Timur</option></select></div>
+  </div>
+</body></html>

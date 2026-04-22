@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Shadows</title>
+<style>
+  body { padding: 26px; background: var(--ejg-kertas); gap: 10px; }
+  .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .chip { width: 110px; height: 86px; background: #fff; border-radius: 18px; border: 1px solid var(--ejg-fog); }
+  .xs { box-shadow: 0 1px 2px rgba(26, 26, 26, 0.06); }
+  .sm { box-shadow: 0 2px 6px rgba(26, 26, 26, 0.07), 0 1px 2px rgba(26, 26, 26, 0.04); }
+  .md { box-shadow: 0 8px 20px rgba(26, 26, 26, 0.08), 0 2px 6px rgba(26, 26, 26, 0.05); }
+  .lg { box-shadow: 0 18px 40px rgba(26, 26, 26, 0.12), 0 4px 10px rgba(26, 26, 26, 0.06); }
+  .lbl { font-family: var(--font-display); font-weight: 700; font-size: 11px; color: var(--fg-1); }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); }
+</style></head>
+<body>
+  <div class="row">
+    <div class="cell"><div class="chip xs"></div><div class="lbl">shadow-xs</div><div class="meta">ambient</div></div>
+    <div class="cell"><div class="chip sm"></div><div class="lbl">shadow-sm</div><div class="meta">card · rest</div></div>
+    <div class="cell"><div class="chip md"></div><div class="lbl">shadow-md</div><div class="meta">card · hover</div></div>
+    <div class="cell"><div class="chip lg"></div><div class="lbl">shadow-lg</div><div class="meta">modal · lifted</div></div>
+  </div>
+</body></html>

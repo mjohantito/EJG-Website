@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Radii</title>
+<style>
+  body { padding: 22px; gap: 10px; }
+  .row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .box { height: 110px; background: var(--ejg-matahari); border: 1.5px solid var(--ejg-ink); display: flex; align-items: end; padding: 10px; }
+  .lbl { font-family: var(--font-display); font-weight: 700; font-size: 11px; color: var(--ejg-ink); }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--ejg-ink); opacity: 0.75; display: block; }
+</style></head>
+<body>
+  <div class="row">
+    <div class="box" style="border-radius: 6px;"><div><div class="lbl">r-xs</div><span class="meta">6px</span></div></div>
+    <div class="box" style="border-radius: 10px;"><div><div class="lbl">r-sm</div><span class="meta">10px</span></div></div>
+    <div class="box" style="border-radius: 14px;"><div><div class="lbl">r-md</div><span class="meta">14px</span></div></div>
+    <div class="box" style="border-radius: 20px;"><div><div class="lbl">r-lg</div><span class="meta">20px</span></div></div>
+    <div class="box" style="border-radius: 28px;"><div><div class="lbl">r-xl</div><span class="meta">28px</span></div></div>
+    <div class="box" style="border-radius: 999px;"><div><div class="lbl">r-pill</div><span class="meta">999px</span></div></div>
+  </div>
+</body></html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Trip card</title>
+<style>
+  body { padding: 22px; background: var(--ejg-kertas); }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; display: grid; grid-template-columns: 220px 1fr; box-shadow: 0 2px 6px rgba(37,37,37,0.07), 0 1px 2px rgba(37,37,37,0.04); }
+  .photo { background: linear-gradient(160deg, #4a4a3e, #252525 60%, #7a7566); position: relative; min-height: 170px; display:grid; place-items:center; font-size: 64px; opacity: 0.95; }
+  .tag-abs { position: absolute; top: 12px; left: 12px; background: #252525; border-radius: 999px; padding: 7px 14px; font-family: var(--font-display); font-size: 12px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #F3D543; box-shadow: 0 6px 14px rgba(0,0,0,0.4); }
+  .pill-abs { position: absolute; bottom: 12px; left: 12px; background: #fff; border-radius: 999px; padding: 5px 10px; font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--ejg-ink); }
+  .body { padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; justify-content: space-between; }
+  .dest { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-3); }
+  .title { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.01em; line-height: 1.1; color: var(--ejg-ink); }
+  .meta { font-size: 13px; color: var(--fg-3); }
+  .foot { display: flex; justify-content: space-between; align-items: end; margin-top: 4px; }
+  .price { font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--ejg-ink); letter-spacing: -0.01em; }
+  .price small { font-family: var(--font-body); font-size: 12px; font-weight: 400; color: var(--fg-3); }
+  .cta { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--ejg-ink); text-decoration: underline; text-underline-offset: 3px; }
+</style></head>
+<body>
+  <div class="card">
+    <div class="photo">
+      🌋
+      <span class="tag-abs">🔥 Popular</span>
+      <span class="pill-abs">3H2M · 17 Mei</span>
+    </div>
+    <div class="body">
+      <div>
+        <div class="dest">JAWA TIMUR · OPEN TRIP</div>
+        <div class="title">Sunrise Bromo & Savana Teletubbies</div>
+        <div class="meta">Jeep, hotel, makan, guide — termasuk semua.</div>
+      </div>
+      <div class="foot">
+        <div class="price">Rp 850K<small> / orang</small></div>
+        <span class="cta">Liat detail →</span>
+      </div>
+    </div>
+  </div>
+</body></html>
