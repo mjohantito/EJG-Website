@@ -10,12 +10,12 @@ const PLACEHOLDER_NOTES = {
   corporate: 'Jumlah peserta, rentang tanggal, objective acara, kota asal, dan budget range.',
 };
 
-export default function InquiryScreen({ onSubmit }) {
+export default function InquiryScreen({ onSubmit, defaultKind }) {
   const location = useLocation();
   const navigate = useNavigate();
   const ctx = location.state || {};
 
-  const [kind, setKind] = useState(ctx.kind || 'open');
+  const [kind, setKind] = useState(ctx.kind || defaultKind || 'open');
   const [name, setName] = useState('');
   const [wa, setWa] = useState('');
   const [pax, setPax] = useState(ctx.pax || 2);
