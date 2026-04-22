@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EH! JADI GA? — Corporate Inquiry Confirmation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:       #252525;
+    --yellow:    #F3D543;
+    --cream:     #EEEAE2;
+    --white:     #FFFFFF;
+    --ink-60:    rgba(37,37,37,.60);
+    --ink-14:    rgba(37,37,37,.14);
+    --ink-22:    rgba(37,37,37,.22);
+    --yellow-dk: #C8AE1C;
+    --red:       #C0392B;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 2.5rem 1rem 4rem;
+  }
+
+  /* ── Brand Header ── */
+  .brand-header { text-align: center; margin-bottom: 2.5rem; }
+  .brand-logo { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .brand-name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700; font-size: 22px;
+    letter-spacing: .03em; color: var(--ink);
+  }
+  .brand-tagline {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ink-60);
+  }
+
+  /* ── Card ── */
+  .form-card {
+    max-width: 680px; margin: 0 auto;
+    background: var(--white); border-radius: 16px;
+    border: 0.5px solid var(--ink-14); overflow: hidden;
+    box-shadow: 0 2px 28px rgba(37,37,37,.07);
+  }
+
+  /* ── Hero ── */
+  .form-hero {
+    background: var(--ink); padding: 2.25rem 2.5rem 2rem;
+    position: relative; overflow: hidden;
+  }
+  .form-hero::before {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 200px; height: 200px; border-radius: 50%;
+    border: 36px solid rgba(243,213,67,.10);
+  }
+  .form-hero::after {
+    content: ''; position: absolute; right: 80px; top: 70px;
+    width: 90px; height: 90px; border-radius: 50%;
+    border: 18px solid rgba(243,213,67,.07);
+  }
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    letter-spacing: .13em; text-transform: uppercase;
+    color: var(--ink); background: var(--yellow);
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 1.1rem;
+  }
+  .form-hero h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 28px; font-weight: 600;
+    color: var(--white); line-height: 1.25; margin-bottom: .5rem;
+  }
+  .form-hero p { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.7; max-width: 420px; }
+
+  /* ── Body ── */
+  .form-body { padding: 2rem 2.5rem 2.5rem; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 2.25rem; }
+  .section-label {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.2rem; padding-bottom: .75rem;
+    border-bottom: 0.5px solid var(--ink-14);
+  }
+  .section-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--yellow); color: var(--ink);
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px; font-weight: 600; color: var(--ink); letter-spacing: .01em;
+  }
+
+  /* ── Grid & Fields ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full  { grid-column: 1 / -1; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 11px; font-weight: 500; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--ink-60);
+  }
+  input[type=text], input[type=email], input[type=tel], input[type=date], textarea {
+    width: 100%; background: var(--cream);
+    border: 0.5px solid var(--ink-22); border-radius: 8px;
+    padding: 10px 13px; font-size: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink);
+    outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, textarea:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(37,37,37,.08);
+    background: var(--white);
+  }
+  input.error, textarea.error { border-color: var(--red); }
+  textarea { resize: vertical; min-height: 76px; line-height: 1.65; }
+
+  /* ── Info cards ── */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-card {
+    background: var(--cream); border: 0.5px solid var(--ink-14);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .info-card .lbl {
+    font-size: 10px; font-weight: 500; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--ink-60); margin-bottom: 4px;
+  }
+  .info-card .val { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .info-card.full { grid-column: 1 / -1; }
+
+  /* ── Terms ── */
+  .terms-box {
+    background: var(--cream); border: 0.5px solid var(--ink-14);
+    border-radius: 10px; overflow: hidden;
+  }
+  .terms-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; border-bottom: 0.5px solid var(--ink-14);
+  }
+  .terms-row:last-child { border-bottom: none; }
+  .terms-key { font-size: 12px; color: var(--ink-60); }
+  .terms-val { font-size: 13px; font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+  .lock {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 4px;
+    background: var(--yellow); font-size: 9px;
+  }
+
+  /* ── Confirm block ── */
+  .confirm-block {
+    background: var(--cream); border: 0.5px solid var(--ink-14);
+    border-radius: 12px; padding: 1.4rem 1.5rem; margin-bottom: 1.75rem;
+  }
+  .confirm-check { display: flex; align-items: flex-start; gap: 10px; margin-bottom: .9rem; cursor: pointer; }
+  .confirm-check:last-of-type { margin-bottom: 0; }
+  .confirm-check input[type=checkbox] {
+    width: 16px; height: 16px; flex-shrink: 0;
+    margin-top: 2px; accent-color: var(--ink); cursor: pointer;
+  }
+  .confirm-check span { font-size: 13px; color: var(--ink); line-height: 1.65; }
+  .sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 1.2rem; }
+
+  /* ── Error message ── */
+  .error-msg {
+    display: none; background: #FDF0EF; border: 0.5px solid rgba(192,57,43,.25);
+    border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem;
+    font-size: 13px; color: var(--red); line-height: 1.6;
+  }
+  .error-msg.show { display: block; }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .btn-submit {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--yellow); color: var(--ink);
+    border: none; border-radius: 8px; padding: 13px 36px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; letter-spacing: .02em; transition: background .15s, transform .1s, opacity .15s;
+  }
+  .btn-submit:hover { background: var(--yellow-dk); }
+  .btn-submit:active { transform: scale(.98); }
+  .btn-submit:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-reset {
+    background: none; border: 0.5px solid var(--ink-22); border-radius: 8px;
+    padding: 13px 20px; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; color: var(--ink-60); cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .btn-reset:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── Spinner ── */
+  .spinner {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(37,37,37,.25);
+    border-top-color: var(--ink);
+    animation: spin .7s linear infinite; display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Success screen ── */
+  .success-screen { display: none; text-align: center; padding: 3.5rem 2rem 4rem; }
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--yellow); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .success-icon svg { display: block; }
+  .success-screen h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 30px; font-weight: 600; color: var(--ink);
+    margin-bottom: .5rem; line-height: 1.2;
+  }
+  .success-screen .sub {
+    font-size: 14px; color: var(--ink-60); line-height: 1.8;
+    max-width: 380px; margin: 0 auto;
+  }
+  .success-divider {
+    width: 40px; height: 2px; background: var(--yellow);
+    margin: 1.5rem auto;
+  }
+  .ref-pill {
+    display: inline-block;
+    background: var(--cream); border: 0.5px solid var(--ink-14);
+    border-radius: 20px; padding: 6px 20px;
+    font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: .05em;
+  }
+  .success-note {
+    margin-top: 1rem; font-size: 12px; color: var(--ink-60);
+  }
+
+  /* ── Footer ── */
+  .form-footer { text-align: center; margin-top: 2rem; font-size: 11px; color: var(--ink-60); letter-spacing: .04em; }
+
+  @media (max-width: 560px) {
+    .form-body { padding: 1.5rem 1.25rem 2rem; }
+    .form-hero { padding: 1.75rem 1.25rem 1.5rem; }
+    .grid2, .info-grid, .sig-row { grid-template-columns: 1fr; }
+    .full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Brand Header -->
+<div class="brand-header">
+  <div class="brand-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 100" width="36" height="41" role="img" aria-label="EH! JADI GA? logo">
+      <rect x="4" y="6" width="12" height="54" rx="6" fill="#252525"/>
+      <circle cx="10" cy="70" r="8.5" fill="#252525"/>
+      <path d="M 30,22 C 30,4 70,4 70,22 C 70,42 56,45 56,64" fill="none" stroke="#252525" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="56" cy="82" r="8.5" fill="#252525"/>
+    </svg>
+    <span class="brand-name">EH! JADI GA?</span>
+  </div>
+  <div class="brand-tagline">Tour Agency</div>
+</div>
+
+<!-- Form Card -->
+<div class="form-card">
+  <div class="form-hero">
+    <div class="badge">Corporate Inquiry Confirmation</div>
+    <h1>Confirm Your Travel Arrangement</h1>
+    <p>Your trip details and deal terms have been pre-filled based on our agreement. Please complete your contact information and confirm below.</p>
+  </div>
+
+  <div class="form-body">
+
+    <!-- ── FORM CONTENT ── -->
+    <div id="formContent">
+
+      <!-- 1. Contact -->
+      <div class="section">
+        <div class="section-label">
+          <div class="section-num">1</div>
+          <div class="section-title">Contact Information</div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Full name</label>
+            <input type="text" id="fullName" name="Full Name" placeholder="e.g. Budi Santoso" />
+          </div>
+          <div class="field">
+            <label>Job title / position</label>
+            <input type="text" id="jobTitle" name="Job Title" placeholder="e.g. Procurement Manager" />
+          </div>
+          <div class="field">
+            <label>Company / organization</label>
+            <input type="text" id="company" name="Company" placeholder="e.g. PT. Nusantara Global" />
+          </div>
+          <div class="field">
+            <label>Department</label>
+            <input type="text" id="department" name="Department" placeholder="e.g. Operations" />
+          </div>
+          <div class="field">
+            <label>Email address</label>
+            <input type="email" id="email" name="Email" placeholder="name@company.com" />
+          </div>
+          <div class="field">
+            <label>Phone / WhatsApp</label>
+            <input type="tel" id="phone" name="Phone / WhatsApp" placeholder="+62 8xx xxxx xxxx" />
+          </div>
+          <div class="field full">
+            <label>Company address</label>
+            <input type="text" id="address" name="Company Address" placeholder="Street, City, Province, Country" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Trip Details -->
+      <div class="section">
+        <div class="section-label">
+          <div class="section-num">2</div>
+          <div class="section-title">Trip Details</div>
+        </div>
+        <div class="info-grid">
+          <div class="info-card"><div class="lbl">Destination</div><div class="val">Bali, North Route</div></div>
+          <div class="info-card"><div class="lbl">Trip purpose</div><div class="val">Corporate Retreat</div></div>
+          <div class="info-card"><div class="lbl">Departure date</div><div class="val">28 May 2026</div></div>
+          <div class="info-card"><div class="lbl">Return date</div><div class="val">31 May 2026</div></div>
+          <div class="info-card"><div class="lbl">Number of travelers</div><div class="val">17 persons</div></div>
+          <div class="info-card"><div class="lbl">Accommodation</div><div class="val">Luminor Hotel Legian</div></div>
+          <div class="info-card full">
+            <div class="lbl">Additional notes / special requests</div>
+            <textarea id="notes" name="Additional Notes" style="margin-top:8px" placeholder="e.g. dietary requirements, room preferences, accessibility needs..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Deal Terms -->
+      <div class="section">
+        <div class="section-label">
+          <div class="section-num">3</div>
+          <div class="section-title">Agreed Deal Terms</div>
+        </div>
+        <div class="terms-box">
+          <div class="terms-row">
+            <span class="terms-key">Package / quotation ref.</span>
+            <span class="terms-val">EJG/INQ/COR/001/2026 <span class="lock">🔒</span></span>
+          </div>
+          <div class="terms-row">
+            <span class="terms-key">Total quoted price (IDR)</span>
+            <span class="terms-val">Rp 38.930.000 <span class="lock">🔒</span></span>
+          </div>
+          <div class="terms-row">
+            <span class="terms-key">Price per person (IDR)</span>
+            <span class="terms-val">Rp 2.290.000 <span class="lock">🔒</span></span>
+          </div>
+          <div class="terms-row">
+            <span class="terms-key">Payment method</span>
+            <span class="terms-val">Bank Transfer <span class="lock">🔒</span></span>
+          </div>
+          <div class="terms-row">
+            <span class="terms-key">Payment deadline</span>
+            <span class="terms-val">28 April 2026 <span class="lock">🔒</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Confirmation -->
+      <div class="section">
+        <div class="section-label">
+          <div class="section-num">4</div>
+          <div class="section-title">Confirmation &amp; Signature</div>
+        </div>
+        <div class="confirm-block">
+          <div class="confirm-check">
+            <input type="checkbox" id="chk1" />
+            <span>I confirm that the contact information, trip details, and agreed deal terms above are accurate and reflect our arrangement.</span>
+          </div>
+          <div class="confirm-check">
+            <input type="checkbox" id="chk2" />
+            <span>I understand that this confirmation is binding and authorizes EH! JADI GA? to proceed with the booking on behalf of our company.</span>
+          </div>
+        </div>
+        <div class="sig-row">
+          <div class="field">
+            <label>Authorized signatory name</label>
+            <input type="text" id="sigName" name="Authorized Signatory" placeholder="Full legal name" />
+          </div>
+          <div class="field">
+            <label>Confirmation date</label>
+            <input type="date" id="sigDate" name="Confirmation Date" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="btn-row">
+        <button class="btn-submit" id="submitBtn" onclick="submitForm()">
+          <span id="btnLabel">Submit Confirmation</span>
+          <span id="btnArrow">→</span>
+          <span class="spinner" id="spinner"></span>
+        </button>
+        <button class="btn-reset" onclick="resetForm()">Reset</button>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS SCREEN ── -->
+    <div class="success-screen" id="successMsg">
+      <div class="success-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 13l4 4L19 7" stroke="#252525" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>Thank You for Confirming!</h2>
+      <p class="sub">Your inquiry confirmation has been successfully submitted. We've received your details and our team at <strong>EH! JADI GA?</strong> will reach out to you shortly to finalize your booking.</p>
+      <div class="success-divider"></div>
+      <div class="ref-pill">Ref: EJG/INQ/COR/001/2026</div>
+      <p class="success-note">A copy of this confirmation has been sent to our team.</p>
+    </div>
+
+  </div><!-- /form-body -->
+</div><!-- /form-card -->
+
+<div class="form-footer">
+  &copy; 2026 EH! JADI GA? &nbsp;·&nbsp; All rights reserved
+</div>
+
+<script>
+  async function submitForm() {
+    var errorEl = document.getElementById('errorMsg');
+    errorEl.classList.remove('show');
+
+    var required = [
+      { id: 'fullName', label: 'Full name' },
+      { id: 'email',    label: 'Email address' },
+      { id: 'phone',    label: 'Phone / WhatsApp' },
+      { id: 'company',  label: 'Company / organization' },
+      { id: 'sigName',  label: 'Authorized signatory name' },
+      { id: 'sigDate',  label: 'Confirmation date' }
+    ];
+
+    var missing = [];
+    required.forEach(function(f) {
+      var el = document.getElementById(f.id);
+      el.classList.remove('error');
+      if (!el.value.trim()) { el.classList.add('error'); missing.push(f.label); }
+    });
+
+    if (!document.getElementById('chk1').checked || !document.getElementById('chk2').checked) {
+      missing.push('both confirmation checkboxes');
+    }
+
+    if (missing.length > 0) {
+      errorEl.textContent = 'Please fill in the following before submitting: ' + missing.join(', ') + '.';
+      errorEl.classList.add('show');
+      errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    var btn = document.getElementById('submitBtn');
+    var label = document.getElementById('btnLabel');
+    var arrow = document.getElementById('btnArrow');
+    var spinner = document.getElementById('spinner');
+    btn.disabled = true;
+    label.textContent = 'Submitting…';
+    arrow.style.display = 'none';
+    spinner.style.display = 'inline-block';
+
+    var data = {
+      _subject:              'New Inquiry Confirmation — EJG/INQ/COR/001/2026',
+      'Full Name':           document.getElementById('fullName').value,
+      'Job Title':           document.getElementById('jobTitle').value,
+      'Company':             document.getElementById('company').value,
+      'Department':          document.getElementById('department').value,
+      'Email':               document.getElementById('email').value,
+      'Phone / WhatsApp':    document.getElementById('phone').value,
+      'Company Address':     document.getElementById('address').value,
+      'Additional Notes':    document.getElementById('notes').value,
+      '--- Trip Details ---': '---',
+      'Destination':         'Bali, North Route',
+      'Trip Purpose':        'Corporate Retreat',
+      'Departure Date':      '28 May 2026',
+      'Return Date':         '31 May 2026',
+      'Travelers':           '17 persons',
+      'Accommodation':       'Luminor Hotel Legian',
+      '--- Deal Terms ---':  '---',
+      'Quotation Ref':       'EJG/INQ/COR/001/2026',
+      'Total Price (IDR)':   'Rp 38.930.000',
+      'Price per Person':    'Rp 2.290.000',
+      'Payment Method':      'Bank Transfer',
+      'Payment Deadline':    '28 April 2026',
+      '--- Signature ---':   '---',
+      'Authorized Signatory': document.getElementById('sigName').value,
+      'Confirmation Date':    document.getElementById('sigDate').value
+    };
+
+    try {
+      var res = await fetch('https://formspree.io/f/xojykrvk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        document.getElementById('formContent').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else { throw new Error('Server error'); }
+    } catch (e) {
+      btn.disabled = false;
+      label.textContent = 'Submit Confirmation';
+      arrow.style.display = 'inline';
+      spinner.style.display = 'none';
+      errorEl.textContent = 'Something went wrong while submitting. Please try again or contact us directly at halo@ehjadiga.com.';
+      errorEl.classList.add('show');
+    }
+  }
+
+  function resetForm() {
+    if (confirm('Reset all fields?')) {
+      document.querySelectorAll('input, textarea').forEach(function(el) {
+        if (el.type === 'checkbox') el.checked = false;
+        else el.value = '';
+        el.classList.remove('error');
+      });
+      document.getElementById('errorMsg').classList.remove('show');
+    }
+  }
+</script>
+</body>
+</html>
