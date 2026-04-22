@@ -18,7 +18,7 @@ import ThanksScreen from './screens/ThanksScreen';
 function getBackLabel(pathname) {
   if (/^\/trips\/.+/.test(pathname)) return 'Trip detail';
   if (/^\/glamping\/.+/.test(pathname)) return 'Glamping';
-  if (pathname === '/inquiry' || pathname.startsWith('/form/inquiry')) return 'Inquiry';
+  if (pathname === '/inquiry') return 'Inquiry';
   if (pathname === '/thanks') return '';
   return null;
 }
@@ -49,7 +49,7 @@ export default function App() {
   const { pathname } = location;
   const backLabel = getBackLabel(pathname);
   const activeNav = getActiveNav(pathname);
-  const showFab = pathname !== '/inquiry' && !pathname.startsWith('/form/inquiry') && pathname !== '/thanks';
+  const showFab = pathname !== '/inquiry' && pathname !== '/thanks';
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -87,7 +87,6 @@ export default function App() {
         <Route path="/glamping" element={<GlampingScreen />} />
         <Route path="/glamping/:id" element={<GlampDetailScreen />} />
         <Route path="/inquiry" element={<InquiryScreen onSubmit={handleSubmitInquiry} />} />
-        <Route path="/form/inquiry/corporate1" element={<InquiryScreen onSubmit={handleSubmitInquiry} defaultKind="corporate" />} />
         <Route path="/about" element={<AboutScreen />} />
         <Route path="/thanks" element={<ThanksScreen />} />
       </Routes>
