@@ -1,116 +1,174 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { UPCOMING_OPEN_TRIPS } from '../data';
 import Icon from '../components/Icon';
+import Footer from '../components/Footer';
 
 export default function TripDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const trip = UPCOMING_OPEN_TRIPS.find(t => t.id === id) || UPCOMING_OPEN_TRIPS[0];
   const low = trip.slots <= 3;
+  const pct = Math.round(((trip.totalSlots - trip.slots) / trip.totalSlots) * 100);
 
   return (
     <>
+      {/* Hero */}
       <div className={`detail-hero ph-${trip.palette || 'ink'}`}>
-        <button className="back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
-          <Icon name="arrowLeft" />
-        </button>
-        <button className="save-btn" aria-label="Simpan">
-          <Icon name="heart" />
-        </button>
         <span className="emoji" style={{ fontSize: 100 }}>{trip.emoji}</span>
         <span className="stamp-pill">OPEN TRIP · {trip.month} {trip.day}</span>
       </div>
 
-      <div className="detail-sheet">
-        <span className="region">{trip.region}</span>
-        <h1 style={{ marginTop: 8 }}>{trip.dest}</h1>
-
-        <div className="meta-row">
-          <span><Icon name="calendar" className="ic ic-sm" />{trip.start} – {trip.end}</span>
-          <span><Icon name="clock" className="ic ic-sm" />{trip.duration}</span>
-          <span><Icon name="group" className="ic ic-sm" />Max {trip.totalSlots}</span>
+      {/* Header */}
+      <div className="page-header" style={{ paddingBottom: 0 }}>
+        <span className="eyebrow">{trip.region}</span>
+        <h1 style={{ marginTop: 4 }}>{trip.dest}</h1>
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 13, color: 'var(--fg-3)', marginTop: 10 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Icon name="calendar" className="ic ic-sm" />{trip.start} – {trip.end}
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Icon name="clock" className="ic ic-sm" />{trip.duration}
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Icon name="group" className="ic ic-sm" />Max {trip.totalSlots} orang
+          </span>
         </div>
+      </div>
 
-        <div style={{ padding: '4px 0 10px' }}>
-          <div className="slots">
-            <div className={`bar${low ? ' low' : ''}`}>
-              <span style={{ width: `${Math.max(10, ((trip.totalSlots - trip.slots) / trip.totalSlots) * 100)}%` }} />
+      {/* Slots bar */}
+      <div style={{ padding: '12px 20px 0' }}>
+        <div className="slots">
+          <div className={`bar${low ? ' low' : ''}`}>
+            <span style={{ width: `${Math.max(10, pct)}%` }} />
+          </div>
+          <span className={`txt${low ? ' low' : ''}`}>
+            {trip.slots} dari {trip.totalSlots} slot tersisa
+          </span>
+        </div>
+      </div>
+
+      {/* Description */}
+      {trip.description && (
+        <div style={{ padding: '20px 20px 0' }}>
+          <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65 }}>{trip.description}</p>
+        </div>
+      )}
+
+      {/* Highlights */}
+      <div style={{ padding: '20px 20px 0' }}>
+        <div style={{
+          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+          color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12,
+        }}>
+          Yang bakal kita lakuin
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {trip.highlights.map((h, i) => (
+            <div key={h} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'var(--ejg-matahari)', color: 'var(--ejg-ink)',
+                display: 'grid', placeItems: 'center',
+                fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12, flexShrink: 0,
+              }}>{i + 1}</span>
+              <span style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.4 }}>{h}</span>
             </div>
-            <span className={`txt${low ? ' low' : ''}`}>
-              {trip.slots} dari {trip.totalSlots} slot tersisa
-            </span>
-          </div>
-        </div>
-
-        {trip.description && (
-          <div className="section">
-            <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65 }}>{trip.description}</p>
-          </div>
-        )}
-
-        <div className="section desc">
-          <h4>Yang bakal kita lakuin</h4>
-          <ul className="bullets">
-            {trip.highlights.map(h => (
-              <li key={h}>
-                <span className="check"><Icon name="check" className="ic ic-sm" /></span>
-                {h}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="section">
-          <h4>Udah termasuk</h4>
-          <ul className="bullets">
-            {trip.includes.map(item => (
-              <li key={item}>
-                <span className="check"><Icon name="check" className="ic ic-sm" /></span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="section">
-          <h4>Belum termasuk</h4>
-          <p>Tiket pesawat ke kota start, pengeluaran pribadi, tip guide (optional).</p>
-        </div>
-
-        <div className="section">
-          <h4>Cara booking</h4>
-          <p>
-            Tap "Tanya &amp; Booking" → isi form → tim kita konfirmasi via WA dalam 1x24 jam.
-            DP 30% untuk hold slot, pelunasan H-7.
-          </p>
-        </div>
-
-        <div className="section" style={{ paddingBottom: 8 }}>
-          <p style={{ fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.6 }}>
-            Dengan booking, kamu menyetujui{' '}
-            <a
-              href="/terms"
-              style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}
-            >
-              Syarat & Ketentuan
-            </a>
-            {' '}yang berlaku.
-          </p>
+          ))}
         </div>
       </div>
 
-      <div className="cta-bar">
-        <div className="price">
-          <span className="small">Mulai {low && '· hampir penuh'}</span>
-          <span className="num">Rp {trip.price}</span>
+      {/* Includes */}
+      <div style={{ padding: '20px 20px 0' }}>
+        <div style={{
+          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+          color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12,
+        }}>
+          Udah termasuk
         </div>
-        <button
-          className="btn btn-pri"
-          onClick={() => navigate('/inquiry', { state: { kind: 'open', tripId: trip.id } })}
-        >
-          Tanya &amp; Booking
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {trip.includes.map(item => (
+            <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{
+                width: 20, height: 20, borderRadius: '50%',
+                background: '#3E7A35', color: '#fff',
+                display: 'grid', placeItems: 'center', flexShrink: 0,
+              }}>
+                <Icon name="check" className="ic ic-sm" style={{ width: 12, height: 12 }} />
+              </span>
+              <span style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.4 }}>{item}</span>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Not included */}
+      <div style={{ padding: '20px 20px 0' }}>
+        <div style={{
+          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+          color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8,
+        }}>
+          Belum termasuk
+        </div>
+        <p style={{ fontSize: 14, color: 'var(--fg-3)', lineHeight: 1.55 }}>
+          Tiket pesawat ke kota start, pengeluaran pribadi, tip guide (optional).
+        </p>
+      </div>
+
+      {/* Booking info */}
+      <div style={{ padding: '20px 20px 0' }}>
+        <div style={{
+          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+          color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8,
+        }}>
+          Cara booking
+        </div>
+        <p style={{ fontSize: 14, color: 'var(--fg-3)', lineHeight: 1.55 }}>
+          Tap tombol di bawah → isi form → tim kita konfirmasi via WA dalam 1×24 jam.
+          DP 30% untuk hold slot, pelunasan H-7.
+        </p>
+      </div>
+
+      {/* CTA */}
+      <div style={{ padding: '20px 20px 0' }}>
+        <div style={{
+          background: 'var(--ejg-ink)', borderRadius: 20, padding: '18px 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+        }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+              Mulai dari
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
+              Rp {trip.price}
+              <span style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 11, color: 'rgba(243,213,67,0.6)', marginLeft: 4 }}>/orang</span>
+            </div>
+            {low && (
+              <div style={{ fontSize: 10, color: '#ff7b63', fontFamily: 'var(--font-display)', fontWeight: 700, marginTop: 2 }}>
+                ⚠ Hampir penuh
+              </div>
+            )}
+          </div>
+          <button
+            className="btn btn-pri"
+            style={{ background: 'var(--ejg-matahari)', color: 'var(--ejg-ink)', flexShrink: 0 }}
+            onClick={() => navigate('/inquiry', { state: { kind: 'open', tripId: trip.id } })}
+          >
+            Booking →
+          </button>
+        </div>
+      </div>
+
+      {/* T&C note */}
+      <div style={{ padding: '14px 20px 0' }}>
+        <p style={{ fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.6 }}>
+          Dengan booking, kamu menyetujui{' '}
+          <a href="/terms" style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}>
+            Syarat & Ketentuan
+          </a>{' '}yang berlaku.
+        </p>
+      </div>
+
+      <Footer onNav={(name) => navigate(`/${name === 'home' ? '' : name}`)} />
     </>
   );
 }

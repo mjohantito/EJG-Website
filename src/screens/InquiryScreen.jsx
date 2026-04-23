@@ -177,6 +177,7 @@ function OpenTripFields({ state, set }) {
   const selectedTrip = UPCOMING_OPEN_TRIPS.find(t => t.id === state.tripId);
   const avail = selectedTrip ? selectedTrip.slots : null;
   const low = avail !== null && avail <= 3;
+  const estimate = selectedTrip?.priceNum ? selectedTrip.priceNum * state.pax : null;
 
   return (
     <>
@@ -213,6 +214,30 @@ function OpenTripFields({ state, set }) {
       </Field>
 
       <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
+
+      {estimate && (
+        <div style={{
+          background: 'var(--ejg-ink)', borderRadius: 14, padding: '14px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+              Estimasi total
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
+              {formatRupiah(estimate)}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              {state.pax} orang × Rp {selectedTrip.price}
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+              *final dikonfirmasi via WA
+            </div>
+          </div>
+        </div>
+      )}
 
       <Field label="Catatan / request">
         <textarea
@@ -280,6 +305,8 @@ function CorporateFields({ state, set }) {
 function GlampingFields({ state, set }) {
   const rule = GLAMP_AVAIL[state.glampLoc];
   const avStatus = dateAvailability(state.date, state.glampLoc);
+  const glamp = GLAMPINGS.find(g => g.id === state.glampLoc);
+  const estimate = glamp?.pricePerNight ? glamp.pricePerNight * state.nights : null;
 
   return (
     <>
@@ -307,7 +334,34 @@ function GlampingFields({ state, set }) {
         )}
       </Field>
 
-      <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={20} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={20} />
+        <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={7} />
+      </div>
+
+      {estimate && (
+        <div style={{
+          background: 'var(--ejg-ink)', borderRadius: 14, padding: '14px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+              Estimasi total
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
+              {formatRupiah(estimate)}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              {state.nights} malam × Rp {glamp?.price}
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+              *per unit, final via WA
+            </div>
+          </div>
+        </div>
+      )}
 
       <Field label="Tanggal check-in">
         <input
@@ -370,6 +424,7 @@ export default function InquiryScreen({ onSubmit }) {
     meetingPoint: 'Surabaya',
     // glamping
     glampLoc: ctx.glampId || GLAMPINGS[0].id,
+    nights: 1,
   });
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));

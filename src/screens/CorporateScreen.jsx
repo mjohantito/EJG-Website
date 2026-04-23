@@ -93,8 +93,20 @@ export default function CorporateScreen() {
   const canSubmit = form.name.trim().length > 1 && form.wa.trim().length > 5 && form.email.trim().length > 3;
 
   const handleSubmit = () => {
+    const msg = [
+      'Halo EH! JADI GA? 👋',
+      '',
+      'Saya tertarik dengan layanan *Corporate Trip*:',
+      '',
+      `Nama: ${form.name}`,
+      `WhatsApp: ${form.wa}`,
+      `Email: ${form.email}`,
+      '',
+      'Mohon follow up ya, terima kasih!',
+    ].join('\n');
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
     setSubmitted(true);
-    setTimeout(() => navigate('/thanks', { state: { kind: 'corporate', ...form } }), 300);
+    setTimeout(() => navigate('/thanks', { state: { kind: 'corporate', ...form } }), 400);
   };
 
   return (
