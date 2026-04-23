@@ -11,8 +11,8 @@ export default function GlampingScreen() {
       <div className="page-header">
         <span className="eyebrow">Glamping · EH! JADI GA?</span>
         <h1 style={{ marginTop: 6 }}>
-          Kemah<span className="q-stamp">?</span><br />
-          Tetep <span className="italic" style={{ fontStyle: 'italic', fontWeight: 500 }}>wangi</span>.
+          Outdoor yang<br />
+          beneran <span className="italic" style={{ fontStyle: 'italic', fontWeight: 500 }}>nyaman</span><span className="q-stamp">.</span>
         </h1>
         <p className="lead">3 lokasi di Jawa Timur. Bisa di-add ke private trip kamu juga.</p>
       </div>

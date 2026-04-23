@@ -249,7 +249,9 @@ export default function InquiryScreen({ onSubmit }) {
   const navigate = useNavigate();
   const ctx = location.state || {};
 
-  const [kind, setKind] = useState(ctx.kind || 'open');
+  const [kind, setKind] = useState(
+    ['open', 'private', 'glamping'].includes(ctx.kind) ? ctx.kind : 'open'
+  );
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -279,7 +281,6 @@ export default function InquiryScreen({ onSubmit }) {
   const canSubmit = (() => {
     const base = form.name.trim().length > 1 && form.email.trim().length > 3 && form.wa.trim().length > 5;
     if (!base) return false;
-    if (kind === 'corporate') return form.company.trim().length > 1;
     if (kind === 'glamping') return glampDateStatus !== 'unavailable';
     return true;
   })();
@@ -293,7 +294,7 @@ export default function InquiryScreen({ onSubmit }) {
     }
   };
 
-  const submitLabel = kind === 'corporate' ? 'Request Trip →' : 'Kirim inquiry →';
+  const submitLabel = 'Kirim inquiry →';
 
   return (
     <>
@@ -309,10 +310,9 @@ export default function InquiryScreen({ onSubmit }) {
         <label className="eyebrow" style={{ display: 'block', marginBottom: 8 }}>Jenis inquiry</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
-            { id: 'open',      label: 'Open trip' },
-            { id: 'private',   label: 'Private trip' },
-            { id: 'glamping',  label: 'Glamping' },
-            { id: 'corporate', label: 'Corporate' },
+            { id: 'open',     label: 'Open trip' },
+            { id: 'private',  label: 'Private trip' },
+            { id: 'glamping', label: 'Glamping' },
           ].map(k => (
             <button
               key={k.id}
@@ -330,9 +330,6 @@ export default function InquiryScreen({ onSubmit }) {
       <div className="form">
         {(kind === 'open' || kind === 'private') && (
           <TripFields kind={kind} state={form} set={set} />
-        )}
-        {kind === 'corporate' && (
-          <CorporateFields state={form} set={set} />
         )}
         {kind === 'glamping' && (
           <GlampingFields state={form} set={set} />

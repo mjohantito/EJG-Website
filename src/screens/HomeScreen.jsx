@@ -46,7 +46,7 @@ export default function HomeScreen() {
           <span className="label">Glamping</span>
           <span className="sub">Tent beneran, tetep wangi.</span>
         </div>
-        <div className="ql" onClick={() => navigate('/inquiry', { state: { kind: 'corporate' } })}>
+        <div className="ql" onClick={() => navigate('/corporate')}>
           <Icon name="group" className="ic ic-lg" />
           <span className="label">Corporate</span>
           <span className="sub">Outing kantor, gathering, offsite.</span>
@@ -69,7 +69,7 @@ export default function HomeScreen() {
 
       <div className="teaser">
         <span className="ey">PRIVATE TRIP</span>
-        <h3>Grup kamu aja. Tanggal kamu sendiri.</h3>
+        <h3 style={{ color: '#fff' }}>Grup kamu aja. Tanggal kamu sendiri.</h3>
         <p>Pilih destinasi, kasih tau jumlah orang dan range tanggal — kita rancang + quote dalam 1x24 jam.</p>
         <button className="btn btn-pri" onClick={() => navigate('/inquiry', { state: { kind: 'private' } })}>
           Mulai inquiry →
@@ -94,8 +94,8 @@ export default function HomeScreen() {
         <span className="ey">CORPORATE</span>
         <h3>Outing kantor? Kita bantu dari A sampai Z.</h3>
         <p>Team offsite, gathering, retreat — logistik kita urus, kamu fokus ke momen.</p>
-        <button className="btn btn-pri" onClick={() => navigate('/inquiry', { state: { kind: 'corporate' } })}>
-          Ajukan RFP →
+        <button className="btn btn-pri" onClick={() => navigate('/corporate')}>
+          Lihat paket corporate →
         </button>
         <span className="deco">👥</span>
       </div>

@@ -15,6 +15,8 @@ import GlampDetailScreen from './screens/GlampDetailScreen';
 import InquiryScreen from './screens/InquiryScreen';
 import AboutScreen from './screens/AboutScreen';
 import ThanksScreen from './screens/ThanksScreen';
+import CorporateScreen from './screens/CorporateScreen';
+import TermsScreen from './screens/TermsScreen';
 
 function getBackLabel(pathname) {
   if (/^\/trips\/private\/.+/.test(pathname)) return 'Private trip';
@@ -22,6 +24,7 @@ function getBackLabel(pathname) {
   if (/^\/glamping\/.+/.test(pathname)) return 'Glamping';
   if (pathname === '/inquiry') return 'Inquiry';
   if (pathname === '/thanks') return '';
+  if (pathname === '/terms') return 'Syarat & Ketentuan';
   return null;
 }
 
@@ -29,17 +32,19 @@ function getActiveNav(pathname) {
   if (pathname === '/') return 'home';
   if (pathname.startsWith('/trips')) return 'trips';
   if (pathname.startsWith('/glamping')) return 'glamping';
+  if (pathname === '/corporate') return 'corporate';
   if (pathname === '/inquiry' || pathname === '/thanks') return 'inquiry';
   if (pathname === '/about') return 'about';
   return 'home';
 }
 
 const NAV_ROUTES = {
-  home:     '/',
-  trips:    '/trips',
-  glamping: '/glamping',
-  inquiry:  '/inquiry',
-  about:    '/about',
+  home:      '/',
+  trips:     '/trips',
+  glamping:  '/glamping',
+  corporate: '/corporate',
+  inquiry:   '/inquiry',
+  about:     '/about',
 };
 
 export default function App() {
@@ -89,9 +94,11 @@ export default function App() {
         <Route path="/trips/:id" element={<TripDetailScreen />} />
         <Route path="/glamping" element={<GlampingScreen />} />
         <Route path="/glamping/:id" element={<GlampDetailScreen />} />
+        <Route path="/corporate" element={<CorporateScreen />} />
         <Route path="/inquiry" element={<InquiryScreen onSubmit={handleSubmitInquiry} />} />
         <Route path="/about" element={<AboutScreen />} />
         <Route path="/thanks" element={<ThanksScreen />} />
+        <Route path="/terms" element={<TermsScreen />} />
       </Routes>
 
       {showFab && <WAFab />}

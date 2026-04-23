@@ -2,11 +2,12 @@ import { WHATSAPP } from '../data';
 import Icon from './Icon';
 
 const NAV_ITEMS = [
-  { id: 'home',     label: 'Beranda' },
-  { id: 'trips',    label: 'Trips' },
-  { id: 'glamping', label: 'Glamping' },
-  { id: 'inquiry',  label: 'Inquiry' },
-  { id: 'about',    label: 'Tentang kami' },
+  { id: 'home',      label: 'Beranda' },
+  { id: 'trips',     label: 'Trips',       badge: 'Open & Private' },
+  { id: 'glamping',  label: 'Glamping',    badge: '3 lokasi' },
+  { id: 'corporate', label: 'Corporate' },
+  { id: 'inquiry',   label: 'Inquiry' },
+  { id: 'about',     label: 'Tentang kami' },
 ];
 
 export default function Drawer({ open, onClose, onNav, active }) {
@@ -32,7 +33,19 @@ export default function Drawer({ open, onClose, onNav, active }) {
               className={active === item.id ? 'on' : ''}
               onClick={() => { onNav(item.id); onClose(); }}
             >
-              {item.label}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {item.label}
+                {item.badge && (
+                  <span style={{
+                    fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700,
+                    background: 'var(--ejg-matahari)', color: 'var(--ejg-ink)',
+                    padding: '2px 8px', borderRadius: 999, letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                  }}>
+                    {item.badge}
+                  </span>
+                )}
+              </span>
               <Icon name="arrowRight" className="ic ic-sm" />
             </a>
           ))}

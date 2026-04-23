@@ -15,8 +15,10 @@ export default function Footer({ onNav }) {
           <ul>
             <li><a onClick={() => onNav('trips')}>Trips</a></li>
             <li><a onClick={() => onNav('glamping')}>Glamping</a></li>
+            <li><a onClick={() => onNav('corporate')}>Corporate</a></li>
             <li><a onClick={() => onNav('inquiry')}>Inquiry</a></li>
             <li><a onClick={() => onNav('about')}>Tentang</a></li>
+            <li><a href="/terms" style={{ color: 'var(--ejg-kertas)', textDecoration: 'none', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14 }}>Syarat & Ketentuan</a></li>
           </ul>
         </div>
         <div>
@@ -27,9 +29,15 @@ export default function Footer({ onNav }) {
                 WhatsApp
               </a>
             </li>
-            <li><a>@ehjadiga</a></li>
-            <li><a>halo@ehjadiga.id</a></li>
-            <li><a>Malang, Jawa Timur</a></li>
+            <li>
+              <a href="https://www.instagram.com/ehjadiga" target="_blank" rel="noreferrer">
+                @ehjadiga
+              </a>
+            </li>
+            <li>
+              <a href="mailto:halo@ehjadiga.com">halo@ehjadiga.com</a>
+            </li>
+            <li>Surabaya, Jawa Timur</li>
           </ul>
         </div>
       </div>

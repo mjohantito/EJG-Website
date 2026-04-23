@@ -42,6 +42,12 @@ export default function TripDetailScreen() {
           </div>
         </div>
 
+        {trip.description && (
+          <div className="section">
+            <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65 }}>{trip.description}</p>
+          </div>
+        )}
+
         <div className="section desc">
           <h4>Yang bakal kita lakuin</h4>
           <ul className="bullets">
@@ -76,6 +82,19 @@ export default function TripDetailScreen() {
           <p>
             Tap "Tanya &amp; Booking" → isi form → tim kita konfirmasi via WA dalam 1x24 jam.
             DP 30% untuk hold slot, pelunasan H-7.
+          </p>
+        </div>
+
+        <div className="section" style={{ paddingBottom: 8 }}>
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.6 }}>
+            Dengan booking, kamu menyetujui{' '}
+            <a
+              href="/terms"
+              style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}
+            >
+              Syarat & Ketentuan
+            </a>
+            {' '}yang berlaku.
           </p>
         </div>
       </div>
