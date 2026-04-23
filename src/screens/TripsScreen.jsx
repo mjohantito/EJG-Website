@@ -4,82 +4,30 @@ import { UPCOMING_OPEN_TRIPS, PRIVATE_DESTINATIONS } from '../data';
 import OpenTripCard from '../components/OpenTripCard';
 import Footer from '../components/Footer';
 
-function PrivateConfigurator() {
-  const navigate = useNavigate();
-  const [dest, setDest] = useState('pronojiwo');
-  const [dateMode, setDateMode] = useState('weekend');
-  const [pax, setPax] = useState(4);
-  const [nights, setNights] = useState(2);
-
+function PrivateDestCard({ dest, onClick }) {
   return (
-    <div style={{ padding: '8px 0 20px' }}>
-      <div className="page-header" style={{ paddingTop: 4, paddingBottom: 10 }}>
-        <span className="eyebrow">Private trip</span>
-        <p className="lead" style={{ marginTop: 6 }}>
-          Pilih konfigurasi dasar, kita lanjut via form detail.
-        </p>
+    <div className="ot-card" onClick={onClick}>
+      <div
+        className={`ot-datestamp ph-${dest.palette || 'ink'}`}
+        style={{ fontSize: 38, letterSpacing: 0 }}
+      >
+        {dest.emoji}
       </div>
-
-      <div style={{ padding: '0 20px 10px', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-        1. Destinasi
-      </div>
-      <div className="dest-grid">
-        {PRIVATE_DESTINATIONS.map(d => (
-          <button
-            key={d.id}
-            className={`dest-opt${dest === d.id ? ' on' : ''}`}
-            onClick={() => setDest(d.id)}
-          >
-            <span className="em">{d.emoji}</span>
-            <span className="name">{d.name}</span>
-            <span className="sub">{d.sub}</span>
-          </button>
-        ))}
-      </div>
-
-      <div style={{ padding: '16px 20px 10px', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-        2. Tanggal
-      </div>
-      <div className="radio-row" style={{ padding: '0 20px 10px' }}>
-        <button className={`radio-card${dateMode === 'weekend' ? ' on' : ''}`} onClick={() => setDateMode('weekend')}>
-          <span className="k">Weekend terdekat</span>
-          <span className="v">Sabtu–Minggu</span>
-        </button>
-        <button className={`radio-card${dateMode === 'custom' ? ' on' : ''}`} onClick={() => setDateMode('custom')}>
-          <span className="k">Tanggal custom</span>
-          <span className="v">Isi di form</span>
-        </button>
-      </div>
-
-      <div style={{ padding: '16px 20px 10px', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-        3. Grup & Durasi
-      </div>
-      <div style={{ padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <div className="field">
-          <label>Jumlah orang</label>
-          <div className="stepper">
-            <button onClick={() => setPax(Math.max(2, pax - 1))}>−</button>
-            <span className="v">{pax}</span>
-            <button onClick={() => setPax(Math.min(30, pax + 1))}>+</button>
-          </div>
+      <div className="ot-body">
+        <span className="region">{dest.region}</span>
+        <div className="title">{dest.name}</div>
+        <div className="meta">{dest.sub}</div>
+        <div className="foot">
+          <span className="price">
+            {dest.startingPrice === 'Sesuai itinerary'
+              ? <em style={{ fontStyle: 'normal', fontSize: 13 }}>Custom quote</em>
+              : <>mulai Rp {dest.startingPrice}<small> / orang</small></>
+            }
+          </span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--ejg-ink)' }}>
+            Lihat →
+          </span>
         </div>
-        <div className="field">
-          <label>Malam</label>
-          <div className="stepper">
-            <button onClick={() => setNights(Math.max(1, nights - 1))}>−</button>
-            <span className="v">{nights}</span>
-            <button onClick={() => setNights(Math.min(10, nights + 1))}>+</button>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ padding: '18px 20px 0' }}>
-        <button
-          className="btn btn-pri btn-block"
-          onClick={() => navigate('/inquiry', { state: { kind: 'private', dest, pax, nights } })}
-        >
-          Lanjut ke form inquiry →
-        </button>
       </div>
     </div>
   );
@@ -135,7 +83,18 @@ export default function TripsScreen() {
         </>
       )}
 
-      {mode === 'private' && <PrivateConfigurator />}
+      {mode === 'private' && (
+        <>
+          <div style={{ padding: '0 20px 10px', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.45 }}>
+            Pilih destinasi. Tanggal & jumlah orang diskusi bareng via form.
+          </div>
+          <div className="opentrip-list">
+            {PRIVATE_DESTINATIONS.map(d => (
+              <PrivateDestCard key={d.id} dest={d} onClick={() => navigate(`/trips/private/${d.id}`)} />
+            ))}
+          </div>
+        </>
+      )}
 
       <Footer onNav={(name) => navigate(`/${name === 'home' ? '' : name}`)} />
     </>

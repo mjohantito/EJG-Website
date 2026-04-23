@@ -9,6 +9,7 @@ import Toast from './components/Toast';
 import HomeScreen from './screens/HomeScreen';
 import TripsScreen from './screens/TripsScreen';
 import TripDetailScreen from './screens/TripDetailScreen';
+import PrivateTripDetailScreen from './screens/PrivateTripDetailScreen';
 import GlampingScreen from './screens/GlampingScreen';
 import GlampDetailScreen from './screens/GlampDetailScreen';
 import InquiryScreen from './screens/InquiryScreen';
@@ -16,6 +17,7 @@ import AboutScreen from './screens/AboutScreen';
 import ThanksScreen from './screens/ThanksScreen';
 
 function getBackLabel(pathname) {
+  if (/^\/trips\/private\/.+/.test(pathname)) return 'Private trip';
   if (/^\/trips\/.+/.test(pathname)) return 'Trip detail';
   if (/^\/glamping\/.+/.test(pathname)) return 'Glamping';
   if (pathname === '/inquiry') return 'Inquiry';
@@ -83,6 +85,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomeScreen />} />
         <Route path="/trips" element={<TripsScreen />} />
+        <Route path="/trips/private/:id" element={<PrivateTripDetailScreen />} />
         <Route path="/trips/:id" element={<TripDetailScreen />} />
         <Route path="/glamping" element={<GlampingScreen />} />
         <Route path="/glamping/:id" element={<GlampDetailScreen />} />
