@@ -19,8 +19,8 @@ export default function WAFab() {
 
   return (
     <a className="wa-fab" href={href} target="_blank" rel="noreferrer" aria-label="Chat WhatsApp">
-      <span className="pulse" />
-      <Icon name="wa" className="ic ic-lg" />
+      <Icon name="wa" className="ic" />
+      <span className="fab-label">Chat WA</span>
     </a>
   );
 }

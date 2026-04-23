@@ -155,6 +155,7 @@ html, body {
 .ql .sub   { font-size: 12px; color: var(--fg-3); line-height: 1.35; }
 .ql.ink { background: var(--ejg-ink); color: #F3D543; border-color: var(--ejg-ink); }
 .ql.ink .sub { color: rgba(243,213,67,0.7); }
+.ql.ink .ic-lg { color: #fff; }
 .ql.sun { background: var(--ejg-matahari); border-color: var(--ejg-matahari); }
 
 /* ============ Section headers ============ */
@@ -558,22 +559,23 @@ html, body {
 /* ============ WhatsApp FAB ============ */
 .wa-fab {
   position: fixed; bottom: 22px; right: 22px; z-index: 50;
-  width: 58px; height: 58px; border-radius: 999px;
-  background: #25D366; color: #fff;
-  display: grid; place-items: center; cursor: pointer;
-  border: 3px solid #fff;
-  box-shadow: 0 8px 20px rgba(37,211,102,0.45), 0 2px 4px rgba(0,0,0,0.2);
+  height: 48px; border-radius: 999px;
+  background: var(--ejg-ink); color: var(--ejg-matahari);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 18px 0 14px;
+  cursor: pointer; border: none;
+  box-shadow: 0 6px 20px rgba(37,37,37,0.3), 0 2px 6px rgba(37,37,37,0.15);
   text-decoration: none;
   transition: all 200ms var(--ease-out-soft);
   animation: fabIn 400ms var(--ease-out-soft) both;
 }
-@keyframes fabIn { from { transform: scale(0) rotate(-30deg); } to { transform: scale(1) rotate(0); } }
-.wa-fab:hover { transform: scale(1.08); }
-.wa-fab .pulse {
-  position: absolute; inset: -3px; border-radius: 999px; border: 3px solid #25D366;
-  animation: pulse 2s ease-out infinite;
+.wa-fab .fab-label {
+  font-family: var(--font-display); font-weight: 800; font-size: 13px;
+  letter-spacing: 0.01em; white-space: nowrap;
 }
-@keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.55); opacity: 0; } }
+@keyframes fabIn { from { transform: translateY(20px) scale(0.85); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+.wa-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,37,37,0.4); }
+.wa-fab:active { transform: scale(0.97); }
 
 /* On desktop keep FAB inside the 430px container */
 @media (min-width: 490px) {

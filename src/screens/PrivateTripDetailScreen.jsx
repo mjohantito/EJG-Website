@@ -21,7 +21,7 @@ export default function PrivateTripDetailScreen() {
   }
 
   const handleInquiry = () => {
-    navigate('/inquiry', { state: { kind: 'private', dest: dest.id } });
+    navigate('/inquiry', { state: { kind: 'private', dest: dest.id, duration: selectedDuration } });
   };
 
   return (

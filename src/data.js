@@ -92,6 +92,7 @@ export const PRIVATE_DESTINATIONS = [
     highlights: ["Tumpak Sewu dari dasar", "Goa Tetes & stalaktit", "Kapas Biru swim spot", "Sunrise dari Pronojiwo"],
     durations: ["2D1N", "3D2N"],
     startingPrice: "1.8jt",
+    pricePerPax: 1_800_000,
   },
   {
     id: "bromo",
@@ -104,6 +105,7 @@ export const PRIVATE_DESTINATIONS = [
     highlights: ["Sunrise Penanjakan", "Jeep ke kawah Bromo", "Savana & Pasir Berbisik", "Bukit Teletubbies"],
     durations: ["2D1N", "3D2N", "4D3N"],
     startingPrice: "1.5jt",
+    pricePerPax: 1_500_000,
   },
   {
     id: "ijen",
@@ -116,6 +118,7 @@ export const PRIVATE_DESTINATIONS = [
     highlights: ["Blue fire midnight hike", "Sunrise kawah Ijen", "Turquoise acid lake view", "Lintas ke Bali (opsional)"],
     durations: ["2D1N", "3D2N"],
     startingPrice: "1.6jt",
+    pricePerPax: 1_600_000,
   },
   {
     id: "malang",
@@ -128,6 +131,7 @@ export const PRIVATE_DESTINATIONS = [
     highlights: ["Coffee crawl & café lokal", "Museum & galeri tersembunyi", "Kuliner non-tourist trap", "Day trip ke Coban Rondo"],
     durations: ["2D1N", "3D2N", "4D3N"],
     startingPrice: "1.2jt",
+    pricePerPax: 1_200_000,
   },
   {
     id: "kelud",
@@ -140,6 +144,7 @@ export const PRIVATE_DESTINATIONS = [
     highlights: ["Kawah danau toska", "Air panas Kelud alami", "Sunset Bukit Kura-kura", "Perkebunan kopi lereng gunung"],
     durations: ["2D1N", "3D2N"],
     startingPrice: "1.3jt",
+    pricePerPax: 1_300_000,
   },
   {
     id: "custom",
@@ -152,6 +157,7 @@ export const PRIVATE_DESTINATIONS = [
     highlights: ["Route custom sesuai keinginan", "Konsultasi gratis via WA", "Quote dalam 1×24 jam", "Bisa kombinasi multi-dest"],
     durations: ["Fleksibel"],
     startingPrice: "Sesuai itinerary",
+    pricePerPax: null,
   },
 ];
 

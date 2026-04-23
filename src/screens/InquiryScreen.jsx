@@ -54,66 +54,165 @@ function Stepper({ label, value, onChange, min = 1, max = 100 }) {
 }
 
 /* ── Open / Private trip fields ── */
-function TripFields({ kind, state, set }) {
+
+const MEETING_POINTS_BASE = ['Kediri', 'Surabaya', 'Malang'];
+const DURATION_MULTIPLIER = { '2D1N': 1, '3D2N': 1.5, '4D3N': 2 };
+
+function formatRupiah(amount) {
+  if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1).replace('.0', '')} juta`;
+  return `Rp ${(amount / 1_000).toFixed(0)} ribu`;
+}
+
+function PrivateFields({ state, set }) {
+  const dest = PRIVATE_DESTINATIONS.find(d => d.id === state.privateDest) || PRIVATE_DESTINATIONS[0];
+  const meetingPoints = state.privateDest === 'ijen'
+    ? [...MEETING_POINTS_BASE, 'Banyuwangi']
+    : MEETING_POINTS_BASE;
+
+  const multiplier = DURATION_MULTIPLIER[state.privateDuration];
+  const estimate = dest.pricePerPax && multiplier
+    ? dest.pricePerPax * state.pax * multiplier
+    : null;
+
+  const handleDestChange = (newDestId) => {
+    set('privateDest', newDestId);
+    const newDest = PRIVATE_DESTINATIONS.find(d => d.id === newDestId);
+    if (newDest) set('privateDuration', newDest.durations[0]);
+    if (newDestId !== 'ijen' && state.meetingPoint === 'Banyuwangi') {
+      set('meetingPoint', 'Kediri');
+    }
+  };
+
+  return (
+    <>
+      <Field label="Nama kamu">
+        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Nama Kamu" />
+      </Field>
+      <Field label="No. WhatsApp" hint="Kita bales via WA biar cepet.">
+        <input value={state.wa} onChange={e => set('wa', e.target.value)} placeholder="+62 812…" inputMode="tel" />
+      </Field>
+      <Field label="Email" hint="Konfirmasi akan dikirim ke email ini.">
+        <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
+      </Field>
+
+      <Field label="Destinasi">
+        <select value={state.privateDest} onChange={e => handleDestChange(e.target.value)}>
+          {PRIVATE_DESTINATIONS.map(d => (
+            <option key={d.id} value={d.id}>{d.emoji} {d.name} — {d.sub}</option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="Durasi trip">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 2 }}>
+          {dest.durations.map(dur => (
+            <button
+              key={dur}
+              type="button"
+              onClick={() => set('privateDuration', dur)}
+              style={{
+                padding: '9px 18px', borderRadius: 999,
+                border: state.privateDuration === dur ? '2px solid var(--ejg-ink)' : '1.5px solid var(--border)',
+                background: state.privateDuration === dur ? 'var(--ejg-matahari)' : '#fff',
+                color: 'var(--ejg-ink)',
+                fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+                cursor: 'pointer', transition: 'all 140ms ease',
+              }}
+            >
+              {dur}
+            </button>
+          ))}
+        </div>
+      </Field>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
+        <Field label="Meeting point">
+          <select value={state.meetingPoint} onChange={e => set('meetingPoint', e.target.value)}>
+            {meetingPoints.map(mp => <option key={mp} value={mp}>{mp}</option>)}
+          </select>
+        </Field>
+      </div>
+
+      <Field label="Tanggal (opsional)">
+        <input type="date" value={state.date} min={TODAY} onChange={e => set('date', e.target.value)} />
+      </Field>
+
+      {estimate && (
+        <div style={{
+          background: 'var(--ejg-ink)', borderRadius: 14, padding: '14px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+              Estimasi total
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
+              {formatRupiah(estimate)}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              {state.pax} orang × {state.privateDuration}
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2, lineHeight: 1.4 }}>
+              *estimasi, final dikonfirmasi via WA
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Field label="Catatan / request">
+        <textarea
+          value={state.notes}
+          onChange={e => set('notes', e.target.value)}
+          placeholder="Ada hal spesifik yang perlu kami tahu? Dietary, aksesibilitas, request khusus…"
+        />
+      </Field>
+    </>
+  );
+}
+
+function OpenTripFields({ state, set }) {
   const selectedTrip = UPCOMING_OPEN_TRIPS.find(t => t.id === state.tripId);
   const avail = selectedTrip ? selectedTrip.slots : null;
   const low = avail !== null && avail <= 3;
 
   return (
     <>
-      <Field label="Nama lengkap">
-        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Manuel Johan" />
-      </Field>
-      <Field label="Email" hint="Konfirmasi akan dikirim ke email ini.">
-        <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
+      <Field label="Nama kamu">
+        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Nama Kamu" />
       </Field>
       <Field label="No. WhatsApp" hint="Kita bales via WA biar cepet.">
         <input value={state.wa} onChange={e => set('wa', e.target.value)} placeholder="+62 812…" inputMode="tel" />
       </Field>
+      <Field label="Email" hint="Konfirmasi akan dikirim ke email ini.">
+        <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
+      </Field>
 
-      {kind === 'open' ? (
-        <Field label="Pilih trip">
-          <select value={state.tripId} onChange={e => set('tripId', e.target.value)}>
-            {UPCOMING_OPEN_TRIPS.map(t => (
-              <option key={t.id} value={t.id}>{t.dest} · {t.start} – {t.end}</option>
-            ))}
-          </select>
-          {avail !== null && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
-              <div style={{ flex: 1, height: 4, background: 'var(--ejg-fog)', borderRadius: 999, overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', borderRadius: 999,
-                  background: low ? '#C23B2A' : 'var(--ejg-ink)',
-                  width: `${Math.max(8, ((selectedTrip.totalSlots - avail) / selectedTrip.totalSlots) * 100)}%`,
-                }} />
-              </div>
-              <span style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: low ? '#C23B2A' : 'var(--fg-3)', letterSpacing: '0.05em' }}>
-                {avail} slot tersisa
-              </span>
+      <Field label="Pilih trip">
+        <select value={state.tripId} onChange={e => set('tripId', e.target.value)}>
+          {UPCOMING_OPEN_TRIPS.map(t => (
+            <option key={t.id} value={t.id}>{t.dest} · {t.start} – {t.end}</option>
+          ))}
+        </select>
+        {avail !== null && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+            <div style={{ flex: 1, height: 4, background: 'var(--ejg-fog)', borderRadius: 999, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%', borderRadius: 999,
+                background: low ? '#C23B2A' : 'var(--ejg-ink)',
+                width: `${Math.max(8, ((selectedTrip.totalSlots - avail) / selectedTrip.totalSlots) * 100)}%`,
+              }} />
             </div>
-          )}
-        </Field>
-      ) : (
-        <Field label="Destinasi">
-          <select value={state.privateDest} onChange={e => set('privateDest', e.target.value)}>
-            {PRIVATE_DESTINATIONS.map(d => (
-              <option key={d.id} value={d.id}>{d.emoji} {d.name} — {d.sub}</option>
-            ))}
-          </select>
-        </Field>
-      )}
+            <span style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: low ? '#C23B2A' : 'var(--fg-3)', letterSpacing: '0.05em' }}>
+              {avail} slot tersisa
+            </span>
+          </div>
+        )}
+      </Field>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
-        <Field label="Tanggal">
-          <input
-            type="date"
-            value={state.date}
-            min={TODAY}
-            onChange={e => set('date', e.target.value)}
-          />
-        </Field>
-      </div>
+      <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
 
       <Field label="Catatan / request">
         <textarea
@@ -130,8 +229,8 @@ function TripFields({ kind, state, set }) {
 function CorporateFields({ state, set }) {
   return (
     <>
-      <Field label="Nama lengkap">
-        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Budi Santoso" />
+      <Field label="Nama kamu">
+        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Nama Kamu" />
       </Field>
       <Field label="Jabatan / posisi">
         <input value={state.jobTitle} onChange={e => set('jobTitle', e.target.value)} placeholder="HR Manager" />
@@ -184,14 +283,14 @@ function GlampingFields({ state, set }) {
 
   return (
     <>
-      <Field label="Nama lengkap">
-        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Manuel Johan" />
-      </Field>
-      <Field label="Email">
-        <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
+      <Field label="Nama kamu">
+        <input value={state.name} onChange={e => set('name', e.target.value)} placeholder="Nama Kamu" />
       </Field>
       <Field label="No. WhatsApp" hint="Kita bales via WA biar cepet.">
         <input value={state.wa} onChange={e => set('wa', e.target.value)} placeholder="+62 812…" inputMode="tel" />
+      </Field>
+      <Field label="Email">
+        <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
       </Field>
 
       <Field label="Lokasi glamping">
@@ -252,6 +351,10 @@ export default function InquiryScreen({ onSubmit }) {
   const [kind, setKind] = useState(
     ['open', 'private', 'glamping'].includes(ctx.kind) ? ctx.kind : 'open'
   );
+
+  const initialPrivateDest = ctx.dest || PRIVATE_DESTINATIONS[0].id;
+  const initialDestData = PRIVATE_DESTINATIONS.find(d => d.id === initialPrivateDest) || PRIVATE_DESTINATIONS[0];
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -262,14 +365,9 @@ export default function InquiryScreen({ onSubmit }) {
     // open trip
     tripId: ctx.tripId || UPCOMING_OPEN_TRIPS[0].id,
     // private trip
-    privateDest: ctx.dest || PRIVATE_DESTINATIONS[0].id,
-    // corporate
-    jobTitle: '',
-    company: '',
-    companyAddress: '',
-    budget: '',
-    tripDest: '',
-    tripPurpose: '',
+    privateDest: initialPrivateDest,
+    privateDuration: ctx.duration || initialDestData.durations[0],
+    meetingPoint: 'Surabaya',
     // glamping
     glampLoc: ctx.glampId || GLAMPINGS[0].id,
   });
@@ -286,6 +384,25 @@ export default function InquiryScreen({ onSubmit }) {
   })();
 
   const handleSubmit = () => {
+    if (kind === 'private') {
+      const dest = PRIVATE_DESTINATIONS.find(d => d.id === form.privateDest);
+      const lines = [
+        'Halo EH! JADI GA? 👋',
+        '',
+        'Saya mau inquiry *Private Trip*:',
+        '',
+        `Nama: ${form.name}`,
+        `WhatsApp: ${form.wa}`,
+        `Email: ${form.email}`,
+        `Destinasi: ${dest?.emoji || ''} ${dest?.name || form.privateDest}`,
+        `Durasi: ${form.privateDuration}`,
+        `Jumlah peserta: ${form.pax} orang`,
+        `Meeting point: ${form.meetingPoint}`,
+        form.date ? `Tanggal: ${form.date}` : '',
+        form.notes ? `Catatan: ${form.notes}` : '',
+      ].filter(Boolean).join('\n');
+      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`, '_blank');
+    }
     const payload = { kind, ...form };
     if (onSubmit) {
       onSubmit(payload);
@@ -294,7 +411,7 @@ export default function InquiryScreen({ onSubmit }) {
     }
   };
 
-  const submitLabel = 'Kirim inquiry →';
+  const submitLabel = kind === 'private' ? 'Kirim ke WhatsApp →' : 'Kirim inquiry →';
 
   return (
     <>
@@ -328,12 +445,9 @@ export default function InquiryScreen({ onSubmit }) {
       </div>
 
       <div className="form">
-        {(kind === 'open' || kind === 'private') && (
-          <TripFields kind={kind} state={form} set={set} />
-        )}
-        {kind === 'glamping' && (
-          <GlampingFields state={form} set={set} />
-        )}
+        {kind === 'open' && <OpenTripFields state={form} set={set} />}
+        {kind === 'private' && <PrivateFields state={form} set={set} />}
+        {kind === 'glamping' && <GlampingFields state={form} set={set} />}
 
         <div style={{ background: 'var(--ejg-kertas-2)', border: '1px dashed var(--border-strong)', borderRadius: 14, padding: 14, fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
           <strong style={{ color: 'var(--ejg-ink)' }}>Fyi:</strong> kita cuma butuh info dasar dulu.
