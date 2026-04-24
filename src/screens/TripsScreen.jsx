@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UPCOMING_OPEN_TRIPS, PRIVATE_DESTINATIONS } from '../data';
 import OpenTripCard from '../components/OpenTripCard';
 import Footer from '../components/Footer';
@@ -35,7 +35,8 @@ function PrivateDestCard({ dest, onClick }) {
 
 export default function TripsScreen() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState('open');
+  const location = useLocation();
+  const [mode, setMode] = useState(location.state?.tab === 'private' ? 'private' : 'open');
 
   const grouped = {};
   UPCOMING_OPEN_TRIPS.forEach(t => {

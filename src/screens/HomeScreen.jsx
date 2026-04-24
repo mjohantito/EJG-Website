@@ -36,7 +36,7 @@ export default function HomeScreen() {
           <span className="label">Open trip</span>
           <span className="sub">Join sama orang seru-seruan, budget ramah.</span>
         </div>
-        <div className="ql ink" onClick={() => navigate('/inquiry', { state: { kind: 'private' } })}>
+        <div className="ql ink" onClick={() => navigate('/trips', { state: { tab: 'private' } })}>
           <Icon name="sparkle" className="ic ic-lg" />
           <span className="label">Private trip</span>
           <span className="sub">Rancang sendiri, grup sendiri.</span>
@@ -71,8 +71,8 @@ export default function HomeScreen() {
         <span className="ey">PRIVATE TRIP</span>
         <h3 style={{ color: '#fff' }}>Grup kamu aja. Tanggal kamu sendiri.</h3>
         <p>Pilih destinasi, kasih tau jumlah orang dan range tanggal — kita rancang + quote dalam 1x24 jam.</p>
-        <button className="btn btn-pri" onClick={() => navigate('/inquiry', { state: { kind: 'private' } })}>
-          Mulai inquiry →
+        <button className="btn btn-pri" onClick={() => navigate('/trips', { state: { tab: 'private' } })}>
+          Lihat private trip →
         </button>
         <span className="deco">🗺️</span>
       </div>
