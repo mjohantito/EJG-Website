@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { GLAMPINGS } from '../data';
+import { useData } from '../context/DataContext';
 import GlampCard from '../components/GlampCard';
 import Footer from '../components/Footer';
 
 export default function GlampingScreen() {
   const navigate = useNavigate();
+  const { glampings } = useData();
 
   return (
     <>
@@ -18,7 +19,7 @@ export default function GlampingScreen() {
       </div>
 
       <div className="glamp-list">
-        {GLAMPINGS.map(g => (
+        {glampings.map(g => (
           <GlampCard key={g.id} g={g} onClick={() => navigate(`/glamping/${g.id}`)} />
         ))}
       </div>

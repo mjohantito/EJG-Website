@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { SPECIAL_EVENTS } from '../data';
+import { useData } from '../context/DataContext';
 import Footer from '../components/Footer';
 
 function EventCard({ ev, onClick }) {
@@ -37,6 +37,7 @@ function EventCard({ ev, onClick }) {
 
 export default function EventsScreen() {
   const navigate = useNavigate();
+  const { events } = useData();
 
   return (
     <>
@@ -49,11 +50,11 @@ export default function EventsScreen() {
       </div>
 
       <div style={{ padding: '0 20px 6px', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.45 }}>
-        {SPECIAL_EVENTS.length} event terjadwal. Tap untuk detail & beli tiket.
+        {events.length} event terjadwal. Tap untuk detail & beli tiket.
       </div>
 
       <div className="opentrip-list">
-        {SPECIAL_EVENTS.map(ev => (
+        {events.map(ev => (
           <EventCard key={ev.id} ev={ev} onClick={() => navigate(`/events/${ev.id}`)} />
         ))}
       </div>

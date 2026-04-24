@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { GLAMPINGS } from '../data';
+import { useData } from '../context/DataContext';
 import Icon from '../components/Icon';
 import Footer from '../components/Footer';
 
@@ -11,7 +11,8 @@ function fmt(n) {
 export default function GlampDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const g = GLAMPINGS.find(x => x.id === id) || GLAMPINGS[0];
+  const { glampings } = useData();
+  const g = glampings.find(x => x.id === id) || glampings[0];
 
   return (
     <>

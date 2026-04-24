@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UPCOMING_OPEN_TRIPS, PRIVATE_DESTINATIONS } from '../data';
+import { useData } from '../context/DataContext';
 import OpenTripCard from '../components/OpenTripCard';
 import Footer from '../components/Footer';
 
@@ -36,10 +36,11 @@ function PrivateDestCard({ dest, onClick }) {
 export default function TripsScreen() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { openTrips, privateDestinations } = useData();
   const [mode, setMode] = useState(location.state?.tab === 'private' ? 'private' : 'open');
 
   const grouped = {};
-  UPCOMING_OPEN_TRIPS.forEach(t => {
+  openTrips.forEach(t => {
     const key = `${t.month} 2025`;
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(t);
@@ -63,7 +64,7 @@ export default function TripsScreen() {
       {mode === 'open' && (
         <>
           <div style={{ padding: '0 20px 6px', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.45 }}>
-            {UPCOMING_OPEN_TRIPS.length} keberangkatan terjadwal. Tap untuk detail & booking.
+            {openTrips.length} keberangkatan terjadwal. Tap untuk detail & booking.
           </div>
           {Object.entries(grouped).map(([mo, trips]) => (
             <div key={mo}>
@@ -90,7 +91,7 @@ export default function TripsScreen() {
             Pilih destinasi. Tanggal & jumlah orang diskusi bareng via form.
           </div>
           <div className="opentrip-list">
-            {PRIVATE_DESTINATIONS.map(d => (
+            {privateDestinations.map(d => (
               <PrivateDestCard key={d.id} dest={d} onClick={() => navigate(`/trips/private/${d.id}`)} />
             ))}
           </div>

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { UPCOMING_OPEN_TRIPS, OPEN_TRIP_ADDONS } from '../data';
+import { useData } from '../context/DataContext';
 import Icon from '../components/Icon';
 import Footer from '../components/Footer';
 
@@ -11,7 +11,8 @@ function fmt(n) {
 export default function TripDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const trip = UPCOMING_OPEN_TRIPS.find(t => t.id === id) || UPCOMING_OPEN_TRIPS[0];
+  const { openTrips, openTripAddons } = useData();
+  const trip = openTrips.find(t => t.id === id) || openTrips[0];
   const low = trip.slots <= 3;
   const pct = Math.round(((trip.totalSlots - trip.slots) / trip.totalSlots) * 100);
 
@@ -142,7 +143,7 @@ export default function TripDetailScreen() {
           Add-on tersedia
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {OPEN_TRIP_ADDONS.map(addon => (
+          {openTripAddons.map(addon => (
             <div key={addon.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--ejg-kertas-2)', borderRadius: 12, border: '1px solid var(--border)' }}>
               <div>
                 <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--ejg-ink)' }}>{addon.label}</div>

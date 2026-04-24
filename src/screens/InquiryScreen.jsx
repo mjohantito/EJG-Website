@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UPCOMING_OPEN_TRIPS, PRIVATE_DESTINATIONS, GLAMPINGS, WHATSAPP, OPEN_TRIP_ADDONS } from '../data';
+import { useData } from '../context/DataContext';
 import Footer from '../components/Footer';
 
 /* ── Glamping availability rules ── */
@@ -63,8 +63,8 @@ function formatRupiah(amount) {
   return `Rp ${(amount / 1_000).toFixed(0)} ribu`;
 }
 
-function PrivateFields({ state, set }) {
-  const dest = PRIVATE_DESTINATIONS.find(d => d.id === state.privateDest) || PRIVATE_DESTINATIONS[0];
+function PrivateFields({ state, set, privateDestinations }) {
+  const dest = privateDestinations.find(d => d.id === state.privateDest) || privateDestinations[0];
   const meetingPoints = state.privateDest === 'ijen'
     ? [...MEETING_POINTS_BASE, 'Banyuwangi']
     : MEETING_POINTS_BASE;
@@ -76,7 +76,7 @@ function PrivateFields({ state, set }) {
 
   const handleDestChange = (newDestId) => {
     set('privateDest', newDestId);
-    const newDest = PRIVATE_DESTINATIONS.find(d => d.id === newDestId);
+    const newDest = privateDestinations.find(d => d.id === newDestId);
     if (newDest) set('privateDuration', newDest.durations[0]);
     if (newDestId !== 'ijen' && state.meetingPoint === 'Banyuwangi') {
       set('meetingPoint', 'Kediri');
@@ -97,7 +97,7 @@ function PrivateFields({ state, set }) {
 
       <Field label="Destinasi">
         <select value={state.privateDest} onChange={e => handleDestChange(e.target.value)}>
-          {PRIVATE_DESTINATIONS.map(d => (
+          {privateDestinations.map(d => (
             <option key={d.id} value={d.id}>{d.emoji} {d.name} — {d.sub}</option>
           ))}
         </select>
@@ -200,12 +200,12 @@ function AddonCheckboxes({ addons, selected, onChange }) {
   );
 }
 
-function OpenTripFields({ state, set }) {
-  const selectedTrip = UPCOMING_OPEN_TRIPS.find(t => t.id === state.tripId);
+function OpenTripFields({ state, set, openTrips, openTripAddons }) {
+  const selectedTrip = openTrips.find(t => t.id === state.tripId);
   const avail = selectedTrip ? selectedTrip.slots : null;
   const low = avail !== null && avail <= 3;
   const addonsTotal = (state.addons || []).reduce((sum, id) => {
-    const a = OPEN_TRIP_ADDONS.find(x => x.id === id);
+    const a = openTripAddons.find(x => x.id === id);
     return sum + (a ? a.price : 0);
   }, 0);
   const estimate = selectedTrip?.priceNum ? selectedTrip.priceNum * state.pax + addonsTotal : null;
@@ -224,7 +224,7 @@ function OpenTripFields({ state, set }) {
 
       <Field label="Pilih trip">
         <select value={state.tripId} onChange={e => set('tripId', e.target.value)}>
-          {UPCOMING_OPEN_TRIPS.map(t => (
+          {openTrips.map(t => (
             <option key={t.id} value={t.id}>{t.dest} · {t.start} – {t.end}</option>
           ))}
         </select>
@@ -248,7 +248,7 @@ function OpenTripFields({ state, set }) {
 
       <Field label="Add-on (opsional)">
         <AddonCheckboxes
-          addons={OPEN_TRIP_ADDONS}
+          addons={openTripAddons}
           selected={state.addons || []}
           onChange={v => set('addons', v)}
         />
@@ -342,10 +342,10 @@ function CorporateFields({ state, set }) {
 }
 
 /* ── Glamping fields ── */
-function GlampingFields({ state, set }) {
+function GlampingFields({ state, set, glampings }) {
   const rule = GLAMP_AVAIL[state.glampLoc];
   const avStatus = dateAvailability(state.date, state.glampLoc);
-  const glamp = GLAMPINGS.find(g => g.id === state.glampLoc);
+  const glamp = glampings.find(g => g.id === state.glampLoc);
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
     return sum + (a ? a.price : 0);
@@ -366,7 +366,7 @@ function GlampingFields({ state, set }) {
 
       <Field label="Lokasi glamping">
         <select value={state.glampLoc} onChange={e => { set('glampLoc', e.target.value); set('date', ''); set('addons', []); }}>
-          {GLAMPINGS.map(g => (
+          {glampings.map(g => (
             <option key={g.id} value={g.id}>{g.emoji} {g.name} — {g.location.split(',')[0]}</option>
           ))}
         </select>
@@ -455,14 +455,15 @@ function GlampingFields({ state, set }) {
 export default function InquiryScreen({ onSubmit }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { openTrips, openTripAddons, privateDestinations, glampings, whatsapp } = useData();
   const ctx = location.state || {};
 
   const [kind, setKind] = useState(
     ['open', 'private', 'glamping'].includes(ctx.kind) ? ctx.kind : 'open'
   );
 
-  const initialPrivateDest = ctx.dest || PRIVATE_DESTINATIONS[0].id;
-  const initialDestData = PRIVATE_DESTINATIONS.find(d => d.id === initialPrivateDest) || PRIVATE_DESTINATIONS[0];
+  const initialPrivateDest = ctx.dest || privateDestinations[0]?.id;
+  const initialDestData = privateDestinations.find(d => d.id === initialPrivateDest) || privateDestinations[0];
 
   const [form, setForm] = useState({
     name: '',
@@ -472,13 +473,13 @@ export default function InquiryScreen({ onSubmit }) {
     date: '',
     notes: '',
     // open trip
-    tripId: ctx.tripId || UPCOMING_OPEN_TRIPS[0].id,
+    tripId: ctx.tripId || openTrips[0]?.id,
     // private trip
     privateDest: initialPrivateDest,
-    privateDuration: ctx.duration || initialDestData.durations[0],
+    privateDuration: ctx.duration || initialDestData?.durations[0],
     meetingPoint: 'Surabaya',
     // glamping
-    glampLoc: ctx.glampId || GLAMPINGS[0].id,
+    glampLoc: ctx.glampId || glampings[0]?.id,
     nights: 1,
     addons: [],
   });
@@ -496,7 +497,7 @@ export default function InquiryScreen({ onSubmit }) {
 
   const handleSubmit = () => {
     if (kind === 'private') {
-      const dest = PRIVATE_DESTINATIONS.find(d => d.id === form.privateDest);
+      const dest = privateDestinations.find(d => d.id === form.privateDest);
       const lines = [
         'Halo EH! JADI GA? 👋',
         '',
@@ -512,7 +513,7 @@ export default function InquiryScreen({ onSubmit }) {
         form.date ? `Tanggal: ${form.date}` : '',
         form.notes ? `Catatan: ${form.notes}` : '',
       ].filter(Boolean).join('\n');
-      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`, '_blank');
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(lines)}`, '_blank');
     }
     const payload = { kind, ...form };
     if (onSubmit) {
@@ -556,9 +557,9 @@ export default function InquiryScreen({ onSubmit }) {
       </div>
 
       <div className="form">
-        {kind === 'open' && <OpenTripFields state={form} set={set} />}
-        {kind === 'private' && <PrivateFields state={form} set={set} />}
-        {kind === 'glamping' && <GlampingFields state={form} set={set} />}
+        {kind === 'open' && <OpenTripFields state={form} set={set} openTrips={openTrips} openTripAddons={openTripAddons} />}
+        {kind === 'private' && <PrivateFields state={form} set={set} privateDestinations={privateDestinations} />}
+        {kind === 'glamping' && <GlampingFields state={form} set={set} glampings={glampings} />}
 
         <div style={{ background: 'var(--ejg-kertas-2)', border: '1px dashed var(--border-strong)', borderRadius: 14, padding: 14, fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
           <strong style={{ color: 'var(--ejg-ink)' }}>Fyi:</strong> kita cuma butuh info dasar dulu.
@@ -578,7 +579,7 @@ export default function InquiryScreen({ onSubmit }) {
         <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)' }}>
           atau{' '}
           <a
-            href={`https://wa.me/${WHATSAPP}`}
+            href={`https://wa.me/${whatsapp}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}

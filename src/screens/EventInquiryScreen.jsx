@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { SPECIAL_EVENTS, WHATSAPP } from '../data';
+import { useData } from '../context/DataContext';
 import Footer from '../components/Footer';
 
 function formatRupiah(n) {
@@ -33,7 +33,8 @@ function Stepper({ label, value, onChange, min = 1, max = 20 }) {
 export default function EventInquiryScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const ev = SPECIAL_EVENTS.find(e => e.id === id) || SPECIAL_EVENTS[0];
+  const { events, whatsapp } = useData();
+  const ev = events.find(e => e.id === id) || events[0];
 
   const [form, setForm] = useState({
     name: '',
@@ -65,7 +66,7 @@ export default function EventInquiryScreen() {
       form.notes ? `Catatan: ${form.notes}` : '',
     ].filter(Boolean).join('\n');
 
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`, '_blank');
+    window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(lines)}`, '_blank');
     navigate('/thanks', { state: { kind: 'event', eventId: ev.id, ...form } });
   };
 
@@ -205,7 +206,7 @@ export default function EventInquiryScreen() {
         <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)' }}>
           atau{' '}
           <a
-            href={`https://wa.me/${WHATSAPP}`}
+            href={`https://wa.me/${whatsapp}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}

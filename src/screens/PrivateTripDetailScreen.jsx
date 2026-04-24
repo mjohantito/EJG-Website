@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PRIVATE_DESTINATIONS } from '../data';
+import { useData } from '../context/DataContext';
 import Footer from '../components/Footer';
 
 export default function PrivateTripDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const dest = PRIVATE_DESTINATIONS.find(d => d.id === id);
+  const { privateDestinations } = useData();
+  const dest = privateDestinations.find(d => d.id === id);
 
   const [selectedDuration, setSelectedDuration] = useState(
     dest ? dest.durations[0] : null

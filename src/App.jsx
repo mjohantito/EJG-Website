@@ -20,6 +20,7 @@ import TermsScreen from './screens/TermsScreen';
 import EventsScreen from './screens/EventsScreen';
 import EventDetailScreen from './screens/EventDetailScreen';
 import EventInquiryScreen from './screens/EventInquiryScreen';
+import AdminApp from './admin/index';
 
 function getBackLabel(pathname) {
   if (/^\/trips\/private\/.+/.test(pathname)) return 'Private trip';
@@ -61,9 +62,10 @@ export default function App() {
   const [toast, setToast] = useState(null);
 
   const { pathname } = location;
+  const isAdmin = pathname.startsWith('/admin');
   const backLabel = getBackLabel(pathname);
   const activeNav = getActiveNav(pathname);
-  const showFab = pathname !== '/inquiry' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
+  const showFab = !isAdmin && pathname !== '/inquiry' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -79,20 +81,24 @@ export default function App() {
   };
 
   return (
-    <div className="app playful">
-      <TopBar
-        onHome={() => navigate('/')}
-        onMenu={() => setDrawerOpen(true)}
-        backLabel={backLabel}
-        onBack={() => navigate(-1)}
-      />
+    <div className={isAdmin ? '' : 'app playful'}>
+      {!isAdmin && (
+        <TopBar
+          onHome={() => navigate('/')}
+          onMenu={() => setDrawerOpen(true)}
+          backLabel={backLabel}
+          onBack={() => navigate(-1)}
+        />
+      )}
 
-      <Drawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        onNav={handleNavFromDrawer}
-        active={activeNav}
-      />
+      {!isAdmin && (
+        <Drawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onNav={handleNavFromDrawer}
+          active={activeNav}
+        />
+      )}
 
       <Routes>
         <Route path="/" element={<HomeScreen />} />
@@ -109,11 +115,12 @@ export default function App() {
         <Route path="/events" element={<EventsScreen />} />
         <Route path="/events/:id" element={<EventDetailScreen />} />
         <Route path="/events/:id/inquiry" element={<EventInquiryScreen />} />
+        <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
 
       {showFab && <WAFab />}
 
-      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      {!isAdmin && toast && <Toast message={toast} onDone={() => setToast(null)} />}
     </div>
   );
 }

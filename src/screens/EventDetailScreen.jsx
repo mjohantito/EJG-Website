@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { SPECIAL_EVENTS } from '../data';
+import { useData } from '../context/DataContext';
 import Icon from '../components/Icon';
 import Footer from '../components/Footer';
 
@@ -11,7 +11,8 @@ function fmt(n) {
 export default function EventDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const ev = SPECIAL_EVENTS.find(e => e.id === id) || SPECIAL_EVENTS[0];
+  const { events } = useData();
+  const ev = events.find(e => e.id === id) || events[0];
 
   const lowestPrice = Math.min(...ev.tickets.map(t => t.price));
 

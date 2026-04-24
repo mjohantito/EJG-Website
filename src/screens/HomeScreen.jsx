@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { UPCOMING_OPEN_TRIPS, GLAMPINGS } from '../data';
+import { useData } from '../context/DataContext';
 import OpenTripCard from '../components/OpenTripCard';
 import GlampCard from '../components/GlampCard';
 import Footer from '../components/Footer';
@@ -7,7 +7,8 @@ import Icon from '../components/Icon';
 
 export default function HomeScreen() {
   const navigate = useNavigate();
-  const highlightTrips = UPCOMING_OPEN_TRIPS.slice(0, 3);
+  const { openTrips, glampings } = useData();
+  const highlightTrips = openTrips.slice(0, 3);
 
   return (
     <>
@@ -85,7 +86,7 @@ export default function HomeScreen() {
         <button className="more" onClick={() => navigate('/glamping')}>Semua →</button>
       </div>
       <div className="glamp-list">
-        {GLAMPINGS.slice(0, 2).map(g => (
+        {glampings.slice(0, 2).map(g => (
           <GlampCard key={g.id} g={g} onClick={() => navigate(`/glamping/${g.id}`)} />
         ))}
       </div>
