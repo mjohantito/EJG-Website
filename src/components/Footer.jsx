@@ -7,7 +7,7 @@ export default function Footer({ onNav }) {
         <img src="/ejg-mark-primary.svg" alt="" /> EH! JADI GA?
       </div>
       <p style={{ fontSize: 13, opacity: 0.7, lineHeight: 1.5, maxWidth: 300 }}>
-        Trip & glamping buat yang pengen jalan tanpa harus mikirin logistik.
+        Buat jiwa muda yang lebih milih jalan daripada diem.
       </p>
       <div className="row">
         <div>
@@ -42,7 +42,7 @@ export default function Footer({ onNav }) {
         </div>
       </div>
       <div className="fine">
-        © {new Date().getFullYear()} EH! JADI GA? · Made with koffie &amp; anxiety · Semua destinasi bisa berubah sesuai cuaca.
+        © {new Date().getFullYear()} EH! JADI GA? · Made with koffie &amp; anxiety.
       </div>
     </div>
   );

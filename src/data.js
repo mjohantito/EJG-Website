@@ -199,7 +199,7 @@ export const GLAMPINGS = [
     unit: "malam",
     cap: "2–4 org / tent",
     availability: "Buka setiap hari",
-    tagline: "Kemah, tapi tetep wangi pas bangun.",
+    tagline: "Tidur di alam, kasurnya beneran.",
     description: "Tent premium di tengah pinus Tulungagung. Tempat tidur beneran, listrik, air panas. Malam ada campfire & BBQ; pagi ada kabut tipis di atas lembah. Pas buat yang pengen ngerasain outdoor tanpa ribet urus tenda.",
     amenities: ["Tempat tidur queen", "Kamar mandi air panas", "Campfire + BBQ set", "Breakfast lokal", "Wifi di common area"],
     gallery: ["Tent di tengah pinus", "Campfire malam", "Kabut pagi lembah", "Sarapan outdoor"],

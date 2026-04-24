@@ -383,31 +383,6 @@ function GlampingFields({ state, set }) {
         <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={7} />
       </div>
 
-      {estimate && (
-        <div style={{
-          background: 'var(--ejg-ink)', borderRadius: 14, padding: '14px 16px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
-              Estimasi total
-            </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
-              {formatRupiah(estimate)}
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
-              {state.nights} malam × Rp {glamp?.price}
-              {addonsTotal > 0 && ` + add-on ${formatRupiah(addonsTotal)}`}
-            </div>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
-              *per unit, final via WA
-            </div>
-          </div>
-        </div>
-      )}
-
       <Field label="Tanggal check-in">
         <input
           type="date"
@@ -438,6 +413,31 @@ function GlampingFields({ state, set }) {
             onChange={v => set('addons', v)}
           />
         </Field>
+      )}
+
+      {estimate && (
+        <div style={{
+          background: 'var(--ejg-ink)', borderRadius: 14, padding: '14px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+              Estimasi total
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
+              {formatRupiah(estimate)}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              {state.nights} malam × Rp {glamp?.price}
+              {addonsTotal > 0 && ` + add-on ${formatRupiah(addonsTotal)}`}
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+              *per unit, final via WA
+            </div>
+          </div>
+        </div>
       )}
 
       <Field label="Catatan / request">

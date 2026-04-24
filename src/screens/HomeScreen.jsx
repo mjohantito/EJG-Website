@@ -44,7 +44,7 @@ export default function HomeScreen() {
         <div className="ql sun" onClick={() => navigate('/glamping')}>
           <Icon name="tent" className="ic ic-lg" />
           <span className="label">Glamping</span>
-          <span className="sub">Tent beneran, tetep wangi.</span>
+          <span className="sub">Alam beneran, kasur beneran.</span>
         </div>
         <div className="ql" onClick={() => navigate('/corporate')}>
           <Icon name="group" className="ic ic-lg" />

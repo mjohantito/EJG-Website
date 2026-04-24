@@ -137,8 +137,8 @@ export default function CorporateScreen() {
           {[
             { icon: '⚡', title: 'Respons cepat', desc: 'Quote & konsultasi dalam 1×24 jam via WhatsApp.' },
             { icon: '📍', title: 'Lokal & terpercaya', desc: 'Tim asli Jawa Timur — kita tahu destinasi ini dari dalam.' },
-            { icon: '🎯', title: 'All-inclusive', desc: 'Transport, akomodasi, konsumsi, guide — satu paket, satu invoice.' },
-            { icon: '📊', title: 'Budget transparan', desc: 'No hidden fee. RAB lengkap sebelum deal.' },
+            { icon: '🎯', title: 'All-inclusive', desc: 'Transport, akomodasi, konsumsi, guide, pajak — satu paket, satu invoice.' },
+            { icon: '📊', title: 'Budget transparan', desc: 'No hidden fee. Transparan dari awal.' },
           ].map(item => (
             <div key={item.title} style={{
               display: 'flex', gap: 14, alignItems: 'flex-start',
