@@ -17,11 +17,16 @@ import AboutScreen from './screens/AboutScreen';
 import ThanksScreen from './screens/ThanksScreen';
 import CorporateScreen from './screens/CorporateScreen';
 import TermsScreen from './screens/TermsScreen';
+import EventsScreen from './screens/EventsScreen';
+import EventDetailScreen from './screens/EventDetailScreen';
+import EventInquiryScreen from './screens/EventInquiryScreen';
 
 function getBackLabel(pathname) {
   if (/^\/trips\/private\/.+/.test(pathname)) return 'Private trip';
   if (/^\/trips\/.+/.test(pathname)) return 'Trip detail';
   if (/^\/glamping\/.+/.test(pathname)) return 'Glamping';
+  if (/^\/events\/.+\/inquiry$/.test(pathname)) return 'Event detail';
+  if (/^\/events\/.+/.test(pathname)) return 'Special Event';
   if (pathname === '/inquiry') return 'Inquiry';
   if (pathname === '/thanks') return '';
   if (pathname === '/terms') return 'Syarat & Ketentuan';
@@ -35,6 +40,7 @@ function getActiveNav(pathname) {
   if (pathname === '/corporate') return 'corporate';
   if (pathname === '/inquiry' || pathname === '/thanks') return 'inquiry';
   if (pathname === '/about') return 'about';
+  if (pathname.startsWith('/events')) return 'events';
   return 'home';
 }
 
@@ -45,6 +51,7 @@ const NAV_ROUTES = {
   corporate: '/corporate',
   inquiry:   '/inquiry',
   about:     '/about',
+  events:    '/events',
 };
 
 export default function App() {
@@ -56,7 +63,7 @@ export default function App() {
   const { pathname } = location;
   const backLabel = getBackLabel(pathname);
   const activeNav = getActiveNav(pathname);
-  const showFab = pathname !== '/inquiry' && pathname !== '/thanks';
+  const showFab = pathname !== '/inquiry' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -99,6 +106,9 @@ export default function App() {
         <Route path="/about" element={<AboutScreen />} />
         <Route path="/thanks" element={<ThanksScreen />} />
         <Route path="/terms" element={<TermsScreen />} />
+        <Route path="/events" element={<EventsScreen />} />
+        <Route path="/events/:id" element={<EventDetailScreen />} />
+        <Route path="/events/:id/inquiry" element={<EventInquiryScreen />} />
       </Routes>
 
       {showFab && <WAFab />}

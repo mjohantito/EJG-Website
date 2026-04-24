@@ -14,6 +14,7 @@ export default function Footer({ onNav }) {
           <h5>Jelajah</h5>
           <ul>
             <li><a onClick={() => onNav('trips')}>Trips</a></li>
+            <li><a onClick={() => onNav('events')}>Special Event</a></li>
             <li><a onClick={() => onNav('glamping')}>Glamping</a></li>
             <li><a onClick={() => onNav('corporate')}>Corporate</a></li>
             <li><a onClick={() => onNav('inquiry')}>Inquiry</a></li>

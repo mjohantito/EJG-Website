@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { id: 'trips',     label: 'Trips',       badge: 'Open & Private' },
   { id: 'glamping',  label: 'Glamping',    badge: '3 lokasi' },
   { id: 'corporate', label: 'Corporate' },
+  { id: 'events',    label: 'Special Event', badge: 'NEW' },
   { id: 'inquiry',   label: 'Inquiry' },
   { id: 'about',     label: 'Tentang kami' },
 ];

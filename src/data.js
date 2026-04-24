@@ -239,3 +239,55 @@ export const GLAMPINGS = [
     addons: GLAMPING_ADDONS,
   },
 ];
+
+export const SPECIAL_EVENTS = [
+  {
+    id: "ev-bromo-solstice",
+    name: "Bromo Solstice Night",
+    subtitle: "Satu malam penuh bintang sebelum sunrise paling epic.",
+    date: "21 Jun", dateEnd: "22 Jun",
+    year: "2026",
+    venue: "Bromo, Jawa Timur",
+    emoji: "🌌",
+    palette: "ink",
+    tag: "COMING SOON",
+    description: "Bukan sekadar open trip biasa. Bromo Solstice Night adalah malam khusus di mana kita bakar api unggun di lautan pasir, dengerin live acoustic dari musisi lokal, dan tunggu sunrise terpanjang dalam setahun dari Penanjakan. Limited slot — karena kita mau ini intim dan beneran berasa.",
+    highlights: [
+      "Campfire di Lautan Pasir Bromo",
+      "Live acoustic session tengah malam",
+      "Sunrise prioritas dari Penanjakan",
+      "Jeep 4x tour ke kawah pagi hari",
+      "Sarapan bersama di atas lautan awan",
+    ],
+    includes: ["Transport AC Surabaya–Bromo PP", "Jeep 4x2 tour", "Makan 3x", "Penginapan sharing", "Live music & campfire setup", "Guide + dokumentasi HP"],
+    tickets: [
+      { id: "earlybird", label: "Early Bird", price: 1_200_000, desc: "Akses semua kegiatan, tenda sharing, makan 3x. Hanya 10 slot.", slots: 10 },
+      { id: "regular",   label: "Regular",    price: 1_500_000, desc: "Akses semua kegiatan, tenda sharing, makan 3x.", slots: 20 },
+      { id: "vip",       label: "VIP",        price: 2_200_000, desc: "Tenda private, welcome kit, makan 4x, priority sunrise spot, meet & greet musisi.", slots: 6 },
+    ],
+  },
+  {
+    id: "ev-ijen-midnight",
+    name: "Ijen Midnight Run",
+    subtitle: "Midnight hike bareng, blue fire bareng.",
+    date: "19 Jul", dateEnd: "20 Jul",
+    year: "2026",
+    venue: "Ijen, Banyuwangi",
+    emoji: "🔵",
+    palette: "dusk",
+    tag: "OPEN",
+    description: "Ini bukan hiking biasa. Ijen Midnight Run adalah event sosial — kita kumpul di basecamp jam 11 malam, jalan bareng, saling semangatin di jalur gelap, dan menyaksikan api biru bersama. Ada fotografer profesional yang ikut mendokumentasikan setiap momen. Pulang bawa foto, bawa cerita.",
+    highlights: [
+      "Midnight group hike mulai 23.00",
+      "Blue fire view bareng komunitas",
+      "Fotografer pro sepanjang jalur",
+      "Sunrise di bibir kawah",
+      "Breakfast + sesi foto group",
+    ],
+    includes: ["Transport AC Surabaya–Banyuwangi PP", "Tiket kawah + gas mask", "Guide pendakian", "Fotografer + 10 foto edited", "Breakfast di basecamp"],
+    tickets: [
+      { id: "hiker",      label: "Hiker",           price: 950_000,   desc: "Akses penuh event + semua include standar.", slots: 30 },
+      { id: "hiker-foto", label: "Hiker + Foto Pack", price: 1_350_000, desc: "Semua include + 20 foto edited + 1 print A4.", slots: 15 },
+    ],
+  },
+];
