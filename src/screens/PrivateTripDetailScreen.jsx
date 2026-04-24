@@ -44,6 +44,23 @@ export default function PrivateTripDetailScreen() {
         <p className="lead" style={{ marginTop: 8 }}>{dest.description}</p>
       </div>
 
+      {/* Gallery */}
+      {dest.gallery && (
+        <div style={{ padding: '20px 20px 0' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13, color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+            Galeri
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {dest.gallery.map((label, i) => (
+              <div key={i} className={`ph-${dest.palette || 'ink'}`} style={{ borderRadius: 14, aspectRatio: '4/3', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%)' }} />
+                <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11, color: '#fff', lineHeight: 1.3 }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Highlights */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{

@@ -16,6 +16,7 @@ export const UPCOMING_OPEN_TRIPS = [
     description: "Sunrise dari Penanjakan yang ikonik — tapi kita lakuin dengan bener. Jeep 4x buat ke kawah, padang savana yang luas banget, dan penginapan lokal yang bikin ngerasa lebih otentik dari sekadar tour biasa. Ini bukan sekadar foto sunrise — ini pengalaman Bromo yang sesungguhnya.",
     highlights: ["Sunrise Penanjakan", "Kawah Bromo naik jeep", "Padang Savana & Pasir Berbisik"],
     includes: ["Jeep tour 4x", "Breakfast + 1x lunch", "Homestay sharing", "Guide lokal", "Dokumentasi HP"],
+    gallery: ["Sunrise dari Penanjakan", "Kawah & jeep tour", "Savana pagi hari", "Homestay malam"],
   },
   {
     id: "ot-ijen-may",
@@ -31,6 +32,7 @@ export const UPCOMING_OPEN_TRIPS = [
     description: "Satu-satunya blue fire alami di dunia yang bisa dikunjungi. Kita berangkat tengah malam, mendaki dalam gelap, dan menyaksikan api biru yang keluar dari retakan kawah. Pengalaman yang susah dijelaskan pakai kata — harus dirasain sendiri.",
     highlights: ["Pendakian midnight", "Blue fire view", "Sunrise di kawah"],
     includes: ["Transport AC", "Tiket kawah + gas mask", "Guide pendakian", "Warung kopi di basecamp"],
+    gallery: ["Blue fire tengah malam", "Kawah belerang pagi", "Sunrise di bibir kawah", "Trek menuju puncak"],
   },
   {
     id: "ot-sewu-jun",
@@ -46,6 +48,7 @@ export const UPCOMING_OPEN_TRIPS = [
     description: "Air terjun bertingkat yang foto-fotonya sering viral — tapi jarang yang beneran turun ke dasarnya. Kita turun. Dari sana kita lanjut ke Goa Tetes yang stalaktitnya masih asri. Dua spot, satu hari, banyak cerita.",
     highlights: ["Hike ke dasar Tumpak Sewu", "Goa Tetes", "Sunset di viewpoint"],
     includes: ["Transport", "Guide + local porter", "Makan 3x", "Homestay"],
+    gallery: ["Air terjun dari bawah", "Goa Tetes dalam", "Viewpoint sunset", "Trek hutan lebat"],
   },
   {
     id: "ot-kelud-jun",
@@ -62,6 +65,7 @@ export const UPCOMING_OPEN_TRIPS = [
     description: "Kawah yang lahir ulang pasca erupsi 2014. Danau toska di tengah kawah, air panas alami yang beneran panas, dan bukit sunset yang masih sepi dari turis. Kelud itu Bromo-nya orang yang udah bosen rame — tenang, tapi sama indahnya.",
     highlights: ["Crater hunt pagi", "Air panas Kelud", "Sunset Bukit Kura-kura"],
     includes: ["Transport", "Tiket + guide", "Makan 3x", "Penginapan"],
+    gallery: ["Danau kawah toska", "Air panas alami", "Sunset Bukit Kura-kura", "Perkebunan lereng"],
   },
   {
     id: "ot-gili-jul",
@@ -77,7 +81,15 @@ export const UPCOMING_OPEN_TRIPS = [
     description: "Pulau kecil di sisi Madura yang airnya jernih kayak kaca. Tiga spot snorkeling, ikan warna-warni, dan tidur di tenda tepat di pinggir pantai sambil denger suara ombak. Gak ada sinyal yang bagus — dan itu justru yang bikin trip ini jadi bagus.",
     highlights: ["Snorkeling 3 spot", "Sunset di pier", "Nginep di pulau"],
     includes: ["Transport + boat", "Snorkel gear", "Makan 3x", "Tenda share"],
+    gallery: ["Terumbu karang jernih", "Sunset di pier kayu", "Tenda di tepi pantai", "Ikan warna-warni"],
   },
+];
+
+export const OPEN_TRIP_ADDONS = [
+  { id: 'single-supplement', label: 'Single Supplement', price: 150_000, desc: 'Kamar sendiri, tidak sharing' },
+  { id: 'hotel-upgrade', label: 'Hotel Upgrade', price: 300_000, desc: 'Upgrade homestay ke hotel bintang 3' },
+  { id: 'foto-pro', label: 'Dokumentasi Pro', price: 200_000, desc: 'Fotografer trip + edit basic' },
+  { id: 'airport-transfer', label: 'Airport Transfer', price: 100_000, desc: 'Jemput/antar bandara' },
 ];
 
 export const PRIVATE_DESTINATIONS = [
@@ -93,6 +105,7 @@ export const PRIVATE_DESTINATIONS = [
     durations: ["2D1N", "3D2N"],
     startingPrice: "1.8jt",
     pricePerPax: 1_800_000,
+    gallery: ["Tumpak Sewu dari dasar", "Goa Tetes stalaktit", "Kapas Biru sungai biru", "Kabut pagi Pronojiwo"],
   },
   {
     id: "bromo",
@@ -106,6 +119,7 @@ export const PRIVATE_DESTINATIONS = [
     durations: ["2D1N", "3D2N", "4D3N"],
     startingPrice: "1.5jt",
     pricePerPax: 1_500_000,
+    gallery: ["Sunrise lautan awan", "Jeep di lautan pasir", "Kawah dari dekat", "Savana & Bukit Teletubbies"],
   },
   {
     id: "ijen",
@@ -119,6 +133,7 @@ export const PRIVATE_DESTINATIONS = [
     durations: ["2D1N", "3D2N"],
     startingPrice: "1.6jt",
     pricePerPax: 1_600_000,
+    gallery: ["Blue fire di retakan", "Danau asam toska", "Sunrise bibir kawah", "Penambang belerang lokal"],
   },
   {
     id: "malang",
@@ -132,6 +147,7 @@ export const PRIVATE_DESTINATIONS = [
     durations: ["2D1N", "3D2N", "4D3N"],
     startingPrice: "1.2jt",
     pricePerPax: 1_200_000,
+    gallery: ["Café lokal Malang", "Street art Kayutangan", "Coban Rondo waterfall", "Kuliner pasar malam"],
   },
   {
     id: "kelud",
@@ -145,6 +161,7 @@ export const PRIVATE_DESTINATIONS = [
     durations: ["2D1N", "3D2N"],
     startingPrice: "1.3jt",
     pricePerPax: 1_300_000,
+    gallery: ["Danau kawah toska", "Air panas alami", "Sunset Bukit Kura-kura", "Kebun kopi lereng gunung"],
   },
   {
     id: "custom",
@@ -158,7 +175,16 @@ export const PRIVATE_DESTINATIONS = [
     durations: ["Fleksibel"],
     startingPrice: "Sesuai itinerary",
     pricePerPax: null,
+    gallery: ["Konsultasi route", "Itinerary custom", "Destinasi pilihan", "Tim planning"],
   },
+];
+
+const GLAMPING_ADDONS = [
+  { id: 'bbq', label: 'BBQ Set', price: 150_000, desc: 'Peralatan BBQ lengkap untuk 4 org' },
+  { id: 'birthday-cake', label: 'Birthday Cake', price: 200_000, desc: 'Kue custom + lilin + dekorasi' },
+  { id: 'foto', label: 'Dokumentasi Pro', price: 300_000, desc: 'Sesi foto 1 jam + basic editing' },
+  { id: 'extra-breakfast', label: 'Extra Breakfast', price: 45_000, desc: 'Per orang tambahan' },
+  { id: 'bouquet', label: 'Bouquet Bunga', price: 150_000, desc: 'Untuk pasangan / anniversary' },
 ];
 
 export const GLAMPINGS = [
@@ -176,6 +202,8 @@ export const GLAMPINGS = [
     tagline: "Kemah, tapi tetep wangi pas bangun.",
     description: "Tent premium di tengah pinus Tulungagung. Tempat tidur beneran, listrik, air panas. Malam ada campfire & BBQ; pagi ada kabut tipis di atas lembah. Pas buat yang pengen ngerasain outdoor tanpa ribet urus tenda.",
     amenities: ["Tempat tidur queen", "Kamar mandi air panas", "Campfire + BBQ set", "Breakfast lokal", "Wifi di common area"],
+    gallery: ["Tent di tengah pinus", "Campfire malam", "Kabut pagi lembah", "Sarapan outdoor"],
+    addons: GLAMPING_ADDONS,
   },
   {
     id: "gl-batu",
@@ -190,6 +218,8 @@ export const GLAMPINGS = [
     tagline: "Dome kaca, view kota Malang di kaki.",
     description: "Transparent dome di punggung Gunung Banyak. Bintang full di atas kepala, city light Malang di bawah. Ada balkon untuk sunrise, dan hot tub outdoor.",
     amenities: ["Dome kaca private", "Hot tub outdoor", "Heater elektrik", "Breakfast + welcome drink", "Akses private deck"],
+    gallery: ["Dome kaca malam", "City light dari balkon", "Hot tub outdoor", "Sunrise dari deck"],
+    addons: GLAMPING_ADDONS,
   },
   {
     id: "gl-tete",
@@ -205,5 +235,7 @@ export const GLAMPINGS = [
     tagline: "Cabin kayu mini, sunset ke arah Welirang.",
     description: "Cabin kayu pinus di kaki Gunung Welirang. Kecil, hangat, punya teras + hammock. Cocok buat couple atau solo stay biar bisa deep work dari hutan.",
     amenities: ["Cabin kayu private", "Heating pad & selimut wol", "Dapur mini + kompor", "Breakfast delivery", "Akses trail pagi"],
+    gallery: ["Cabin kayu dari depan", "Teras & hammock", "Sunset ke Welirang", "Interior cabin hangat"],
+    addons: GLAMPING_ADDONS,
   },
 ];

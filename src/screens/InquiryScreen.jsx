@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UPCOMING_OPEN_TRIPS, PRIVATE_DESTINATIONS, GLAMPINGS, WHATSAPP } from '../data';
+import { UPCOMING_OPEN_TRIPS, PRIVATE_DESTINATIONS, GLAMPINGS, WHATSAPP, OPEN_TRIP_ADDONS } from '../data';
 import Footer from '../components/Footer';
 
 /* ── Glamping availability rules ── */
@@ -173,11 +173,42 @@ function PrivateFields({ state, set }) {
   );
 }
 
+function AddonCheckboxes({ addons, selected, onChange }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {addons.map(addon => {
+        const checked = selected.includes(addon.id);
+        return (
+          <label key={addon.id} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '10px 14px', background: 'var(--ejg-kertas-2)', borderRadius: 12, border: `1.5px solid ${checked ? 'var(--ejg-ink)' : 'var(--border)'}` }}>
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={() => onChange(checked ? selected.filter(id => id !== addon.id) : [...selected, addon.id])}
+              style={{ width: 18, height: 18, accentColor: 'var(--ejg-ink)', flexShrink: 0 }}
+            />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--ejg-ink)' }}>{addon.label}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>{addon.desc}</div>
+            </div>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12, color: 'var(--fg-2)', flexShrink: 0 }}>
+              +{formatRupiah(addon.price)}
+            </span>
+          </label>
+        );
+      })}
+    </div>
+  );
+}
+
 function OpenTripFields({ state, set }) {
   const selectedTrip = UPCOMING_OPEN_TRIPS.find(t => t.id === state.tripId);
   const avail = selectedTrip ? selectedTrip.slots : null;
   const low = avail !== null && avail <= 3;
-  const estimate = selectedTrip?.priceNum ? selectedTrip.priceNum * state.pax : null;
+  const addonsTotal = (state.addons || []).reduce((sum, id) => {
+    const a = OPEN_TRIP_ADDONS.find(x => x.id === id);
+    return sum + (a ? a.price : 0);
+  }, 0);
+  const estimate = selectedTrip?.priceNum ? selectedTrip.priceNum * state.pax + addonsTotal : null;
 
   return (
     <>
@@ -215,6 +246,14 @@ function OpenTripFields({ state, set }) {
 
       <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
 
+      <Field label="Add-on (opsional)">
+        <AddonCheckboxes
+          addons={OPEN_TRIP_ADDONS}
+          selected={state.addons || []}
+          onChange={v => set('addons', v)}
+        />
+      </Field>
+
       {estimate && (
         <div style={{
           background: 'var(--ejg-ink)', borderRadius: 14, padding: '14px 16px',
@@ -230,7 +269,8 @@ function OpenTripFields({ state, set }) {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
-              {state.pax} orang × Rp {selectedTrip.price}
+              {state.pax} org × Rp {selectedTrip.price}
+              {addonsTotal > 0 && ` + add-on ${formatRupiah(addonsTotal)}`}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
               *final dikonfirmasi via WA
@@ -306,7 +346,11 @@ function GlampingFields({ state, set }) {
   const rule = GLAMP_AVAIL[state.glampLoc];
   const avStatus = dateAvailability(state.date, state.glampLoc);
   const glamp = GLAMPINGS.find(g => g.id === state.glampLoc);
-  const estimate = glamp?.pricePerNight ? glamp.pricePerNight * state.nights : null;
+  const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
+    const a = glamp.addons.find(x => x.id === id);
+    return sum + (a ? a.price : 0);
+  }, 0) : 0;
+  const estimate = glamp?.pricePerNight ? glamp.pricePerNight * state.nights + addonsTotal : null;
 
   return (
     <>
@@ -321,7 +365,7 @@ function GlampingFields({ state, set }) {
       </Field>
 
       <Field label="Lokasi glamping">
-        <select value={state.glampLoc} onChange={e => { set('glampLoc', e.target.value); set('date', ''); }}>
+        <select value={state.glampLoc} onChange={e => { set('glampLoc', e.target.value); set('date', ''); set('addons', []); }}>
           {GLAMPINGS.map(g => (
             <option key={g.id} value={g.id}>{g.emoji} {g.name} — {g.location.split(',')[0]}</option>
           ))}
@@ -355,6 +399,7 @@ function GlampingFields({ state, set }) {
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
               {state.nights} malam × Rp {glamp?.price}
+              {addonsTotal > 0 && ` + add-on ${formatRupiah(addonsTotal)}`}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
               *per unit, final via WA
@@ -385,11 +430,21 @@ function GlampingFields({ state, set }) {
         )}
       </Field>
 
+      {glamp?.addons && (
+        <Field label="Add-on (opsional)">
+          <AddonCheckboxes
+            addons={glamp.addons}
+            selected={state.addons || []}
+            onChange={v => set('addons', v)}
+          />
+        </Field>
+      )}
+
       <Field label="Catatan / request">
         <textarea
           value={state.notes}
           onChange={e => set('notes', e.target.value)}
-          placeholder="Ada request makanan, butuh add-on BBQ, atau hal lain yang perlu kami siapkan?"
+          placeholder="Ada request makanan atau hal lain yang perlu kami siapkan?"
         />
       </Field>
     </>
@@ -425,6 +480,7 @@ export default function InquiryScreen({ onSubmit }) {
     // glamping
     glampLoc: ctx.glampId || GLAMPINGS[0].id,
     nights: 1,
+    addons: [],
   });
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));

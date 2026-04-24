@@ -3,6 +3,11 @@ import { GLAMPINGS } from '../data';
 import Icon from '../components/Icon';
 import Footer from '../components/Footer';
 
+function fmt(n) {
+  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1).replace('.0', '')} juta`;
+  return `Rp ${(n / 1_000).toFixed(0)}rb`;
+}
+
 export default function GlampDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -42,6 +47,23 @@ export default function GlampDetailScreen() {
         <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65 }}>{g.description}</p>
       </div>
 
+      {/* Gallery */}
+      {g.gallery && (
+        <div style={{ padding: '20px 20px 0' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13, color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+            Galeri
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {g.gallery.map((label, i) => (
+              <div key={i} className={`ph-${g.palette || 'forest'}`} style={{ borderRadius: 14, aspectRatio: '4/3', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%)' }} />
+                <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11, color: '#fff', lineHeight: 1.3 }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Amenities */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{
@@ -78,10 +100,26 @@ export default function GlampDetailScreen() {
         </p>
       </div>
 
-      {/* Info note */}
-      <div style={{ margin: '16px 20px 0', background: 'var(--ejg-kertas-2)', border: '1px dashed var(--border-strong)', borderRadius: 14, padding: 14, fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
-        Tersedia add-on: BBQ set, sarapan ekstra, atau paket honeymoon. Cerita aja via WA.
-      </div>
+      {/* Add-ons */}
+      {g.addons && (
+        <div style={{ padding: '20px 20px 0' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13, color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+            Add-on tersedia
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {g.addons.map(addon => (
+              <div key={addon.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--ejg-kertas-2)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--ejg-ink)' }}>{addon.label}</div>
+                  <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>{addon.desc}</div>
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13, color: 'var(--ejg-ink)', flexShrink: 0, marginLeft: 12 }}>+{fmt(addon.price)}</div>
+              </div>
+            ))}
+          </div>
+          <p style={{ marginTop: 8, fontSize: 12, color: 'var(--fg-3)' }}>Pilih add-on saat isi form booking.</p>
+        </div>
+      )}
 
       {/* CTA */}
       <div style={{ padding: '20px 20px 0' }}>
