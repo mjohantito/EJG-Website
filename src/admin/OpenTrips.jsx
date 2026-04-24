@@ -1,34 +1,37 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK = {
   id: '', dest: '', region: '', month: '', day: '', start: '', end: '', duration: '2D1N',
   price: '', priceNum: 0, slots: 10, totalSlots: 12, tag: '', palette: 'ink', emoji: '',
-  description: '', highlights: [], includes: [], gallery: [],
+  cover: '', description: '', highlights: [], includes: [], gallery: [],
 };
 
 export default function AdminOpenTrips() {
-  const { openTrips, setOpenTrips } = useData();
-  const [panel, setPanel] = useState(null); // null | { mode: 'add'|'edit', item }
+  const { openTrips, setOpenTrips, deleteOpenTrip } = useData();
+  const [panel, setPanel] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [draft, setDraft] = useState(null);
+  const [saving, setSaving] = useState(false);
 
-  const openAdd = () => { setDraft({ ...BLANK }); setPanel({ mode: 'add' }); };
+  const openAdd  = () => { setDraft({ ...BLANK }); setPanel({ mode: 'add' }); };
   const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
   const set = (key, val) => setDraft(d => ({ ...d, [key]: val }));
 
-  const save = () => {
+  const save = async () => {
+    setSaving(true);
     if (panel.mode === 'add') {
-      setOpenTrips([...openTrips, draft]);
+      await setOpenTrips([...openTrips, draft]);
     } else {
-      setOpenTrips(openTrips.map(t => t.id === panel.id ? draft : t));
+      await setOpenTrips(openTrips.map(t => t.id === panel.id ? draft : t));
     }
+    setSaving(false);
     setPanel(null);
   };
 
-  const confirmDelete = () => {
-    setOpenTrips(openTrips.filter(t => t.id !== deleteId));
+  const confirmDelete = async () => {
+    await deleteOpenTrip(deleteId);
     setDeleteId(null);
   };
 
@@ -36,7 +39,7 @@ export default function AdminOpenTrips() {
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>Open Trips</h1>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111' }}>Open Trips</h1>
           <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{openTrips.length} keberangkatan terjadwal</p>
         </div>
         <button onClick={openAdd} style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px' }}>+ Tambah Trip</button>
@@ -63,7 +66,10 @@ export default function AdminOpenTrips() {
                 <tr key={t.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 20 }}>{t.emoji}</span>
+                      {t.cover
+                        ? <img src={t.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                        : <span style={{ fontSize: 20 }}>{t.emoji}</span>
+                      }
                       <div>
                         <div style={{ fontWeight: 600 }}>{t.dest}</div>
                         <div style={{ fontSize: 12, color: '#9ca3af' }}>{t.region}</div>
@@ -95,11 +101,14 @@ export default function AdminOpenTrips() {
       </div>
 
       {panel && draft && (
-        <Panel title={panel.mode === 'add' ? 'Tambah Open Trip' : 'Edit Open Trip'} onClose={() => setPanel(null)} onSave={save}>
+        <Panel title={panel.mode === 'add' ? 'Tambah Open Trip' : 'Edit Open Trip'} onClose={() => setPanel(null)} onSave={save} saving={saving}>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="ID (unik)" half><AInput value={draft.id} onChange={v => set('id', v)} placeholder="ot-bromo-jun" /></AField>
-            <AField label="Emoji" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🌋" /></AField>
+            <AField label="Emoji (fallback)" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🌋" /></AField>
           </div>
+          <AField label="Cover foto" hint="Upload atau paste URL gambar. Ditampilkan di listing & detail.">
+            <ImageField value={draft.cover} onChange={v => set('cover', v)} folder="covers" />
+          </AField>
           <AField label="Nama destinasi"><AInput value={draft.dest} onChange={v => set('dest', v)} placeholder="Bromo Sunrise" /></AField>
           <AField label="Region"><AInput value={draft.region} onChange={v => set('region', v)} placeholder="Jawa Timur" /></AField>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
@@ -126,7 +135,9 @@ export default function AdminOpenTrips() {
           <AField label="Deskripsi"><ATextarea value={draft.description} onChange={v => set('description', v)} rows={4} /></AField>
           <AField label="Highlights"><ListEditor items={draft.highlights} onChange={v => set('highlights', v)} placeholder="Sunrise Penanjakan" /></AField>
           <AField label="Termasuk (includes)"><ListEditor items={draft.includes} onChange={v => set('includes', v)} placeholder="Transport AC" /></AField>
-          <AField label="Galeri (label foto)"><ListEditor items={draft.gallery} onChange={v => set('gallery', v)} placeholder="Sunrise dari puncak" /></AField>
+          <AField label="Galeri foto" hint="Upload atau paste URL untuk setiap foto.">
+            <GalleryEditor items={draft.gallery} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
         </Panel>
       )}
 

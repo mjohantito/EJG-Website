@@ -1,4 +1,6 @@
 /* ── Shared admin UI components ── */
+import { useState } from 'react';
+import { uploadMedia } from '../lib/supabase';
 
 export const S = {
   sidebar: { width: 220, background: '#1a1a2e', color: '#e2e2e2', height: '100vh', position: 'fixed', left: 0, top: 0, display: 'flex', flexDirection: 'column', zIndex: 100 },
@@ -163,6 +165,112 @@ export function ConfirmModal({ message, onConfirm, onCancel }) {
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Image upload field (Supabase Storage or paste URL) ── */
+export function ImageField({ value, onChange, folder = 'covers', label = 'Cover image' }) {
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr] = useState('');
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setErr('');
+    try {
+      const url = await uploadMedia(file, folder);
+      onChange(url);
+    } catch (ex) {
+      setErr('Upload gagal: ' + ex.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div>
+      {value && (
+        <div style={{ marginBottom: 10, position: 'relative', display: 'inline-block' }}>
+          <img src={value} alt="preview" style={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb', display: 'block' }} />
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: 6, padding: '2px 8px', cursor: 'pointer', fontSize: 13 }}
+          >×</button>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <label style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', cursor: 'pointer', display: 'inline-block', padding: '8px 14px', flexShrink: 0 }}>
+          {uploading ? 'Mengupload…' : '↑ Upload'}
+          <input type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} disabled={uploading} />
+        </label>
+        <span style={{ fontSize: 12, color: '#9ca3af' }}>atau</span>
+        <input
+          style={{ ...S.input, flex: 1 }}
+          value={value ?? ''}
+          onChange={e => onChange(e.target.value)}
+          placeholder="Paste URL gambar…"
+        />
+      </div>
+      {err && <p style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{err}</p>}
+    </div>
+  );
+}
+
+/* ── Gallery editor: array of image URLs ── */
+export function GalleryEditor({ items = [], onChange, folder = 'gallery' }) {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadMedia(file, folder);
+      onChange([...items, url]);
+    } catch {}
+    finally { setUploading(false); }
+  };
+
+  const remove = (i) => onChange(items.filter((_, j) => j !== i));
+  const updateUrl = (i, val) => { const n = [...items]; n[i] = val; onChange(n); };
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 10 }}>
+        {items.map((url, i) => (
+          <div key={i} style={{ position: 'relative' }}>
+            {url ? (
+              <img src={url} alt="" style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }} />
+            ) : (
+              <div style={{ width: '100%', aspectRatio: '4/3', background: '#f3f4f6', borderRadius: 8, border: '1px solid #e5e7eb', display: 'grid', placeItems: 'center', fontSize: 11, color: '#9ca3af' }}>No image</div>
+            )}
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', borderRadius: 4, width: 22, height: 22, cursor: 'pointer', fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center' }}
+            >×</button>
+            <input
+              style={{ ...S.input, fontSize: 10, padding: '4px 6px', marginTop: 4 }}
+              value={url}
+              onChange={e => updateUrl(i, e.target.value)}
+              placeholder="URL…"
+            />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <label style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', cursor: 'pointer', display: 'inline-block', padding: '8px 14px' }}>
+          {uploading ? 'Mengupload…' : '↑ Upload foto'}
+          <input type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} disabled={uploading} />
+        </label>
+        <button
+          type="button"
+          onClick={() => onChange([...items, ''])}
+          style={{ ...S.btn, background: '#f3f4f6', color: '#374151' }}
+        >+ URL</button>
+      </div>
+    </div>
   );
 }
 

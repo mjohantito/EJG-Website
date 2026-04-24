@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { submitInquiry } from '../lib/submitInquiry';
 import Footer from '../components/Footer';
 
 /* ── Glamping availability rules ── */
@@ -455,7 +456,7 @@ function GlampingFields({ state, set, glampings }) {
 export default function InquiryScreen({ onSubmit }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { openTrips, openTripAddons, privateDestinations, glampings, whatsapp } = useData();
+  const { openTrips, openTripAddons, privateDestinations, glampings } = useData();
   const ctx = location.state || {};
 
   const [kind, setKind] = useState(
@@ -472,17 +473,16 @@ export default function InquiryScreen({ onSubmit }) {
     pax: ctx.pax || 1,
     date: '',
     notes: '',
-    // open trip
     tripId: ctx.tripId || openTrips[0]?.id,
-    // private trip
     privateDest: initialPrivateDest,
     privateDuration: ctx.duration || initialDestData?.durations[0],
     meetingPoint: 'Surabaya',
-    // glamping
     glampLoc: ctx.glampId || glampings[0]?.id,
     nights: 1,
     addons: [],
   });
+
+  const [submitting, setSubmitting] = useState(false);
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
@@ -495,26 +495,10 @@ export default function InquiryScreen({ onSubmit }) {
     return true;
   })();
 
-  const handleSubmit = () => {
-    if (kind === 'private') {
-      const dest = privateDestinations.find(d => d.id === form.privateDest);
-      const lines = [
-        'Halo EH! JADI GA? 👋',
-        '',
-        'Saya mau inquiry *Private Trip*:',
-        '',
-        `Nama: ${form.name}`,
-        `WhatsApp: ${form.wa}`,
-        `Email: ${form.email}`,
-        `Destinasi: ${dest?.emoji || ''} ${dest?.name || form.privateDest}`,
-        `Durasi: ${form.privateDuration}`,
-        `Jumlah peserta: ${form.pax} orang`,
-        `Meeting point: ${form.meetingPoint}`,
-        form.date ? `Tanggal: ${form.date}` : '',
-        form.notes ? `Catatan: ${form.notes}` : '',
-      ].filter(Boolean).join('\n');
-      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(lines)}`, '_blank');
-    }
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await submitInquiry(kind, form);
+    setSubmitting(false);
     const payload = { kind, ...form };
     if (onSubmit) {
       onSubmit(payload);
@@ -523,16 +507,14 @@ export default function InquiryScreen({ onSubmit }) {
     }
   };
 
-  const submitLabel = kind === 'private' ? 'Kirim ke WhatsApp →' : 'Kirim inquiry →';
-
   return (
     <>
       <div className="page-header">
-        <span className="eyebrow">Inquiry · Respons 1×24 jam</span>
+        <span className="eyebrow">Inquiry · Langkah pertama ke petualanganmu</span>
         <h1 style={{ marginTop: 6 }}>
-          Kita <span className="italic" style={{ fontStyle: 'italic', fontWeight: 500 }}>bales</span> dalam 24 jam<span className="q-stamp">.</span>
+          Kamu selangkah lebih dekat<span className="q-stamp">.</span>
         </h1>
-        <p className="lead">Isi form ini. Tim kita konfirmasi langsung via WhatsApp.</p>
+        <p className="lead">Isi form ini — tim kita balas dalam hitungan jam, bukan hari.</p>
       </div>
 
       <div style={{ padding: '0 20px 14px' }}>
@@ -569,24 +551,12 @@ export default function InquiryScreen({ onSubmit }) {
         <button
           type="button"
           className="btn btn-pri btn-block"
-          disabled={!canSubmit}
+          disabled={!canSubmit || submitting}
           onClick={handleSubmit}
-          style={{ opacity: canSubmit ? 1 : 0.45 }}
+          style={{ opacity: canSubmit && !submitting ? 1 : 0.45 }}
         >
-          {submitLabel}
+          {submitting ? 'Mengirim…' : 'Kirim inquiry →'}
         </button>
-
-        <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)' }}>
-          atau{' '}
-          <a
-            href={`https://wa.me/${whatsapp}`}
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}
-          >
-            chat langsung di WA
-          </a>
-        </div>
       </div>
 
       <Footer onNav={(name) => navigate(`/${name === 'home' ? '' : name}`)} />

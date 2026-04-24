@@ -28,8 +28,8 @@ export default function PrivateTripDetailScreen() {
   return (
     <>
       {/* Hero */}
-      <div className={`detail-hero ph-${dest.palette || 'ink'}`}>
-        <span className="emoji">{dest.emoji}</span>
+      <div className={`detail-hero ph-${dest.palette || 'ink'}`} style={dest.cover ? { backgroundImage: `url(${dest.cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+        {!dest.cover && <span className="emoji">{dest.emoji}</span>}
         {dest.startingPrice !== 'Sesuai itinerary' && (
           <div className="stamp-pill">mulai Rp {dest.startingPrice} / orang</div>
         )}
@@ -52,10 +52,9 @@ export default function PrivateTripDetailScreen() {
             Galeri
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {dest.gallery.map((label, i) => (
-              <div key={i} className={`ph-${dest.palette || 'ink'}`} style={{ borderRadius: 14, aspectRatio: '4/3', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%)' }} />
-                <span style={{ position: 'relative', zIndex: 1, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11, color: '#fff', lineHeight: 1.3 }}>{label}</span>
+            {dest.gallery.map((url, i) => (
+              <div key={i} className={`ph-${dest.palette || 'ink'}`} style={{ borderRadius: 14, aspectRatio: '4/3', position: 'relative', overflow: 'hidden' }}>
+                {url?.startsWith('http') && <img src={url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
               </div>
             ))}
           </div>

@@ -1,34 +1,37 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK = {
-  id: '', name: '', region: '', sub: '', emoji: '', palette: 'ink',
+  id: '', name: '', region: '', sub: '', emoji: '', cover: '', palette: 'ink',
   description: '', highlights: [], durations: ['2D1N', '3D2N'],
   startingPrice: '', pricePerPax: null, gallery: [],
 };
 
 export default function AdminPrivateTrips() {
-  const { privateDestinations, setPrivateDestinations } = useData();
+  const { privateDestinations, setPrivateDestinations, deletePrivateDestination } = useData();
   const [panel, setPanel] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [draft, setDraft] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const openAdd = () => { setDraft({ ...BLANK, durations: ['2D1N', '3D2N'], gallery: [], highlights: [] }); setPanel({ mode: 'add' }); };
   const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
   const set = (key, val) => setDraft(d => ({ ...d, [key]: val }));
 
-  const save = () => {
+  const save = async () => {
+    setSaving(true);
     if (panel.mode === 'add') {
-      setPrivateDestinations([...privateDestinations, draft]);
+      await setPrivateDestinations([...privateDestinations, draft]);
     } else {
-      setPrivateDestinations(privateDestinations.map(d => d.id === panel.id ? draft : d));
+      await setPrivateDestinations(privateDestinations.map(d => d.id === panel.id ? draft : d));
     }
+    setSaving(false);
     setPanel(null);
   };
 
-  const confirmDelete = () => {
-    setPrivateDestinations(privateDestinations.filter(d => d.id !== deleteId));
+  const confirmDelete = async () => {
+    await deletePrivateDestination(deleteId);
     setDeleteId(null);
   };
 
@@ -62,7 +65,10 @@ export default function AdminPrivateTrips() {
                 <tr key={d.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 20 }}>{d.emoji}</span>
+                      {d.cover
+                        ? <img src={d.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                        : <span style={{ fontSize: 20 }}>{d.emoji}</span>
+                      }
                       <span style={{ fontWeight: 600 }}>{d.name}</span>
                     </div>
                   </td>
@@ -84,11 +90,14 @@ export default function AdminPrivateTrips() {
       </div>
 
       {panel && draft && (
-        <Panel title={panel.mode === 'add' ? 'Tambah Destinasi' : 'Edit Destinasi'} onClose={() => setPanel(null)} onSave={save}>
+        <Panel title={panel.mode === 'add' ? 'Tambah Destinasi' : 'Edit Destinasi'} onClose={() => setPanel(null)} onSave={save} saving={saving}>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="ID (unik)" half><AInput value={draft.id} onChange={v => set('id', v)} placeholder="pronojiwo" /></AField>
-            <AField label="Emoji" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="💧" /></AField>
+            <AField label="Emoji (fallback)" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="💧" /></AField>
           </div>
+          <AField label="Cover foto" hint="Upload atau paste URL gambar.">
+            <ImageField value={draft.cover} onChange={v => set('cover', v)} folder="covers" />
+          </AField>
           <AField label="Nama destinasi"><AInput value={draft.name} onChange={v => set('name', v)} placeholder="Pronojiwo" /></AField>
           <AField label="Region"><AInput value={draft.region} onChange={v => set('region', v)} placeholder="Lumajang, Jawa Timur" /></AField>
           <AField label="Subtitle"><AInput value={draft.sub} onChange={v => set('sub', v)} placeholder="Tumpak Sewu, Goa Tetes, Kapas Biru" /></AField>
@@ -106,7 +115,9 @@ export default function AdminPrivateTrips() {
               <AInput value={draft.pricePerPax ?? ''} onChange={v => set('pricePerPax', v === '' ? null : Number(v))} type="number" placeholder="1800000" />
             </AField>
           </div>
-          <AField label="Galeri (label foto)"><ListEditor items={draft.gallery || []} onChange={v => set('gallery', v)} placeholder="Tumpak Sewu dari dasar" /></AField>
+          <AField label="Galeri foto" hint="Upload atau paste URL.">
+            <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
         </Panel>
       )}
 

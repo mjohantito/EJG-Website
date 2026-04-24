@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK_TICKET = { id: '', label: '', price: 0, desc: '', slots: 10 };
 
 const BLANK = {
   id: '', name: '', subtitle: '', date: '', dateEnd: '', year: '2026',
-  venue: '', emoji: '', palette: 'ink', tag: 'OPEN',
+  venue: '', emoji: '', cover: '', palette: 'ink', tag: 'OPEN',
   description: '', highlights: [], includes: [],
   tickets: [{ ...BLANK_TICKET }],
 };
@@ -23,7 +23,7 @@ function TicketEditor({ tickets, onChange }) {
   return (
     <div>
       {tickets.map((t, i) => (
-        <div key={i} style={{ border: '1.5px solid #e5e7eb', borderRadius: 12, padding: '14px 16px', marginBottom: 10, position: 'relative' }}>
+        <div key={i} style={{ border: '1.5px solid #e5e7eb', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
           <div style={{ fontWeight: 700, fontSize: 12, color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tiket #{i + 1}</div>
           <div style={{ display: 'flex', gap: '3%', flexWrap: 'wrap' }}>
             <div style={{ width: '48%' }}>
@@ -56,26 +56,29 @@ function TicketEditor({ tickets, onChange }) {
 }
 
 export default function AdminEvents() {
-  const { events, setEvents } = useData();
+  const { events, setEvents, deleteEvent } = useData();
   const [panel, setPanel] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [draft, setDraft] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const openAdd = () => { setDraft({ ...BLANK, highlights: [], includes: [], tickets: [{ ...BLANK_TICKET }] }); setPanel({ mode: 'add' }); };
   const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
   const set = (key, val) => setDraft(d => ({ ...d, [key]: val }));
 
-  const save = () => {
+  const save = async () => {
+    setSaving(true);
     if (panel.mode === 'add') {
-      setEvents([...events, draft]);
+      await setEvents([...events, draft]);
     } else {
-      setEvents(events.map(e => e.id === panel.id ? draft : e));
+      await setEvents(events.map(e => e.id === panel.id ? draft : e));
     }
+    setSaving(false);
     setPanel(null);
   };
 
-  const confirmDelete = () => {
-    setEvents(events.filter(e => e.id !== deleteId));
+  const confirmDelete = async () => {
+    await deleteEvent(deleteId);
     setDeleteId(null);
   };
 
@@ -86,7 +89,7 @@ export default function AdminEvents() {
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>Special Events</h1>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111' }}>Special Events</h1>
           <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{events.length} event terjadwal</p>
         </div>
         <button onClick={openAdd} style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px' }}>+ Tambah Event</button>
@@ -113,7 +116,10 @@ export default function AdminEvents() {
                 <tr key={ev.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 20 }}>{ev.emoji}</span>
+                      {ev.cover
+                        ? <img src={ev.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                        : <span style={{ fontSize: 20 }}>{ev.emoji}</span>
+                      }
                       <div>
                         <div style={{ fontWeight: 600 }}>{ev.name}</div>
                         <div style={{ fontSize: 12, color: '#9ca3af' }}>{ev.subtitle}</div>
@@ -145,11 +151,14 @@ export default function AdminEvents() {
       </div>
 
       {panel && draft && (
-        <Panel title={panel.mode === 'add' ? 'Tambah Event' : 'Edit Event'} onClose={() => setPanel(null)} onSave={save}>
+        <Panel title={panel.mode === 'add' ? 'Tambah Event' : 'Edit Event'} onClose={() => setPanel(null)} onSave={save} saving={saving}>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="ID (unik)" half><AInput value={draft.id} onChange={v => set('id', v)} placeholder="ev-bromo-nyeve" /></AField>
-            <AField label="Emoji" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🌌" /></AField>
+            <AField label="Emoji (fallback)" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🌌" /></AField>
           </div>
+          <AField label="Cover foto" hint="Upload atau paste URL gambar.">
+            <ImageField value={draft.cover} onChange={v => set('cover', v)} folder="covers" />
+          </AField>
           <AField label="Nama event"><AInput value={draft.name} onChange={v => set('name', v)} placeholder="Bromo Solstice Night" /></AField>
           <AField label="Subtitle"><AInput value={draft.subtitle} onChange={v => set('subtitle', v)} placeholder="Satu malam penuh bintang sebelum sunrise paling epic." /></AField>
           <AField label="Venue / lokasi"><AInput value={draft.venue} onChange={v => set('venue', v)} placeholder="Bromo, Jawa Timur" /></AField>
@@ -171,6 +180,9 @@ export default function AdminEvents() {
           <AField label="Deskripsi"><ATextarea value={draft.description} onChange={v => set('description', v)} rows={4} /></AField>
           <AField label="Highlights"><ListEditor items={draft.highlights || []} onChange={v => set('highlights', v)} placeholder="Campfire di Lautan Pasir" /></AField>
           <AField label="Termasuk (includes)"><ListEditor items={draft.includes || []} onChange={v => set('includes', v)} placeholder="Transport AC Surabaya–Bromo PP" /></AField>
+          <AField label="Cover gallery (opsional)" hint="Foto tambahan untuk halaman detail event.">
+            <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
           <AField label="Tipe tiket"><TicketEditor tickets={draft.tickets || []} onChange={v => set('tickets', v)} /></AField>
         </Panel>
       )}

@@ -5,8 +5,8 @@ import Footer from '../components/Footer';
 function EventCard({ ev, onClick }) {
   return (
     <div className="ot-card" onClick={onClick} style={{ cursor: 'pointer' }}>
-      <div className={`ot-datestamp ph-${ev.palette || 'ink'}`} style={{ fontSize: 38, letterSpacing: 0 }}>
-        {ev.emoji}
+      <div className={`ot-datestamp ph-${ev.palette || 'ink'}`} style={ev.cover ? { backgroundImage: `url(${ev.cover})`, backgroundSize: 'cover', backgroundPosition: 'center', fontSize: 38, letterSpacing: 0 } : { fontSize: 38, letterSpacing: 0 }}>
+        {!ev.cover && ev.emoji}
         {ev.tag && (
           <span style={{
             position: 'absolute', top: 10, right: 10,

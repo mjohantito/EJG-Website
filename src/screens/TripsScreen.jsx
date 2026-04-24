@@ -9,9 +9,9 @@ function PrivateDestCard({ dest, onClick }) {
     <div className="ot-card" onClick={onClick}>
       <div
         className={`ot-datestamp ph-${dest.palette || 'ink'}`}
-        style={{ fontSize: 38, letterSpacing: 0 }}
+        style={dest.cover ? { backgroundImage: `url(${dest.cover})`, backgroundSize: 'cover', backgroundPosition: 'center', fontSize: 38, letterSpacing: 0 } : { fontSize: 38, letterSpacing: 0 }}
       >
-        {dest.emoji}
+        {!dest.cover && dest.emoji}
       </div>
       <div className="ot-body">
         <span className="region">{dest.region}</span>

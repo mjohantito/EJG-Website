@@ -19,8 +19,8 @@ export default function EventDetailScreen() {
   return (
     <>
       {/* Hero */}
-      <div className={`detail-hero ph-${ev.palette || 'ink'}`}>
-        <span className="emoji" style={{ fontSize: 100 }}>{ev.emoji}</span>
+      <div className={`detail-hero ph-${ev.palette || 'ink'}`} style={ev.cover ? { backgroundImage: `url(${ev.cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+        {!ev.cover && <span className="emoji" style={{ fontSize: 100 }}>{ev.emoji}</span>}
         <span className="stamp-pill">SPECIAL EVENT · {ev.date} {ev.year}</span>
       </div>
 

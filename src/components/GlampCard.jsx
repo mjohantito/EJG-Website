@@ -1,8 +1,8 @@
 export default function GlampCard({ g, onClick }) {
   return (
     <div className="gl-card" onClick={onClick}>
-      <div className={`gl-photo ph-${g.palette || 'forest'}`}>
-        <span className="emoji">{g.emoji}</span>
+      <div className={`gl-photo ph-${g.palette || 'forest'}`} style={g.cover ? { backgroundImage: `url(${g.cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+        {!g.cover && <span className="emoji">{g.emoji}</span>}
         {g.tag && <span className="tag">{g.tag}</span>}
       </div>
       <div className="gl-body">

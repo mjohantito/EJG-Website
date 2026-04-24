@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
 
 const BLANK = {
-  id: '', name: '', location: '', palette: 'forest', emoji: '', tag: '',
+  id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
   price: '', pricePerNight: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
-  closedDays: [], tagline: '', description: '', amenities: [], gallery: [],
-  addons: [],
+  closedDays: [], tagline: '', description: '', amenities: [], gallery: [], addons: [],
 };
 
 function AddonEditor({ addons, onChange }) {
@@ -46,26 +45,29 @@ function AddonEditor({ addons, onChange }) {
 }
 
 export default function AdminGlamping() {
-  const { glampings, setGlampings } = useData();
+  const { glampings, setGlampings, deleteGlamping } = useData();
   const [panel, setPanel] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [draft, setDraft] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const openAdd = () => { setDraft({ ...BLANK, amenities: [], gallery: [], addons: [], closedDays: [] }); setPanel({ mode: 'add' }); };
   const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
   const set = (key, val) => setDraft(d => ({ ...d, [key]: val }));
 
-  const save = () => {
+  const save = async () => {
+    setSaving(true);
     if (panel.mode === 'add') {
-      setGlampings([...glampings, draft]);
+      await setGlampings([...glampings, draft]);
     } else {
-      setGlampings(glampings.map(g => g.id === panel.id ? draft : g));
+      await setGlampings(glampings.map(g => g.id === panel.id ? draft : g));
     }
+    setSaving(false);
     setPanel(null);
   };
 
-  const confirmDelete = () => {
-    setGlampings(glampings.filter(g => g.id !== deleteId));
+  const confirmDelete = async () => {
+    await deleteGlamping(deleteId);
     setDeleteId(null);
   };
 
@@ -73,7 +75,7 @@ export default function AdminGlamping() {
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>Glamping</h1>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111' }}>Glamping</h1>
           <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{glampings.length} lokasi terdaftar</p>
         </div>
         <button onClick={openAdd} style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px' }}>+ Tambah Lokasi</button>
@@ -99,7 +101,10 @@ export default function AdminGlamping() {
                 <tr key={g.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 20 }}>{g.emoji}</span>
+                      {g.cover
+                        ? <img src={g.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                        : <span style={{ fontSize: 20 }}>{g.emoji}</span>
+                      }
                       <div>
                         <div style={{ fontWeight: 600 }}>{g.name}</div>
                         {g.tag && <span style={{ ...S.badge, background: '#fef9c3', color: '#854d0e' }}>{g.tag}</span>}
@@ -128,11 +133,14 @@ export default function AdminGlamping() {
       </div>
 
       {panel && draft && (
-        <Panel title={panel.mode === 'add' ? 'Tambah Lokasi Glamping' : 'Edit Lokasi Glamping'} onClose={() => setPanel(null)} onSave={save}>
+        <Panel title={panel.mode === 'add' ? 'Tambah Lokasi Glamping' : 'Edit Lokasi Glamping'} onClose={() => setPanel(null)} onSave={save} saving={saving}>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="ID (unik)" half><AInput value={draft.id} onChange={v => set('id', v)} placeholder="gl-senggani" /></AField>
-            <AField label="Emoji" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🏕️" /></AField>
+            <AField label="Emoji (fallback)" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🏕️" /></AField>
           </div>
+          <AField label="Cover foto" hint="Upload atau paste URL gambar.">
+            <ImageField value={draft.cover} onChange={v => set('cover', v)} folder="covers" />
+          </AField>
           <AField label="Nama lokasi"><AInput value={draft.name} onChange={v => set('name', v)} placeholder="Jurang Senggani" /></AField>
           <AField label="Lokasi"><AInput value={draft.location} onChange={v => set('location', v)} placeholder="Tulungagung, Jawa Timur" /></AField>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
@@ -155,7 +163,9 @@ export default function AdminGlamping() {
           <AField label="Tagline"><AInput value={draft.tagline} onChange={v => set('tagline', v)} placeholder="Kemah, tapi tetap nyaman." /></AField>
           <AField label="Deskripsi"><ATextarea value={draft.description} onChange={v => set('description', v)} rows={3} /></AField>
           <AField label="Fasilitas (amenities)"><ListEditor items={draft.amenities || []} onChange={v => set('amenities', v)} placeholder="Tempat tidur queen" /></AField>
-          <AField label="Galeri (label foto)"><ListEditor items={draft.gallery || []} onChange={v => set('gallery', v)} placeholder="Tent di tengah pinus" /></AField>
+          <AField label="Galeri foto" hint="Upload atau paste URL.">
+            <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
           <AField label="Add-on"><AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} /></AField>
         </Panel>
       )}

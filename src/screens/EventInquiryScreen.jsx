@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { submitInquiry } from '../lib/submitInquiry';
 import Footer from '../components/Footer';
 
 function formatRupiah(n) {
@@ -33,7 +34,7 @@ function Stepper({ label, value, onChange, min = 1, max = 20 }) {
 export default function EventInquiryScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { events, whatsapp } = useData();
+  const { events } = useData();
   const ev = events.find(e => e.id === id) || events[0];
 
   const [form, setForm] = useState({
@@ -45,28 +46,24 @@ export default function EventInquiryScreen() {
     notes: '',
   });
 
+  const [submitting, setSubmitting] = useState(false);
+
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
   const selectedTicket = ev.tickets.find(t => t.id === form.ticketId) || ev.tickets[0];
   const estimate = selectedTicket.price * form.qty;
   const canSubmit = form.name.trim().length > 1 && form.email.trim().length > 3 && form.wa.trim().length > 5;
 
-  const handleSubmit = () => {
-    const lines = [
-      'Halo EH! JADI GA? 👋',
-      '',
-      `Saya mau beli tiket *${ev.name}*:`,
-      '',
-      `Nama: ${form.name}`,
-      `WhatsApp: ${form.wa}`,
-      `Email: ${form.email}`,
-      `Tipe tiket: ${selectedTicket.label} — ${formatRupiah(selectedTicket.price)}/tiket`,
-      `Jumlah: ${form.qty} tiket`,
-      `Total estimasi: ${formatRupiah(estimate)}`,
-      form.notes ? `Catatan: ${form.notes}` : '',
-    ].filter(Boolean).join('\n');
-
-    window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(lines)}`, '_blank');
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await submitInquiry('event', {
+      ...form,
+      eventId: ev.id,
+      eventName: ev.name,
+      ticketLabel: selectedTicket.label,
+      estimate: formatRupiah(estimate),
+    });
+    setSubmitting(false);
     navigate('/thanks', { state: { kind: 'event', eventId: ev.id, ...form } });
   };
 
@@ -76,9 +73,9 @@ export default function EventInquiryScreen() {
       <div className="page-header">
         <span className="eyebrow">Beli Tiket · {ev.name}</span>
         <h1 style={{ marginTop: 6 }}>
-          Satu langkah lagi<span className="q-stamp">!</span>
+          Kamu selangkah lebih dekat<span className="q-stamp">!</span>
         </h1>
-        <p className="lead">Isi data di bawah. Tim kita konfirmasi via WA setelah pembayaran DP.</p>
+        <p className="lead">Isi data di bawah — kami konfirmasi ketersediaan tiket segera.</p>
       </div>
 
       {/* Event summary card */}
@@ -88,8 +85,8 @@ export default function EventInquiryScreen() {
           borderRadius: 16, padding: '14px 16px',
           display: 'flex', alignItems: 'center', gap: 14,
         }}>
-          <div className={`ph-${ev.palette || 'ink'}`} style={{ width: 48, height: 48, borderRadius: 12, display: 'grid', placeItems: 'center', fontSize: 24, flexShrink: 0 }}>
-            {ev.emoji}
+          <div className={`ph-${ev.palette || 'ink'}`} style={{ width: 48, height: 48, borderRadius: 12, overflow: 'hidden', flexShrink: 0, display: 'grid', placeItems: 'center', fontSize: 24 }}>
+            {ev.cover ? <img src={ev.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : ev.emoji}
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, color: 'var(--ejg-ink)' }}>{ev.name}</div>
@@ -190,30 +187,18 @@ export default function EventInquiryScreen() {
         </Field>
 
         <div style={{ background: 'var(--ejg-kertas-2)', border: '1px dashed var(--border-strong)', borderRadius: 14, padding: 14, fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
-          <strong style={{ color: 'var(--ejg-ink)' }}>Alur pembelian:</strong> Kamu langsung chat ke WA kami → tim konfirmasi ketersediaan → kamu DP 50% → tiket confirmed.
+          <strong style={{ color: 'var(--ejg-ink)' }}>Alur pembelian:</strong> Isi form → tim konfirmasi ketersediaan via email/WA → kamu DP 50% → tiket confirmed.
         </div>
 
         <button
           type="button"
           className="btn btn-pri btn-block"
-          disabled={!canSubmit}
+          disabled={!canSubmit || submitting}
           onClick={handleSubmit}
-          style={{ opacity: canSubmit ? 1 : 0.45 }}
+          style={{ opacity: canSubmit && !submitting ? 1 : 0.45 }}
         >
-          Kirim ke WhatsApp →
+          {submitting ? 'Mengirim…' : 'Pesan tiket →'}
         </button>
-
-        <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)' }}>
-          atau{' '}
-          <a
-            href={`https://wa.me/${whatsapp}`}
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: 'var(--ejg-ink)', fontFamily: 'var(--font-display)', fontWeight: 700, textDecoration: 'underline' }}
-          >
-            chat langsung di WA
-          </a>
-        </div>
       </div>
 
       <Footer onNav={(name) => navigate(`/${name === 'home' ? '' : name}`)} />
