@@ -62,6 +62,17 @@ html, body {
 
 .topbar .back { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--ejg-ink); }
 
+/* Desktop inline nav — hidden on mobile */
+.desktop-nav { display: none; }
+.desktop-nav-link {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  color: var(--fg-3); background: none; border: none;
+  padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  transition: all 150ms ease; letter-spacing: -0.01em;
+}
+.desktop-nav-link:hover { color: var(--ejg-ink); background: var(--ejg-kertas-2); }
+.desktop-nav-link.on { color: var(--ejg-ink); background: var(--ejg-matahari); }
+
 /* ============ Drawer menu ============ */
 .scrim {
   position: fixed; inset: 0; background: rgba(20,18,14,0.55); z-index: 80;
@@ -577,8 +588,8 @@ html, body {
 .wa-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,37,37,0.4); }
 .wa-fab:active { transform: scale(0.97); }
 
-/* On desktop keep FAB inside the 430px container */
-@media (min-width: 490px) {
+/* Keep FAB inside narrow viewport */
+@media (min-width: 490px) and (max-width: 767px) {
   .wa-fab { right: calc(50% - 193px); }
 }
 
@@ -600,3 +611,130 @@ html, body {
 .app.playful .hero-stamp .tag:nth-child(2) { transform: rotate(3deg); }
 .app.playful .about-hero .ey { transform: rotate(-2deg); }
 .app.playful .private-cta h3 { transform: rotate(-0.5deg); }
+
+/* ============================================================
+   RESPONSIVE — Tablet ≥768px
+   ============================================================ */
+@media (min-width: 768px) {
+  /* App container */
+  .app { max-width: 900px; }
+
+  /* TopBar */
+  .topbar { padding: 16px 32px; }
+  .topbar-hamburger { display: none !important; }
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    padding: 0 20px;
+  }
+
+  /* Hero */
+  .hero { padding: 20px 32px 32px; }
+  .hero-stamp h1 { font-size: 56px; }
+  .hero-stamp .lead { max-width: 480px; }
+
+  /* Section layout */
+  .sh { padding: 32px 32px 14px; }
+  .page-header { padding: 16px 32px 24px; }
+  .page-header h1 { font-size: 48px; }
+
+  /* Quick links — 4 columns */
+  .quicklinks { grid-template-columns: repeat(4, 1fr); padding: 10px 32px 6px; }
+
+  /* Card grids — 2 columns */
+  .opentrip-list { display: grid; grid-template-columns: 1fr 1fr; padding: 0 32px 20px; }
+  .glamp-list    { display: grid; grid-template-columns: 1fr 1fr; padding: 0 32px 20px; }
+  .month-sep { padding: 10px 32px 8px; }
+  .segmented { margin: 0 32px 18px; }
+
+  /* Private/Glamping/Teaser blocks */
+  .private-cta { margin: 10px 32px; }
+  .teaser { margin: 6px 32px 8px; }
+  .value-card { margin: 0 32px 10px; }
+  .stat-row { padding: 8px 32px 28px; }
+
+  /* Detail pages */
+  .detail-hero { height: 420px; }
+  .detail-sheet { padding: 28px 32px 32px; }
+  .detail-sheet h1 { font-size: 36px; }
+  .form { padding: 4px 32px 24px; }
+  .cta-bar { padding: 16px 32px calc(16px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Destination grid — 3 cols */
+  .dest-grid { grid-template-columns: repeat(3, 1fr); padding: 0 32px 20px; }
+
+  /* About */
+  .about-hero { padding: 20px 32px 24px; }
+  .about-hero h1 { font-size: 52px; }
+  .about-body { padding: 0 32px 20px; }
+
+  /* Footer */
+  .site-foot { padding: 48px 40px 52px; }
+  .site-foot .row { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* FAB */
+  .wa-fab { right: max(40px, calc((100vw - 900px) / 2 + 40px)); bottom: 40px; }
+}
+
+/* ============================================================
+   RESPONSIVE — Desktop ≥1024px
+   ============================================================ */
+@media (min-width: 1024px) {
+  /* App container */
+  .app { max-width: 1200px; }
+
+  /* TopBar */
+  .topbar { padding: 18px 48px; }
+  .desktop-nav { padding: 0 28px; gap: 4px; }
+  .desktop-nav-link { font-size: 15px; padding: 9px 14px; }
+
+  /* Hero */
+  .hero { padding: 32px 48px 44px; }
+  .hero-stamp h1 { font-size: 72px; }
+  .hero-stamp .lead { font-size: 17px; }
+
+  /* Section layout */
+  .sh { padding: 36px 48px 16px; }
+  .sh h2 { font-size: 28px; }
+  .page-header { padding: 24px 48px 28px; }
+  .page-header h1 { font-size: 56px; }
+
+  /* Quick links */
+  .quicklinks { padding: 12px 48px 8px; gap: 14px; }
+
+  /* Card grids — 3 columns */
+  .opentrip-list { grid-template-columns: repeat(3, 1fr); padding: 0 48px 24px; gap: 18px; }
+  .glamp-list    { grid-template-columns: repeat(3, 1fr); padding: 0 48px 24px; gap: 18px; }
+  .month-sep { padding: 14px 48px 10px; }
+  .segmented { margin: 0 48px 20px; }
+
+  /* Private/Teaser blocks */
+  .private-cta { margin: 10px 48px; }
+  .private-cta h3 { font-size: 32px; max-width: none; }
+  .teaser { margin: 6px 48px 8px; }
+  .value-card { margin: 0 48px 10px; }
+  .stat-row { padding: 8px 48px 32px; }
+
+  /* Detail pages */
+  .detail-hero { height: 520px; }
+  .detail-sheet { padding: 32px 48px 40px; }
+  .detail-sheet h1 { font-size: 42px; }
+  .form { padding: 4px 48px 32px; }
+  .cta-bar { padding: 18px 48px calc(18px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Destination grid — 4 cols */
+  .dest-grid { grid-template-columns: repeat(4, 1fr); padding: 0 48px 24px; }
+
+  /* About */
+  .about-hero { padding: 28px 48px 28px; }
+  .about-hero h1 { font-size: 60px; }
+  .about-body { padding: 0 48px 24px; }
+
+  /* Footer */
+  .site-foot { padding: 56px 64px 60px; }
+
+  /* FAB */
+  .wa-fab { right: max(40px, calc((100vw - 1200px) / 2 + 40px)); }
+}

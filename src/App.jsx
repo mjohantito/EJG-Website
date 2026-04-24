@@ -86,6 +86,8 @@ export default function App() {
         <TopBar
           onHome={() => navigate('/')}
           onMenu={() => setDrawerOpen(true)}
+          onNav={handleNavFromDrawer}
+          activeNav={activeNav}
           backLabel={backLabel}
           onBack={() => navigate(-1)}
         />
