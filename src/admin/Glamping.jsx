@@ -7,7 +7,7 @@ const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
 const BLANK = {
   id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
   price: '', pricePerNight: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
-  closedDays: [], tagline: '', description: '', amenities: [], gallery: [], addons: [],
+  closedDays: [], tagline: '', description: '', amenities: [], notIncluded: [], gallery: [], addons: [],
   priceTiers: [],
 };
 
@@ -164,6 +164,7 @@ export default function AdminGlamping() {
           <AField label="Tagline"><AInput value={draft.tagline} onChange={v => set('tagline', v)} placeholder="Kemah, tapi tetap nyaman." /></AField>
           <AField label="Deskripsi"><ATextarea value={draft.description} onChange={v => set('description', v)} rows={3} /></AField>
           <AField label="Fasilitas (amenities)"><ListEditor items={draft.amenities || []} onChange={v => set('amenities', v)} placeholder="Tempat tidur queen" /></AField>
+          <AField label="Tidak termasuk (not included)"><ListEditor items={draft.notIncluded || []} onChange={v => set('notIncluded', v)} placeholder="Konsumsi makan siang" /></AField>
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
           </AField>

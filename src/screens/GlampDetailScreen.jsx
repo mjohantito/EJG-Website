@@ -96,6 +96,31 @@ export default function GlampDetailScreen() {
         </div>
       </div>
 
+      {/* Not included */}
+      {g.notIncluded?.length > 0 && (
+        <div style={{ padding: '20px 20px 0' }}>
+          <div style={{
+            fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
+            color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12,
+          }}>
+            Tidak Termasuk
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {g.notIncluded.map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: '#fef2f2', color: '#dc2626',
+                  display: 'grid', placeItems: 'center',
+                  fontSize: 14, flexShrink: 0,
+                }}>✕</span>
+                <span style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.4 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Booking info */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{

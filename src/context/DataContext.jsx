@@ -51,7 +51,8 @@ function rowToGlamping(r) {
     pricePerNight: r.price_per_night, unit: r.unit, cap: r.cap,
     availability: r.availability, closedDays: r.closed_days || [],
     tagline: r.tagline, description: r.description,
-    amenities: r.amenities || [], gallery: r.gallery || [], addons: r.addons || [],
+    amenities: r.amenities || [], notIncluded: r.not_included || [],
+    gallery: r.gallery || [], addons: r.addons || [],
     priceTiers: r.price_tiers || [],
   };
 }
@@ -105,7 +106,8 @@ export function glampingToRow(g) {
     cap: g.cap, availability: g.availability,
     closed_days: g.closedDays || [],
     tagline: g.tagline, description: g.description,
-    amenities: g.amenities || [], gallery: g.gallery || [], addons: g.addons || [],
+    amenities: g.amenities || [], not_included: g.notIncluded || [],
+    gallery: g.gallery || [], addons: g.addons || [],
     price_tiers: g.priceTiers || [],
   };
 }
