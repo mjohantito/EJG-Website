@@ -39,8 +39,11 @@ const BUDGET_OPTIONS = [
 const DURATION_MULTIPLIER = { '2D1N': 1, '3D2N': 1.5, '4D3N': 2 };
 
 function formatRupiah(amount) {
-  if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1).replace('.0', '')} juta`;
-  return `Rp ${(amount / 1_000).toFixed(0)} ribu`;
+  if (amount >= 1_000_000) {
+    const val = (amount / 1_000_000).toFixed(2).replace('.', ',').replace(/,?0+$/, '');
+    return `Rp ${val}jt`;
+  }
+  return `Rp ${(amount / 1_000).toFixed(0)}rb`;
 }
 
 function applyDiscount(total, referral) {
