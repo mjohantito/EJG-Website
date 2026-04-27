@@ -9,6 +9,16 @@ import {
   WHATSAPP as D_WHATSAPP,
 } from '../data';
 
+export function lookupTier(tiers, pax) {
+  if (!tiers || tiers.length === 0) return null;
+  const sorted = [...tiers].sort((a, b) => a.minPax - b.minPax);
+  let result = sorted[0];
+  for (const tier of sorted) {
+    if (tier.minPax <= pax) result = tier;
+  }
+  return result;
+}
+
 const DataContext = createContext(null);
 
 /* Map DB row → JS shape (snake_case → camelCase) */
@@ -31,7 +41,7 @@ function rowToPrivate(r) {
     emoji: r.emoji, cover: r.cover, palette: r.palette, description: r.description,
     highlights: r.highlights || [], durations: r.durations || [],
     startingPrice: r.starting_price, pricePerPax: r.price_per_pax,
-    gallery: r.gallery || [],
+    gallery: r.gallery || [], priceTiers: r.price_tiers || [],
   };
 }
 function rowToGlamping(r) {
@@ -42,6 +52,15 @@ function rowToGlamping(r) {
     availability: r.availability, closedDays: r.closed_days || [],
     tagline: r.tagline, description: r.description,
     amenities: r.amenities || [], gallery: r.gallery || [], addons: r.addons || [],
+    priceTiers: r.price_tiers || [],
+  };
+}
+function rowToReferral(r) {
+  return {
+    id: r.id, code: r.code, discountType: r.discount_type,
+    discountValue: r.discount_value, maxUses: r.max_uses,
+    usedCount: r.used_count, expiresAt: r.expires_at,
+    active: r.active, description: r.description,
   };
 }
 function rowToEvent(r) {
@@ -75,7 +94,7 @@ export function privateToRow(p) {
     description: p.description,
     highlights: p.highlights || [], durations: p.durations || [],
     starting_price: p.startingPrice, price_per_pax: p.pricePerPax,
-    gallery: p.gallery || [],
+    gallery: p.gallery || [], price_tiers: p.priceTiers || [],
   };
 }
 export function glampingToRow(g) {
@@ -87,6 +106,15 @@ export function glampingToRow(g) {
     closed_days: g.closedDays || [],
     tagline: g.tagline, description: g.description,
     amenities: g.amenities || [], gallery: g.gallery || [], addons: g.addons || [],
+    price_tiers: g.priceTiers || [],
+  };
+}
+export function referralToRow(r) {
+  return {
+    id: r.id, code: r.code, discount_type: r.discountType,
+    discount_value: r.discountValue, max_uses: r.maxUses,
+    used_count: r.usedCount, expires_at: r.expiresAt || null,
+    active: r.active, description: r.description || '',
   };
 }
 export function eventToRow(e) {
@@ -106,17 +134,19 @@ export function DataProvider({ children }) {
   const [glampings, setGlampingsState]                     = useState(D_GLAMPINGS);
   const [events, setEventsState]                           = useState(D_EVENTS);
   const [whatsapp, setWhatsappState]                       = useState(D_WHATSAPP);
+  const [referrals, setReferralsState]                     = useState([]);
   const [loading, setLoading]                              = useState(true);
 
   useEffect(() => {
     async function load() {
-      const [trips, addons, priv, glamp, evs, settings] = await Promise.all([
+      const [trips, addons, priv, glamp, evs, settings, refs] = await Promise.all([
         supabase.from('open_trips').select('*').order('sort_order'),
         supabase.from('open_trip_addons').select('*').order('sort_order'),
         supabase.from('private_destinations').select('*').order('sort_order'),
         supabase.from('glampings').select('*').order('sort_order'),
         supabase.from('events').select('*').order('sort_order'),
         supabase.from('settings').select('*'),
+        supabase.from('referrals').select('*').order('id'),
       ]);
 
       if (trips.data?.length)    setOpenTripsState(trips.data.map(rowToTrip));
@@ -124,6 +154,7 @@ export function DataProvider({ children }) {
       if (priv.data?.length)     setPrivateDestinationsState(priv.data.map(rowToPrivate));
       if (glamp.data?.length)    setGlampingsState(glamp.data.map(rowToGlamping));
       if (evs.data?.length)      setEventsState(evs.data.map(rowToEvent));
+      if (refs.data?.length)     setReferralsState(refs.data.map(rowToReferral));
       const waSetting = settings.data?.find(s => s.key === 'whatsapp');
       if (waSetting)             setWhatsappState(waSetting.value);
 
@@ -168,6 +199,31 @@ export function DataProvider({ children }) {
     await supabase.from('settings').upsert({ key: 'whatsapp', value: val });
   };
 
+  const setReferrals = async (items) => {
+    setReferralsState(items);
+    for (const item of items) {
+      await supabase.from('referrals').upsert(referralToRow(item));
+    }
+  };
+  const deleteReferral = async (id) => {
+    await supabase.from('referrals').delete().eq('id', id);
+    setReferralsState(p => p.filter(x => x.id !== id));
+  };
+  const validateReferral = async (code) => {
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase.from('referrals')
+      .select('*').eq('code', code.toUpperCase().trim()).single();
+    if (!data) return { valid: false, error: 'Kode tidak ditemukan' };
+    if (!data.active) return { valid: false, error: 'Kode sudah tidak aktif' };
+    if (data.expires_at && data.expires_at < today) return { valid: false, error: 'Kode sudah kedaluwarsa' };
+    if (data.max_uses > 0 && data.used_count >= data.max_uses) return { valid: false, error: 'Kode sudah habis digunakan' };
+    return { valid: true, referral: rowToReferral(data) };
+  };
+  const useReferral = async (id, currentCount) => {
+    await supabase.from('referrals').update({ used_count: currentCount + 1 }).eq('id', id);
+    setReferralsState(p => p.map(r => r.id === id ? { ...r, usedCount: currentCount + 1 } : r));
+  };
+
   const deleteOpenTrip         = async (id) => { await supabase.from('open_trips').delete().eq('id', id); setOpenTripsState(p => p.filter(x => x.id !== id)); };
   const deleteOpenTripAddon    = async (id) => { await supabase.from('open_trip_addons').delete().eq('id', id); setOpenTripAddonsState(p => p.filter(x => x.id !== id)); };
   const deletePrivateDestination = async (id) => { await supabase.from('private_destinations').delete().eq('id', id); setPrivateDestinationsState(p => p.filter(x => x.id !== id)); };
@@ -205,6 +261,7 @@ export function DataProvider({ children }) {
       glampings, setGlampings, deleteGlamping,
       events, setEvents, deleteEvent,
       whatsapp, setWhatsapp,
+      referrals, setReferrals, deleteReferral, validateReferral, useReferral,
       resetAll,
     }}>
       {children}

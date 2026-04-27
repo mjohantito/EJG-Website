@@ -14,11 +14,11 @@ export default function Footer({ onNav }) {
           <h5>Jelajah</h5>
           <ul>
             <li><a onClick={() => onNav('trips')}>Trips</a></li>
-            <li><a onClick={() => onNav('events')}>Special Event</a></li>
             <li><a onClick={() => onNav('glamping')}>Glamping</a></li>
             <li><a onClick={() => onNav('corporate')}>Corporate</a></li>
+            <li><a onClick={() => onNav('events')}>Special Event</a></li>
+            <li><a onClick={() => onNav('about')}>Tentang Kami</a></li>
             <li><a onClick={() => onNav('inquiry')}>Inquiry</a></li>
-            <li><a onClick={() => onNav('about')}>Tentang</a></li>
             <li><a href="/terms" style={{ color: 'var(--ejg-kertas)', textDecoration: 'none', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14 }}>Syarat & Ketentuan</a></li>
           </ul>
         </div>

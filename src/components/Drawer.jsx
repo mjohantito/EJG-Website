@@ -3,12 +3,11 @@ import Icon from './Icon';
 
 const NAV_ITEMS = [
   { id: 'home',      label: 'Beranda' },
-  { id: 'trips',     label: 'Trips',       badge: 'Open & Private' },
-  { id: 'glamping',  label: 'Glamping',    badge: '3 lokasi' },
+  { id: 'trips',     label: 'Trips',         badge: 'Open & Private' },
+  { id: 'glamping',  label: 'Glamping',      badge: '3 lokasi' },
   { id: 'corporate', label: 'Corporate' },
   { id: 'events',    label: 'Special Event', badge: 'NEW' },
-  { id: 'inquiry',   label: 'Inquiry' },
-  { id: 'about',     label: 'Tentang kami' },
+  { id: 'about',     label: 'Tentang Kami' },
 ];
 
 export default function Drawer({ open, onClose, onNav, active }) {

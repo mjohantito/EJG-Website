@@ -274,6 +274,49 @@ export function GalleryEditor({ items = [], onChange, folder = 'gallery' }) {
   );
 }
 
+/* ── Price Tier Editor: [{ minPax, price }] total price per group size ── */
+export function PriceTierEditor({ tiers = [], onChange, unit = 'malam' }) {
+  const add    = () => onChange([...tiers, { minPax: 1, price: 0 }]);
+  const remove = (i) => onChange(tiers.filter((_, j) => j !== i));
+  const update = (i, key, val) => {
+    const next = [...tiers];
+    next[i] = { ...next[i], [key]: Number(val) };
+    onChange(next);
+  };
+  return (
+    <div>
+      {tiers.length === 0 && (
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8 }}>
+          Belum ada tier. Jika kosong, harga dihitung dari field "Harga per {unit}" di atas.
+        </p>
+      )}
+      {tiers.map((tier, i) => (
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+          <div style={{ width: '40%' }}>
+            <label style={{ ...S.label, fontSize: 10 }}>Min tamu</label>
+            <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.minPax}
+              onChange={e => update(i, 'minPax', e.target.value)} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ ...S.label, fontSize: 10 }}>Total harga (Rp) / {unit}</label>
+            <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.price}
+              onChange={e => update(i, 'price', e.target.value)} />
+          </div>
+          <button type="button" onClick={() => remove(i)}
+            style={{ ...S.btn, background: '#fee2e2', color: '#dc2626', padding: '0 10px', marginTop: 16, flexShrink: 0 }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        style={{ ...S.btn, background: '#f0fdf4', color: '#16a34a', fontSize: 12 }}>+ Tambah tier</button>
+      {tiers.length > 0 && (
+        <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 8, lineHeight: 1.5 }}>
+          Sistem otomatis pilih tier tertinggi yang ≤ jumlah tamu. Harga tampil ke user sebagai "per pax" (total ÷ tamu).
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function EmptyState({ icon, title, sub }) {
   return (
     <div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>

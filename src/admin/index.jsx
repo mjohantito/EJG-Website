@@ -7,6 +7,7 @@ import OpenTrips from './OpenTrips';
 import PrivateTrips from './PrivateTrips';
 import Glamping from './Glamping';
 import Events from './Events';
+import Referrals from './Referrals';
 import Settings from './Settings';
 
 export default function AdminApp() {
@@ -24,6 +25,7 @@ export default function AdminApp() {
         <Route path="private" element={<PrivateTrips />} />
         <Route path="glamping" element={<Glamping />} />
         <Route path="events" element={<Events />} />
+        <Route path="referrals" element={<Referrals />} />
         <Route path="settings" element={<Settings />} />
       </Routes>
     </Layout>

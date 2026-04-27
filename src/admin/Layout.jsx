@@ -7,6 +7,7 @@ const NAV = [
   { path: '/admin/private',      label: 'Private Trip',    icon: '🗺️' },
   { path: '/admin/glamping',     label: 'Glamping',        icon: '🏕️' },
   { path: '/admin/events',       label: 'Special Event',   icon: '🎉' },
+  { path: '/admin/referrals',    label: 'Referral Codes',  icon: '🎟️' },
   { path: '/admin/settings',     label: 'Settings',        icon: '⚙️' },
 ];
 

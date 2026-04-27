@@ -2,11 +2,11 @@ import Brand from './Brand';
 import Icon from './Icon';
 
 const NAV_ITEMS = [
-  { key: 'trips',     label: 'Open Trip' },
+  { key: 'trips',     label: 'Trips' },
   { key: 'glamping',  label: 'Glamping' },
-  { key: 'events',    label: 'Events' },
-  { key: 'about',     label: 'About' },
   { key: 'corporate', label: 'Corporate' },
+  { key: 'events',    label: 'Special Event' },
+  { key: 'about',     label: 'Tentang Kami' },
 ];
 
 export default function TopBar({ onHome, onMenu, onNav, activeNav, backLabel, onBack }) {

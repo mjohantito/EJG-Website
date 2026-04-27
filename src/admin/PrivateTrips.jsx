@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK = {
   id: '', name: '', region: '', sub: '', emoji: '', cover: '', palette: 'ink',
   description: '', highlights: [], durations: ['2D1N', '3D2N'],
-  startingPrice: '', pricePerPax: null, gallery: [],
+  startingPrice: '', pricePerPax: null, gallery: [], priceTiers: [],
 };
 
 export default function AdminPrivateTrips() {
@@ -111,10 +111,13 @@ export default function AdminPrivateTrips() {
             <AField label="Harga tampil" half hint="Contoh: 1.8jt atau 'Sesuai itinerary'">
               <AInput value={draft.startingPrice} onChange={v => set('startingPrice', v)} placeholder="1.8jt" />
             </AField>
-            <AField label="Harga per pax (angka)" half hint="Kosongkan jika custom">
+            <AField label="Harga per pax fallback" half hint="Dipakai jika price tiers kosong">
               <AInput value={draft.pricePerPax ?? ''} onChange={v => set('pricePerPax', v === '' ? null : Number(v))} type="number" placeholder="1800000" />
             </AField>
           </div>
+          <AField label="Harga per jumlah tamu (price tiers)" hint="Total harga untuk durasi dasar (2D1N). Durasi lain dikali multiplier otomatis.">
+            <PriceTierEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} unit="trip" />
+          </AField>
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
           </AField>

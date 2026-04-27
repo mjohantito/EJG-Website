@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useData } from '../context/DataContext';
+import { useData, lookupTier } from '../context/DataContext';
 import Footer from '../components/Footer';
+
+function fmt(n) {
+  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1).replace('.0', '')} juta`;
+  return `Rp ${(n / 1_000).toFixed(0)}rb`;
+}
 
 export default function PrivateTripDetailScreen() {
   const { id } = useParams();
@@ -31,7 +36,7 @@ export default function PrivateTripDetailScreen() {
       <div className={`detail-hero ph-${dest.palette || 'ink'}`} style={dest.cover ? { backgroundImage: `url(${dest.cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
         {!dest.cover && <span className="emoji">{dest.emoji}</span>}
         {dest.startingPrice !== 'Sesuai itinerary' && (
-          <div className="stamp-pill">mulai Rp {dest.startingPrice} / orang</div>
+          <div className="stamp-pill">mulai {fmt(dest.priceTiers?.length ? lookupTier(dest.priceTiers, 1)?.price : (dest.pricePerPax || 0))} / pax</div>
         )}
         {dest.startingPrice === 'Sesuai itinerary' && (
           <div className="stamp-pill">Custom quote</div>

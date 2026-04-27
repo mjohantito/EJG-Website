@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
 
@@ -8,6 +8,7 @@ const BLANK = {
   id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
   price: '', pricePerNight: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
   closedDays: [], tagline: '', description: '', amenities: [], gallery: [], addons: [],
+  priceTiers: [],
 };
 
 function AddonEditor({ addons, onChange }) {
@@ -165,6 +166,9 @@ export default function AdminGlamping() {
           <AField label="Fasilitas (amenities)"><ListEditor items={draft.amenities || []} onChange={v => set('amenities', v)} placeholder="Tempat tidur queen" /></AField>
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
+          <AField label="Harga per jumlah tamu (price tiers)" hint="Jika diisi, menggantikan 'Harga angka' di atas untuk kalkulasi estimasi.">
+            <PriceTierEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} unit="malam" />
           </AField>
           <AField label="Add-on"><AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} /></AField>
         </Panel>
