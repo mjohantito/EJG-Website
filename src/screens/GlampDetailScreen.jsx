@@ -8,13 +8,10 @@ function fmt(n) {
   return `Rp ${(n / 1_000).toFixed(0)}rb`;
 }
 
-function fmtPerPax(tiers, fallbackPrice) {
-  if (tiers?.length) {
-    const min = [...tiers].sort((a, b) => a.minPax - b.minPax);
-    const first = min[0];
-    if (first) return `${fmt(Math.round(first.price / first.minPax))}/pax`;
-  }
-  return null;
+function fmtPerPax(tiers) {
+  if (!tiers?.length) return null;
+  const highest = [...tiers].sort((a, b) => b.minPax - a.minPax)[0];
+  return `${fmt(Math.round(highest.price / highest.minPax))}/pax`;
 }
 
 export default function GlampDetailScreen() {
@@ -163,16 +160,11 @@ export default function GlampDetailScreen() {
         }}>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
-              Mulai / {g.unit}
+              Mulai / pax / {g.unit}
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
-              Rp {g.price}
+              {g.priceTiers?.length > 0 ? fmtPerPax(g.priceTiers) : `Rp ${g.price}`}
             </div>
-            {g.priceTiers?.length > 0 && (
-              <div style={{ fontSize: 11, color: 'rgba(243,213,67,0.6)', marginTop: 3 }}>
-                ≈ {fmtPerPax(g.priceTiers)}&nbsp;· harga total per grup
-              </div>
-            )}
           </div>
           <button
             className="btn btn-pri"
