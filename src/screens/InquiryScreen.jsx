@@ -453,19 +453,18 @@ function GlampingFields({ state, set, glampings }) {
       </Field>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        {hasTiers ? (
-          <Field label="Jumlah tamu">
-            <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
-              {sortedTiers.map(tier => (
-                <option key={tier.minPax} value={tier.minPax}>
-                  {tier.minPax} orang
-                </option>
-              ))}
-            </select>
-          </Field>
-        ) : (
-          <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={20} />
-        )}
+        <Field label="Jumlah tamu">
+          <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
+            {hasTiers
+              ? sortedTiers.map(tier => (
+                  <option key={tier.minPax} value={tier.minPax}>{tier.minPax} orang</option>
+                ))
+              : Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+                  <option key={n} value={n}>{n} orang</option>
+                ))
+            }
+          </select>
+        </Field>
         <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={3} />
       </div>
 
