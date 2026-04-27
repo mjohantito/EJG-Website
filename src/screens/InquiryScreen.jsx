@@ -21,6 +21,11 @@ function dateAvailability(dateStr, glampId) {
 }
 
 const TODAY = new Date().toISOString().split('T')[0];
+const MAX_DATE = (() => {
+  const d = new Date();
+  d.setMonth(d.getMonth() + 10);
+  return d.toISOString().split('T')[0];
+})();
 
 const BUDGET_OPTIONS = [
   'Di bawah Rp 5 juta',
@@ -394,17 +399,33 @@ function GlampingFields({ state, set, glampings }) {
   const avStatus = dateAvailability(state.date, state.glampLoc);
   const glamp = glampings.find(g => g.id === state.glampLoc);
 
+  const sortedTiers = glamp?.priceTiers?.length
+    ? [...glamp.priceTiers].sort((a, b) => a.minPax - b.minPax)
+    : [];
+  const hasTiers = sortedTiers.length > 0;
+
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
     return sum + (a ? a.price : 0);
   }, 0) : 0;
 
-  // Tiered pricing: total per night based on group size
-  const tier = glamp?.priceTiers?.length ? lookupTier(glamp.priceTiers, state.pax) : null;
-  const pricePerNight = tier ? tier.price : (glamp?.pricePerNight ?? 0);
+  // Price from selected tier or fallback to pricePerNight
+  const activeTier = hasTiers ? lookupTier(glamp.priceTiers, state.pax) : null;
+  const pricePerNight = activeTier ? activeTier.price : (glamp?.pricePerNight ?? 0);
   const baseTotal = pricePerNight * state.nights;
   const estimate = baseTotal > 0 ? baseTotal + addonsTotal : null;
   const perPax = estimate && state.pax > 0 ? Math.round(estimate / state.pax) : null;
+
+  const handleLocChange = (newId) => {
+    const newGlamp = glampings.find(g => g.id === newId);
+    const tiers = newGlamp?.priceTiers?.length
+      ? [...newGlamp.priceTiers].sort((a, b) => a.minPax - b.minPax)
+      : [];
+    set('glampLoc', newId);
+    set('pax', tiers.length ? tiers[0].minPax : 1);
+    set('date', '');
+    set('addons', []);
+  };
 
   return (
     <>
@@ -418,7 +439,7 @@ function GlampingFields({ state, set, glampings }) {
         <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
       </Field>
       <Field label="Lokasi glamping">
-        <select value={state.glampLoc} onChange={e => { set('glampLoc', e.target.value); set('date', ''); set('addons', []); }}>
+        <select value={state.glampLoc} onChange={e => handleLocChange(e.target.value)}>
           {glampings.map(g => (
             <option key={g.id} value={g.id}>{g.emoji} {g.name} — {g.location.split(',')[0]}</option>
           ))}
@@ -430,12 +451,26 @@ function GlampingFields({ state, set, glampings }) {
           </div>
         )}
       </Field>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+
+      {/* Jumlah tamu — dropdown from tiers if available, stepper otherwise */}
+      {hasTiers ? (
+        <Field label="Jumlah tamu">
+          <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
+            {sortedTiers.map(tier => (
+              <option key={tier.minPax} value={tier.minPax}>
+                {tier.minPax} orang — {formatRupiah(tier.price)}/malam (≈ {formatRupiah(Math.round(tier.price / tier.minPax))}/pax)
+              </option>
+            ))}
+          </select>
+        </Field>
+      ) : (
         <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={20} />
-        <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={7} />
-      </div>
+      )}
+
+      <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={3} />
+
       <Field label="Tanggal check-in">
-        <input type="date" value={state.date} min={TODAY}
+        <input type="date" value={state.date} min={TODAY} max={MAX_DATE}
           onChange={e => set('date', e.target.value)}
           style={{ borderColor: avStatus === 'unavailable' ? '#C23B2A' : undefined }}
         />
@@ -452,6 +487,7 @@ function GlampingFields({ state, set, glampings }) {
           </div>
         )}
       </Field>
+
       {glamp?.addons?.length > 0 && (
         <Field label="Add-on (opsional)">
           <AddonCheckboxes addons={glamp.addons} selected={state.addons || []} onChange={v => set('addons', v)} />
