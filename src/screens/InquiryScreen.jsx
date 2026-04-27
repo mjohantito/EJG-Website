@@ -452,22 +452,22 @@ function GlampingFields({ state, set, glampings }) {
         )}
       </Field>
 
-      {/* Jumlah tamu — dropdown from tiers if available, stepper otherwise */}
-      {hasTiers ? (
-        <Field label="Jumlah tamu">
-          <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
-            {sortedTiers.map(tier => (
-              <option key={tier.minPax} value={tier.minPax}>
-                {tier.minPax} orang — {formatRupiah(tier.price)}/malam (≈ {formatRupiah(Math.round(tier.price / tier.minPax))}/pax)
-              </option>
-            ))}
-          </select>
-        </Field>
-      ) : (
-        <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={20} />
-      )}
-
-      <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={3} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {hasTiers ? (
+          <Field label="Jumlah tamu">
+            <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
+              {sortedTiers.map(tier => (
+                <option key={tier.minPax} value={tier.minPax}>
+                  {tier.minPax} orang
+                </option>
+              ))}
+            </select>
+          </Field>
+        ) : (
+          <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={20} />
+        )}
+        <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={3} />
+      </div>
 
       <Field label="Tanggal check-in">
         <input type="date" value={state.date} min={TODAY} max={MAX_DATE}
