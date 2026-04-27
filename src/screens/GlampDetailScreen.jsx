@@ -11,7 +11,7 @@ function fmt(n) {
 function fmtPerPax(tiers) {
   if (!tiers?.length) return null;
   const highest = [...tiers].sort((a, b) => b.minPax - a.minPax)[0];
-  return `${fmt(Math.round(highest.price / highest.minPax))}/pax`;
+  return fmt(Math.round(highest.price / highest.minPax));
 }
 
 export default function GlampDetailScreen() {
@@ -160,10 +160,13 @@ export default function GlampDetailScreen() {
         }}>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10, color: 'rgba(243,213,67,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
-              Mulai / pax / {g.unit}
+              MULAI
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: 4 }}>
               {g.priceTiers?.length > 0 ? fmtPerPax(g.priceTiers) : `Rp ${g.price}`}
+              {g.priceTiers?.length > 0 && (
+                <span style={{ fontWeight: 500, fontSize: 13, color: 'rgba(243,213,67,0.55)', letterSpacing: 0 }}>/pax</span>
+              )}
             </div>
           </div>
           <button
