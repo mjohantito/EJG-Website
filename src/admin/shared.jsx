@@ -90,31 +90,38 @@ export function PaletteSelect({ value, onChange }) {
 }
 
 export function ListEditor({ items = [], onChange, placeholder = 'Item…' }) {
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
   const update = (i, val) => { const n = [...items]; n[i] = val; onChange(n); };
   const remove = (i) => onChange(items.filter((_, j) => j !== i));
   const add    = () => onChange([...items, '']);
   return (
     <div>
       {items.map((item, i) => (
-        <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+        <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 6, alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, flexShrink: 0 }}>
+            <button type="button" onClick={() => move(i, -1)} disabled={i === 0}
+              style={{ ...S.btn, padding: '1px 6px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === 0 ? 0.3 : 1, lineHeight: '14px' }}>↑</button>
+            <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1}
+              style={{ ...S.btn, padding: '1px 6px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === items.length - 1 ? 0.3 : 1, lineHeight: '14px' }}>↓</button>
+          </div>
           <input
             style={{ ...S.input, flex: 1 }}
             value={item}
             onChange={e => update(i, e.target.value)}
             placeholder={placeholder}
           />
-          <button
-            type="button"
-            onClick={() => remove(i)}
-            style={{ ...S.btn, background: '#fee2e2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}
-          >×</button>
+          <button type="button" onClick={() => remove(i)}
+            style={{ ...S.btn, background: '#fee2e2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}>×</button>
         </div>
       ))}
-      <button
-        type="button"
-        onClick={add}
-        style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', fontSize: 12, marginTop: 2 }}
-      >+ Tambah item</button>
+      <button type="button" onClick={add}
+        style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', fontSize: 12, marginTop: 2 }}>+ Tambah item</button>
     </div>
   );
 }
@@ -232,6 +239,13 @@ export function GalleryEditor({ items = [], onChange, folder = 'gallery' }) {
     finally { setUploading(false); }
   };
 
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
   const remove = (i) => onChange(items.filter((_, j) => j !== i));
   const updateUrl = (i, val) => { const n = [...items]; n[i] = val; onChange(n); };
 
@@ -245,11 +259,14 @@ export function GalleryEditor({ items = [], onChange, folder = 'gallery' }) {
             ) : (
               <div style={{ width: '100%', aspectRatio: '4/3', background: '#f3f4f6', borderRadius: 8, border: '1px solid #e5e7eb', display: 'grid', placeItems: 'center', fontSize: 11, color: '#9ca3af' }}>No image</div>
             )}
-            <button
-              type="button"
-              onClick={() => remove(i)}
-              style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', borderRadius: 4, width: 22, height: 22, cursor: 'pointer', fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center' }}
-            >×</button>
+            <button type="button" onClick={() => remove(i)}
+              style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', borderRadius: 4, width: 22, height: 22, cursor: 'pointer', fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center' }}>×</button>
+            <div style={{ position: 'absolute', top: 4, left: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', borderRadius: 4, width: 22, height: 18, cursor: 'pointer', fontSize: 10, display: 'grid', placeItems: 'center', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1}
+                style={{ background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', borderRadius: 4, width: 22, height: 18, cursor: 'pointer', fontSize: 10, display: 'grid', placeItems: 'center', opacity: i === items.length - 1 ? 0.3 : 1 }}>↓</button>
+            </div>
             <input
               style={{ ...S.input, fontSize: 10, padding: '4px 6px', marginTop: 4 }}
               value={url}
@@ -313,6 +330,17 @@ export function PriceTierEditor({ tiers = [], onChange, unit = 'malam' }) {
           Sistem otomatis pilih tier tertinggi yang ≤ jumlah tamu. Harga tampil ke user sebagai "per pax" (total ÷ tamu).
         </p>
       )}
+    </div>
+  );
+}
+
+export function ReorderButtons({ index, total, onMove }) {
+  return (
+    <div style={{ display: 'flex', gap: 2 }}>
+      <button type="button" onClick={() => onMove(-1)} disabled={index === 0}
+        style={{ ...S.btn, padding: '4px 7px', fontSize: 11, background: '#f3f4f6', color: '#6b7280', opacity: index === 0 ? 0.3 : 1 }}>↑</button>
+      <button type="button" onClick={() => onMove(1)} disabled={index === total - 1}
+        style={{ ...S.btn, padding: '4px 7px', fontSize: 11, background: '#f3f4f6', color: '#6b7280', opacity: index === total - 1 ? 0.3 : 1 }}>↓</button>
     </div>
   );
 }

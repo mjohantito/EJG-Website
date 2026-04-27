@@ -168,32 +168,32 @@ export function DataProvider({ children }) {
   /* CMS setters — write to Supabase then update local state */
   const setOpenTrips = async (items) => {
     setOpenTripsState(items);
-    for (const item of items) {
-      await supabase.from('open_trips').upsert(tripToRow(item));
+    for (let i = 0; i < items.length; i++) {
+      await supabase.from('open_trips').upsert({ ...tripToRow(items[i]), sort_order: i });
     }
   };
   const setOpenTripAddons = async (items) => {
     setOpenTripAddonsState(items);
-    for (const item of items) {
-      await supabase.from('open_trip_addons').upsert(addonToRow(item));
+    for (let i = 0; i < items.length; i++) {
+      await supabase.from('open_trip_addons').upsert({ ...addonToRow(items[i]), sort_order: i });
     }
   };
   const setPrivateDestinations = async (items) => {
     setPrivateDestinationsState(items);
-    for (const item of items) {
-      await supabase.from('private_destinations').upsert(privateToRow(item));
+    for (let i = 0; i < items.length; i++) {
+      await supabase.from('private_destinations').upsert({ ...privateToRow(items[i]), sort_order: i });
     }
   };
   const setGlampings = async (items) => {
     setGlampingsState(items);
-    for (const item of items) {
-      await supabase.from('glampings').upsert(glampingToRow(item));
+    for (let i = 0; i < items.length; i++) {
+      await supabase.from('glampings').upsert({ ...glampingToRow(items[i]), sort_order: i });
     }
   };
   const setEvents = async (items) => {
     setEventsState(items);
-    for (const item of items) {
-      await supabase.from('events').upsert(eventToRow(item));
+    for (let i = 0; i < items.length; i++) {
+      await supabase.from('events').upsert({ ...eventToRow(items[i]), sort_order: i });
     }
   };
   const setWhatsapp = async (val) => {

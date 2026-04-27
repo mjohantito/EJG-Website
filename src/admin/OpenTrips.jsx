@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK = {
   id: '', dest: '', region: '', month: '', day: '', start: '', end: '', duration: '2D1N',
@@ -35,6 +35,14 @@ export default function AdminOpenTrips() {
     setDeleteId(null);
   };
 
+  const reorder = async (idx, dir) => {
+    const j = idx + dir;
+    if (j < 0 || j >= openTrips.length) return;
+    const next = [...openTrips];
+    [next[idx], next[j]] = [next[j], next[idx]];
+    await setOpenTrips(next);
+  };
+
   return (
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
@@ -62,7 +70,7 @@ export default function AdminOpenTrips() {
               </tr>
             </thead>
             <tbody>
-              {openTrips.map(t => (
+              {openTrips.map((t, idx) => (
                 <tr key={t.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -88,7 +96,8 @@ export default function AdminOpenTrips() {
                     {t.tag && <span style={{ ...S.badge, background: '#fef9c3', color: '#854d0e' }}>{t.tag}</span>}
                   </td>
                   <td style={S.td}>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <ReorderButtons index={idx} total={openTrips.length} onMove={dir => reorder(idx, dir)} />
                       <button onClick={() => openEdit(t)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(t.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
                     </div>

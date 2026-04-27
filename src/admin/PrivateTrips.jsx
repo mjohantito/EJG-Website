@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK = {
   id: '', name: '', region: '', sub: '', emoji: '', cover: '', palette: 'ink',
@@ -35,6 +35,14 @@ export default function AdminPrivateTrips() {
     setDeleteId(null);
   };
 
+  const reorder = async (idx, dir) => {
+    const j = idx + dir;
+    if (j < 0 || j >= privateDestinations.length) return;
+    const next = [...privateDestinations];
+    [next[idx], next[j]] = [next[j], next[idx]];
+    await setPrivateDestinations(next);
+  };
+
   return (
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
@@ -61,7 +69,7 @@ export default function AdminPrivateTrips() {
               </tr>
             </thead>
             <tbody>
-              {privateDestinations.map(d => (
+              {privateDestinations.map((d, idx) => (
                 <tr key={d.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -77,7 +85,8 @@ export default function AdminPrivateTrips() {
                   <td style={S.td}>{d.startingPrice === 'Sesuai itinerary' ? <em style={{ color: '#9ca3af', fontStyle: 'normal' }}>Custom</em> : `Rp ${d.startingPrice}`}</td>
                   <td style={S.td}>{d.durations.join(', ')}</td>
                   <td style={S.td}>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <ReorderButtons index={idx} total={privateDestinations.length} onMove={dir => reorder(idx, dir)} />
                       <button onClick={() => openEdit(d)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(d.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
                     </div>

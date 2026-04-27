@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
 
@@ -12,6 +12,13 @@ const BLANK = {
 };
 
 function AddonEditor({ addons, onChange }) {
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= addons.length) return;
+    const next = [...addons];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
   const update = (i, key, val) => {
     const next = [...addons];
     next[i] = { ...next[i], [key]: key === 'price' ? Number(val) : val };
@@ -24,6 +31,15 @@ function AddonEditor({ addons, onChange }) {
     <div>
       {addons.map((a, i) => (
         <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Add-on #{i + 1}</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ ...S.btn, padding: '3px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === addons.length - 1}
+                style={{ ...S.btn, padding: '3px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === addons.length - 1 ? 0.3 : 1 }}>↓</button>
+            </div>
+          </div>
           <div style={{ display: 'flex', gap: '3%', flexWrap: 'wrap' }}>
             <div style={{ width: '48%' }}>
               <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Label</label>
@@ -72,6 +88,14 @@ export default function AdminGlamping() {
     setDeleteId(null);
   };
 
+  const reorder = async (idx, dir) => {
+    const j = idx + dir;
+    if (j < 0 || j >= glampings.length) return;
+    const next = [...glampings];
+    [next[idx], next[j]] = [next[j], next[idx]];
+    await setGlampings(next);
+  };
+
   return (
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
@@ -98,7 +122,7 @@ export default function AdminGlamping() {
               </tr>
             </thead>
             <tbody>
-              {glampings.map(g => (
+              {glampings.map((g, idx) => (
                 <tr key={g.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -121,7 +145,8 @@ export default function AdminGlamping() {
                     </span>
                   </td>
                   <td style={S.td}>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <ReorderButtons index={idx} total={glampings.length} onMove={dir => reorder(idx, dir)} />
                       <button onClick={() => openEdit(g)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(g.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
                     </div>

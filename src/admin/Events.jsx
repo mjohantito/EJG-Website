@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK_TICKET = { id: '', label: '', price: 0, desc: '', slots: 10 };
 
@@ -12,6 +12,13 @@ const BLANK = {
 };
 
 function TicketEditor({ tickets, onChange }) {
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= tickets.length) return;
+    const next = [...tickets];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
   const update = (i, key, val) => {
     const next = [...tickets];
     next[i] = { ...next[i], [key]: ['price', 'slots'].includes(key) ? Number(val) : val };
@@ -24,7 +31,15 @@ function TicketEditor({ tickets, onChange }) {
     <div>
       {tickets.map((t, i) => (
         <div key={i} style={{ border: '1.5px solid #e5e7eb', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
-          <div style={{ fontWeight: 700, fontSize: 12, color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tiket #{i + 1}</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <span style={{ fontWeight: 700, fontSize: 12, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tiket #{i + 1}</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ ...S.btn, padding: '3px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === tickets.length - 1}
+                style={{ ...S.btn, padding: '3px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === tickets.length - 1 ? 0.3 : 1 }}>↓</button>
+            </div>
+          </div>
           <div style={{ display: 'flex', gap: '3%', flexWrap: 'wrap' }}>
             <div style={{ width: '48%' }}>
               <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Label</label>
@@ -82,6 +97,14 @@ export default function AdminEvents() {
     setDeleteId(null);
   };
 
+  const reorder = async (idx, dir) => {
+    const j = idx + dir;
+    if (j < 0 || j >= events.length) return;
+    const next = [...events];
+    [next[idx], next[j]] = [next[j], next[idx]];
+    await setEvents(next);
+  };
+
   const totalSlots = (ev) => ev.tickets.reduce((s, t) => s + t.slots, 0);
   const lowestPrice = (ev) => Math.min(...ev.tickets.map(t => t.price));
 
@@ -112,7 +135,7 @@ export default function AdminEvents() {
               </tr>
             </thead>
             <tbody>
-              {events.map(ev => (
+              {events.map((ev, idx) => (
                 <tr key={ev.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -138,7 +161,8 @@ export default function AdminEvents() {
                     {ev.tag && <span style={{ ...S.badge, background: '#fef9c3', color: '#854d0e' }}>{ev.tag}</span>}
                   </td>
                   <td style={S.td}>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <ReorderButtons index={idx} total={events.length} onMove={dir => reorder(idx, dir)} />
                       <button onClick={() => openEdit(ev)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(ev.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
                     </div>
