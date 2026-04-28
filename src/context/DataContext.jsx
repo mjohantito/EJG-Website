@@ -235,11 +235,21 @@ export function DataProvider({ children }) {
     setReferralsState(p => p.map(r => r.id === id ? { ...r, usedCount: currentCount + 1 } : r));
   };
 
-  const deleteOpenTrip         = async (id) => { await supabase.from('open_trips').delete().eq('id', id); setOpenTripsState(p => p.filter(x => x.id !== id)); };
-  const deleteOpenTripAddon    = async (id) => { await supabase.from('open_trip_addons').delete().eq('id', id); setOpenTripAddonsState(p => p.filter(x => x.id !== id)); };
-  const deletePrivateDestination = async (id) => { await supabase.from('private_destinations').delete().eq('id', id); setPrivateDestinationsState(p => p.filter(x => x.id !== id)); };
-  const deleteGlamping         = async (id) => { await supabase.from('glampings').delete().eq('id', id); setGlampingsState(p => p.filter(x => x.id !== id)); };
-  const deleteEvent            = async (id) => { await supabase.from('events').delete().eq('id', id); setEventsState(p => p.filter(x => x.id !== id)); };
+  const deleteRow = async (table, id) => {
+    try {
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) { console.error(`${table} delete error:`, error.message); return false; }
+      return true;
+    } catch (e) {
+      console.error(`${table} delete threw:`, e.message); return false;
+    }
+  };
+
+  const deleteOpenTrip         = async (id) => { if (await deleteRow('open_trips', id))           setOpenTripsState(p => p.filter(x => x.id !== id)); };
+  const deleteOpenTripAddon    = async (id) => { if (await deleteRow('open_trip_addons', id))      setOpenTripAddonsState(p => p.filter(x => x.id !== id)); };
+  const deletePrivateDestination = async (id) => { if (await deleteRow('private_destinations', id)) setPrivateDestinationsState(p => p.filter(x => x.id !== id)); };
+  const deleteGlamping         = async (id) => { if (await deleteRow('glampings', id))             setGlampingsState(p => p.filter(x => x.id !== id)); };
+  const deleteEvent            = async (id) => { if (await deleteRow('events', id))                setEventsState(p => p.filter(x => x.id !== id)); };
 
   const resetAll = async () => {
     await Promise.all([
