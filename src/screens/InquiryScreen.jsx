@@ -268,25 +268,56 @@ function OpenTripFields({ state, set, openTrips, openTripAddons }) {
 /* ── Private trip fields ── */
 function PrivateFields({ state, set, privateDestinations }) {
   const dest = privateDestinations.find(d => d.id === state.privateDest) || privateDestinations[0];
-  const meetingPoints = state.privateDest === 'ijen'
-    ? [...MEETING_POINTS_BASE, 'Banyuwangi']
-    : MEETING_POINTS_BASE;
+
+  const hasMpPricing = dest?.meetingPointPrices?.length > 0;
+
+  const meetingPoints = hasMpPricing
+    ? dest.meetingPointPrices.map(mp => mp.point)
+    : (state.privateDest === 'ijen' ? [...MEETING_POINTS_BASE, 'Banyuwangi'] : MEETING_POINTS_BASE);
+
+  const validMp = meetingPoints.includes(state.meetingPoint) ? state.meetingPoint : meetingPoints[0];
+
+  const activeMpTiers = hasMpPricing
+    ? (dest.meetingPointPrices.find(mp => mp.point === validMp)?.tiers || [])
+    : [];
+
+  const sortedMpTiers = [...activeMpTiers].sort((a, b) => a.minPax - b.minPax);
+  const hasTiers = sortedMpTiers.length > 0;
+
+  const validPax = hasTiers && !sortedMpTiers.find(t => t.minPax === state.pax)
+    ? sortedMpTiers[0].minPax
+    : state.pax;
 
   const multiplier = DURATION_MULTIPLIER[state.privateDuration];
 
-  // Tiered pricing: total for group, then show per-pax
-  const tier = dest?.priceTiers?.length ? lookupTier(dest.priceTiers, state.pax) : null;
+  const activeTiers = hasTiers ? sortedMpTiers : (dest?.priceTiers || []);
+  const tier = activeTiers.length ? lookupTier(activeTiers, validPax) : null;
   const totalFromTier = tier && multiplier ? Math.round(tier.price * multiplier) : null;
-  const totalFromPerPax = dest?.pricePerPax && multiplier ? dest.pricePerPax * state.pax * multiplier : null;
+  const totalFromPerPax = !tier && dest?.pricePerPax && multiplier ? dest.pricePerPax * validPax * multiplier : null;
   const baseTotal = totalFromTier ?? totalFromPerPax;
-  const perPax = baseTotal && state.pax > 0 ? Math.round(baseTotal / state.pax) : null;
+  const perPax = baseTotal && validPax > 0 ? Math.round(baseTotal / validPax) : null;
 
   const handleDestChange = (newDestId) => {
     set('privateDest', newDestId);
     const newDest = privateDestinations.find(d => d.id === newDestId);
     if (newDest) set('privateDuration', newDest.durations[0]);
-    if (newDestId !== 'ijen' && state.meetingPoint === 'Banyuwangi') {
+    const newHasMp = newDest?.meetingPointPrices?.length > 0;
+    if (newHasMp) {
+      const firstMp = newDest.meetingPointPrices[0];
+      set('meetingPoint', firstMp.point);
+      const firstTier = [...(firstMp.tiers || [])].sort((a, b) => a.minPax - b.minPax)[0];
+      if (firstTier) set('pax', firstTier.minPax);
+    } else if (newDestId !== 'ijen' && state.meetingPoint === 'Banyuwangi') {
       set('meetingPoint', 'Kediri');
+    }
+  };
+
+  const handleMpChange = (newMp) => {
+    set('meetingPoint', newMp);
+    if (hasMpPricing) {
+      const mpData = dest.meetingPointPrices.find(mp => mp.point === newMp);
+      const tiers = [...(mpData?.tiers || [])].sort((a, b) => a.minPax - b.minPax);
+      if (tiers.length > 0) set('pax', tiers[0].minPax);
     }
   };
 
@@ -322,9 +353,19 @@ function PrivateFields({ state, set, privateDestinations }) {
         </div>
       </Field>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
+        {hasTiers ? (
+          <Field label="Jumlah tamu">
+            <select value={validPax} onChange={e => set('pax', Number(e.target.value))}>
+              {sortedMpTiers.map(t => (
+                <option key={t.minPax} value={t.minPax}>{t.minPax} orang</option>
+              ))}
+            </select>
+          </Field>
+        ) : (
+          <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
+        )}
         <Field label="Meeting point">
-          <select value={state.meetingPoint} onChange={e => set('meetingPoint', e.target.value)}>
+          <select value={validMp} onChange={e => handleMpChange(e.target.value)}>
             {meetingPoints.map(mp => <option key={mp} value={mp}>{mp}</option>)}
           </select>
         </Field>
@@ -337,7 +378,7 @@ function PrivateFields({ state, set, privateDestinations }) {
           total={baseTotal}
           discountedTotal={applyDiscount(baseTotal, state.appliedReferral)}
           referral={state.appliedReferral}
-          detail={perPax ? `≈ ${formatRupiah(perPax)}/pax · ${state.pax} orang · ${state.privateDuration}` : `${state.pax} orang · ${state.privateDuration}`}
+          detail={perPax ? `≈ ${formatRupiah(perPax)}/pax · ${validPax} orang · ${state.privateDuration}` : `${validPax} orang · ${state.privateDuration}`}
         />
       )}
       <Field label="Catatan / request">
