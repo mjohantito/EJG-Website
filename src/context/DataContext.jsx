@@ -166,39 +166,43 @@ export function DataProvider({ children }) {
   }, []);
 
   /* CMS setters — write to Supabase then update local state */
+  const upsertRow = async (table, row) => {
+    try {
+      const { error } = await supabase.from(table).upsert(row);
+      if (error) console.error(`${table} upsert error:`, error.message);
+    } catch (e) {
+      console.error(`${table} upsert threw:`, e.message);
+    }
+  };
+
   const setOpenTrips = async (items) => {
     setOpenTripsState(items);
     for (let i = 0; i < items.length; i++) {
-      const { error } = await supabase.from('open_trips').upsert({ ...tripToRow(items[i]), sort_order: i });
-      if (error) console.error('open_trips upsert error:', error.message, error);
+      await upsertRow('open_trips', { ...tripToRow(items[i]), sort_order: i });
     }
   };
   const setOpenTripAddons = async (items) => {
     setOpenTripAddonsState(items);
     for (let i = 0; i < items.length; i++) {
-      const { error } = await supabase.from('open_trip_addons').upsert({ ...addonToRow(items[i]), sort_order: i });
-      if (error) console.error('open_trip_addons upsert error:', error.message, error);
+      await upsertRow('open_trip_addons', { ...addonToRow(items[i]), sort_order: i });
     }
   };
   const setPrivateDestinations = async (items) => {
     setPrivateDestinationsState(items);
     for (let i = 0; i < items.length; i++) {
-      const { error } = await supabase.from('private_destinations').upsert({ ...privateToRow(items[i]), sort_order: i });
-      if (error) console.error('private_destinations upsert error:', error.message, error);
+      await upsertRow('private_destinations', { ...privateToRow(items[i]), sort_order: i });
     }
   };
   const setGlampings = async (items) => {
     setGlampingsState(items);
     for (let i = 0; i < items.length; i++) {
-      const { error } = await supabase.from('glampings').upsert({ ...glampingToRow(items[i]), sort_order: i });
-      if (error) console.error('glampings upsert error:', error.message, error);
+      await upsertRow('glampings', { ...glampingToRow(items[i]), sort_order: i });
     }
   };
   const setEvents = async (items) => {
     setEventsState(items);
     for (let i = 0; i < items.length; i++) {
-      const { error } = await supabase.from('events').upsert({ ...eventToRow(items[i]), sort_order: i });
-      if (error) console.error('events upsert error:', error.message, error);
+      await upsertRow('events', { ...eventToRow(items[i]), sort_order: i });
     }
   };
   const setWhatsapp = async (val) => {
