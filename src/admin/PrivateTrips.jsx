@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, MeetingPointPriceEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK = {
   id: '', name: '', region: '', sub: '', emoji: '', cover: '', palette: 'ink',
   description: '', highlights: [], durations: ['2D1N', '3D2N'],
-  startingPrice: '', pricePerPax: null, gallery: [], priceTiers: [],
+  startingPrice: '', pricePerPax: null, gallery: [], priceTiers: [], meetingPointPrices: [],
 };
 
 export default function AdminPrivateTrips() {
@@ -126,6 +126,9 @@ export default function AdminPrivateTrips() {
           </div>
           <AField label="Harga per jumlah tamu (price tiers)" hint="Total harga untuk durasi dasar (2D1N). Durasi lain dikali multiplier otomatis.">
             <PriceTierEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} unit="trip" />
+          </AField>
+          <AField label="Harga per meeting point" hint="Jika diisi, setiap meeting point punya harga tier sendiri. Override price tiers global di atas.">
+            <MeetingPointPriceEditor items={draft.meetingPointPrices || []} onChange={v => set('meetingPointPrices', v)} />
           </AField>
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
