@@ -61,6 +61,10 @@ CREATE TABLE IF NOT EXISTS referrals (
   description   TEXT DEFAULT ''
 );
 
+-- ── Add meeting_point_prices column to private_destinations ──
+ALTER TABLE private_destinations
+  ADD COLUMN IF NOT EXISTS meeting_point_prices JSONB DEFAULT '[]';
+
 -- ── RLS for referrals ────────────────────────────────────────
 ALTER TABLE referrals ENABLE ROW LEVEL SECURITY;
 
