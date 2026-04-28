@@ -42,6 +42,7 @@ function rowToPrivate(r) {
     highlights: r.highlights || [], durations: r.durations || [],
     startingPrice: r.starting_price, pricePerPax: r.price_per_pax,
     gallery: r.gallery || [], priceTiers: r.price_tiers || [],
+    meetingPointPrices: r.meeting_point_prices || [],
   };
 }
 function rowToGlamping(r) {
@@ -96,6 +97,7 @@ export function privateToRow(p) {
     highlights: p.highlights || [], durations: p.durations || [],
     starting_price: p.startingPrice, price_per_pax: p.pricePerPax,
     gallery: p.gallery || [], price_tiers: p.priceTiers || [],
+    meeting_point_prices: p.meetingPointPrices || [],
   };
 }
 export function glampingToRow(g) {
