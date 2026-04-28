@@ -29,6 +29,14 @@ CREATE POLICY "anon all private_destinations" ON private_destinations FOR ALL US
 CREATE POLICY "anon all glampings"            ON glampings            FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "anon all events"               ON events               FOR ALL USING (true) WITH CHECK (true);
 
+-- ── Grant privileges to anon role (needed for DELETE) ────────
+GRANT SELECT, INSERT, UPDATE, DELETE ON open_trips           TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON open_trip_addons     TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON private_destinations TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON glampings            TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON events               TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON referrals            TO anon;
+
 -- ── not_included column for glampings ───────────────────────
 ALTER TABLE glampings ADD COLUMN IF NOT EXISTS not_included JSONB DEFAULT '[]';
 

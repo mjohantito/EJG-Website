@@ -238,10 +238,16 @@ export function DataProvider({ children }) {
   const deleteRow = async (table, id) => {
     try {
       const { error } = await supabase.from(table).delete().eq('id', id);
-      if (error) { console.error(`${table} delete error:`, error.message); return false; }
+      if (error) {
+        console.error(`${table} delete error:`, error.message);
+        alert(`Gagal hapus: ${error.message}`);
+        return false;
+      }
       return true;
     } catch (e) {
-      console.error(`${table} delete threw:`, e.message); return false;
+      console.error(`${table} delete threw:`, e.message);
+      alert(`Gagal hapus: ${e.message}`);
+      return false;
     }
   };
 
