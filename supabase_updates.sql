@@ -3,6 +3,35 @@
 -- Run this in: Supabase Dashboard → SQL Editor → Run
 -- ============================================================
 
+-- ── sort_order columns (needed for CMS ordering feature) ────
+ALTER TABLE open_trips           ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE open_trip_addons     ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE private_destinations ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE glampings            ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE events               ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+
+-- ── RLS policies — allow anon full access (CMS auth is app-level) ──
+ALTER TABLE open_trips           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE open_trip_addons     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private_destinations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE glampings            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE events               ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "anon all open_trips"           ON open_trips;
+DROP POLICY IF EXISTS "anon all open_trip_addons"     ON open_trip_addons;
+DROP POLICY IF EXISTS "anon all private_destinations" ON private_destinations;
+DROP POLICY IF EXISTS "anon all glampings"            ON glampings;
+DROP POLICY IF EXISTS "anon all events"               ON events;
+
+CREATE POLICY "anon all open_trips"           ON open_trips           FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon all open_trip_addons"     ON open_trip_addons     FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon all private_destinations" ON private_destinations FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon all glampings"            ON glampings            FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon all events"               ON events               FOR ALL USING (true) WITH CHECK (true);
+
+-- ── not_included column for glampings ───────────────────────
+ALTER TABLE glampings ADD COLUMN IF NOT EXISTS not_included JSONB DEFAULT '[]';
+
 -- ── Add price_tiers column to glampings ─────────────────────
 ALTER TABLE glampings
   ADD COLUMN IF NOT EXISTS price_tiers JSONB DEFAULT '[]';
