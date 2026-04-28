@@ -334,6 +334,59 @@ export function PriceTierEditor({ tiers = [], onChange, unit = 'malam' }) {
   );
 }
 
+/* ── Meeting Point Price Editor: [{ point, tiers }] ── */
+export function MeetingPointPriceEditor({ items = [], onChange }) {
+  const add    = () => onChange([...items, { point: '', tiers: [] }]);
+  const remove = (i) => onChange(items.filter((_, j) => j !== i));
+  const update = (i, key, val) => {
+    const next = [...items];
+    next[i] = { ...next[i], [key]: val };
+    onChange(next);
+  };
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  return (
+    <div>
+      {items.length === 0 && (
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8 }}>
+          Belum ada meeting point. Jika kosong, harga pakai "Price Tiers" global di atas.
+        </p>
+      )}
+      {items.map((mp, i) => (
+        <div key={i} style={{ border: '1.5px solid #e5e7eb', borderRadius: 10, padding: '14px', marginBottom: 10 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ ...S.btn, padding: '2px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === 0 ? 0.3 : 1, lineHeight: '14px' }}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1}
+                style={{ ...S.btn, padding: '2px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === items.length - 1 ? 0.3 : 1, lineHeight: '14px' }}>↓</button>
+            </div>
+            <input
+              style={{ ...S.input, flex: 1, fontWeight: 600 }}
+              value={mp.point}
+              onChange={e => update(i, 'point', e.target.value)}
+              placeholder="Nama meeting point (cth: Kediri)"
+            />
+            <button type="button" onClick={() => remove(i)}
+              style={{ ...S.btn, background: '#fee2e2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}>×</button>
+          </div>
+          <div style={{ paddingLeft: 32 }}>
+            <label style={{ ...S.label, fontSize: 11 }}>Harga per jumlah tamu</label>
+            <PriceTierEditor tiers={mp.tiers || []} onChange={v => update(i, 'tiers', v)} unit="trip" />
+          </div>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', fontSize: 12 }}>+ Tambah meeting point</button>
+    </div>
+  );
+}
+
 export function ReorderButtons({ index, total, onMove }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
