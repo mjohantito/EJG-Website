@@ -8,6 +8,24 @@ function fmt(n) {
   return `Rp ${(n / 1_000).toFixed(0)}rb`;
 }
 
+function getCheapestPerPax(dest) {
+  if (dest.meetingPointPrices?.length) {
+    let cheapest = null;
+    for (const mp of dest.meetingPointPrices) {
+      if (!mp.tiers?.length) continue;
+      const highest = [...mp.tiers].sort((a, b) => b.minPax - a.minPax)[0];
+      const perPax = Math.round(highest.price / highest.minPax);
+      if (cheapest === null || perPax < cheapest) cheapest = perPax;
+    }
+    if (cheapest !== null) return cheapest;
+  }
+  if (dest.priceTiers?.length) {
+    const highest = [...dest.priceTiers].sort((a, b) => b.minPax - a.minPax)[0];
+    return Math.round(highest.price / highest.minPax);
+  }
+  return dest.pricePerPax || 0;
+}
+
 export default function PrivateTripDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -36,7 +54,7 @@ export default function PrivateTripDetailScreen() {
       <div className={`detail-hero ph-${dest.palette || 'ink'}`} style={dest.cover ? { backgroundImage: `url(${dest.cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
         {!dest.cover && <span className="emoji">{dest.emoji}</span>}
         {dest.startingPrice !== 'Sesuai itinerary' && (
-          <div className="stamp-pill">mulai {fmt(dest.priceTiers?.length ? lookupTier(dest.priceTiers, 1)?.price : (dest.pricePerPax || 0))} / pax</div>
+          <div className="stamp-pill">mulai {fmt(getCheapestPerPax(dest))} / pax</div>
         )}
         {dest.startingPrice === 'Sesuai itinerary' && (
           <div className="stamp-pill">Custom quote</div>
