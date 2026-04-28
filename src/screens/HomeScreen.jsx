@@ -54,19 +54,22 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      <div className="sh">
-        <div>
-          <h2>Open trip yang<br />lagi buka<span className="q-stamp">?</span></h2>
-          <div className="sh-sub">3 dari 5 keberangkatan bulan ini.</div>
-        </div>
-        <button className="more" onClick={() => navigate('/trips')}>Semua →</button>
-      </div>
+      {openTrips.length > 0 && (
+        <>
+          <div className="sh">
+            <div>
+              <h2>Open trip yang<br />lagi buka<span className="q-stamp">?</span></h2>
+            </div>
+            <button className="more" onClick={() => navigate('/trips')}>Semua →</button>
+          </div>
 
-      <div className="opentrip-list">
-        {highlightTrips.map(t => (
-          <OpenTripCard key={t.id} trip={t} onClick={() => navigate(`/trips/${t.id}`)} />
-        ))}
-      </div>
+          <div className="opentrip-list">
+            {highlightTrips.map(t => (
+              <OpenTripCard key={t.id} trip={t} onClick={() => navigate(`/trips/${t.id}`)} />
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="teaser">
         <span className="ey">PRIVATE TRIP</span>
@@ -81,7 +84,7 @@ export default function HomeScreen() {
       <div className="sh">
         <div>
           <h2>Glamping<br /><span className="italic" style={{ fontStyle: 'italic', fontWeight: 500 }}>pilihan</span></h2>
-          <div className="sh-sub">3 lokasi di Jawa Timur.</div>
+          <div className="sh-sub">{glampings.length} lokasi di Jawa Timur.</div>
         </div>
         <button className="more" onClick={() => navigate('/glamping')}>Semua →</button>
       </div>

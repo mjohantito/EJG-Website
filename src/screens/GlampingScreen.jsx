@@ -15,7 +15,7 @@ export default function GlampingScreen() {
           Outdoor yang<br />
           beneran <span className="italic" style={{ fontStyle: 'italic', fontWeight: 500 }}>nyaman</span><span className="q-stamp">.</span>
         </h1>
-        <p className="lead">3 lokasi di Jawa Timur. Bisa di-add ke private trip kamu juga.</p>
+        <p className="lead">{glampings.length} lokasi di Jawa Timur. Bisa di-add ke private trip kamu juga.</p>
       </div>
 
       <div className="glamp-list">
