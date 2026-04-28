@@ -151,12 +151,12 @@ export function DataProvider({ children }) {
         supabase.from('referrals').select('*').order('id'),
       ]);
 
-      if (trips.data?.length)    setOpenTripsState(trips.data.map(rowToTrip));
-      if (addons.data?.length)   setOpenTripAddonsState(addons.data.map(rowToAddon));
-      if (priv.data?.length)     setPrivateDestinationsState(priv.data.map(rowToPrivate));
-      if (glamp.data?.length)    setGlampingsState(glamp.data.map(rowToGlamping));
-      if (evs.data?.length)      setEventsState(evs.data.map(rowToEvent));
-      if (refs.data?.length)     setReferralsState(refs.data.map(rowToReferral));
+      if (trips.data)    setOpenTripsState(trips.data.map(rowToTrip));
+      if (addons.data)   setOpenTripAddonsState(addons.data.map(rowToAddon));
+      if (priv.data)     setPrivateDestinationsState(priv.data.map(rowToPrivate));
+      if (glamp.data)    setGlampingsState(glamp.data.map(rowToGlamping));
+      if (evs.data)      setEventsState(evs.data.map(rowToEvent));
+      if (refs.data)     setReferralsState(refs.data.map(rowToReferral));
       const waSetting = settings.data?.find(s => s.key === 'whatsapp');
       if (waSetting)             setWhatsappState(waSetting.value);
 
