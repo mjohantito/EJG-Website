@@ -38,6 +38,14 @@ const BUDGET_OPTIONS = [
 
 const DURATION_MULTIPLIER = { '2D1N': 1, '3D2N': 1.5, '4D3N': 2 };
 
+function parsePriceNum(priceStr) {
+  if (!priceStr) return 0;
+  const s = priceStr.toLowerCase().trim().replace(/rp\s*/i, '').replace(/\s/g, '');
+  if (s.endsWith('jt') || s.endsWith('juta')) return parseFloat(s) * 1_000_000;
+  if (s.endsWith('k') || s.endsWith('rb')) return parseFloat(s) * 1_000;
+  return parseFloat(s) || 0;
+}
+
 function formatRupiah(amount) {
   if (amount >= 1_000_000) {
     const val = (amount / 1_000_000).toFixed(2).replace('.', ',').replace(/,?0+$/, '');
@@ -210,7 +218,8 @@ function OpenTripFields({ state, set, openTrips, openTripAddons }) {
     const a = openTripAddons.find(x => x.id === id);
     return sum + (a ? a.price : 0);
   }, 0);
-  const baseTotal = selectedTrip?.priceNum ? selectedTrip.priceNum * state.pax : 0;
+  const effectivePriceNum = selectedTrip?.priceNum || parsePriceNum(selectedTrip?.price);
+  const baseTotal = effectivePriceNum * state.pax;
   const estimate = baseTotal + addonsTotal || null;
 
   return (
