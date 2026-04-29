@@ -297,7 +297,7 @@ function PrivateFields({ state, set, privateDestinations }) {
     ? sortedMpTiers[0].minPax
     : state.pax;
 
-  const multiplier = DURATION_MULTIPLIER[state.privateDuration];
+  const multiplier = DURATION_MULTIPLIER[state.privateDuration] ?? 1;
 
   const activeTiers = hasTiers ? sortedMpTiers : (dest?.priceTiers || []);
   const tier = activeTiers.length ? lookupTier(activeTiers, validPax) : null;
