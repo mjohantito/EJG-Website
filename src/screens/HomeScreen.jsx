@@ -12,45 +12,47 @@ export default function HomeScreen() {
 
   return (
     <>
-      <div className="hero hero-stamp">
-        <div className="tag-row">
-          <span className="tag">Open trip</span>
-          <span className="tag out">Private · Glamping · Corporate</span>
+      <div className="hero-desktop-wrapper">
+        <div className="hero hero-stamp">
+          <div className="tag-row">
+            <span className="tag">Open trip</span>
+            <span className="tag out">Private · Glamping · Corporate</span>
+          </div>
+          <h1>
+            Eh<span className="q-stamp">?</span><br />
+            <span className="italic">beneran </span>jadi ga<span className="q-stamp">?</span>
+          </h1>
+          <p className="lead">
+            Trip & glamping untuk anak muda yang rencananya banyak, waktunya dikit.
+            Kita urusin logistik, kamu fokus seru-seruan.
+          </p>
+          <div className="hero-cta">
+            <button className="btn btn-pri" onClick={() => navigate('/trips')}>Liat trip →</button>
+            <button className="btn btn-sec" onClick={() => navigate('/glamping')}>Glamping</button>
+          </div>
         </div>
-        <h1>
-          Eh<span className="q-stamp">?</span><br />
-          <span className="italic">beneran </span>jadi ga<span className="q-stamp">?</span>
-        </h1>
-        <p className="lead">
-          Trip & glamping untuk anak muda yang rencananya banyak, waktunya dikit.
-          Kita urusin logistik, kamu fokus seru-seruan.
-        </p>
-        <div className="hero-cta">
-          <button className="btn btn-pri" onClick={() => navigate('/trips')}>Liat trip →</button>
-          <button className="btn btn-sec" onClick={() => navigate('/glamping')}>Glamping</button>
-        </div>
-      </div>
 
-      <div className="quicklinks">
-        <div className="ql" onClick={() => navigate('/trips')}>
-          <Icon name="mountain" className="ic ic-lg" />
-          <span className="label">Open trip</span>
-          <span className="sub">Join sama orang seru-seruan, budget ramah.</span>
-        </div>
-        <div className="ql ink" onClick={() => navigate('/trips', { state: { tab: 'private' } })}>
-          <Icon name="sparkle" className="ic ic-lg" />
-          <span className="label">Private trip</span>
-          <span className="sub">Rancang sendiri, grup sendiri.</span>
-        </div>
-        <div className="ql sun" onClick={() => navigate('/glamping')}>
-          <Icon name="tent" className="ic ic-lg" />
-          <span className="label">Glamping</span>
-          <span className="sub">Alam beneran, kasur beneran.</span>
-        </div>
-        <div className="ql" onClick={() => navigate('/corporate')}>
-          <Icon name="group" className="ic ic-lg" />
-          <span className="label">Corporate</span>
-          <span className="sub">Outing kantor, gathering, offsite.</span>
+        <div className="quicklinks">
+          <div className="ql" onClick={() => navigate('/trips')}>
+            <Icon name="mountain" className="ic ic-lg" />
+            <span className="label">Open trip</span>
+            <span className="sub">Join sama orang seru-seruan, budget ramah.</span>
+          </div>
+          <div className="ql ink" onClick={() => navigate('/trips', { state: { tab: 'private' } })}>
+            <Icon name="sparkle" className="ic ic-lg" />
+            <span className="label">Private trip</span>
+            <span className="sub">Rancang sendiri, grup sendiri.</span>
+          </div>
+          <div className="ql sun" onClick={() => navigate('/glamping')}>
+            <Icon name="tent" className="ic ic-lg" />
+            <span className="label">Glamping</span>
+            <span className="sub">Alam beneran, kasur beneran.</span>
+          </div>
+          <div className="ql" onClick={() => navigate('/corporate')}>
+            <Icon name="group" className="ic ic-lg" />
+            <span className="label">Corporate</span>
+            <span className="sub">Outing kantor, gathering, offsite.</span>
+          </div>
         </div>
       </div>
 
