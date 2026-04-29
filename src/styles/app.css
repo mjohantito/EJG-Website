@@ -4,7 +4,7 @@
 
 html, body {
   min-height: 100vh;
-  background: #1a1a17;
+  background: var(--ejg-kertas);
   font-family: var(--font-body);
   color: var(--fg-2);
   -webkit-font-smoothing: antialiased;
@@ -683,7 +683,7 @@ html, body {
    ============================================================ */
 @media (min-width: 1024px) {
   /* App container */
-  .app { max-width: 1200px; }
+  .app { max-width: 1440px; }
 
   /* TopBar */
   .topbar { padding: 18px 48px; }
@@ -736,5 +736,60 @@ html, body {
   .site-foot { padding: 56px 64px 60px; }
 
   /* FAB */
-  .wa-fab { right: max(40px, calc((100vw - 1200px) / 2 + 40px)); }
+  .wa-fab { right: max(40px, calc((100vw - 1440px) / 2 + 40px)); }
+}
+
+/* ============================================================
+   RESPONSIVE — Wide desktop ≥1280px
+   ============================================================ */
+@media (min-width: 1280px) {
+  /* Hero 2-column layout */
+  .hero-desktop-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    align-items: center;
+    padding: 0 64px;
+    gap: 52px;
+  }
+  .hero-desktop-wrapper .hero {
+    padding: 40px 0 48px;
+  }
+  .hero-desktop-wrapper .quicklinks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+    gap: 12px;
+  }
+
+  /* Wider padding for all sections */
+  .topbar { padding: 20px 64px; }
+  .desktop-nav { padding: 0 32px; }
+  .hero { padding: 40px 64px 48px; }
+  .hero-stamp h1 { font-size: 80px; }
+  .sh { padding: 40px 64px 18px; }
+  .page-header { padding: 28px 64px 32px; }
+  .page-header h1 { font-size: 60px; }
+  .opentrip-list { padding: 0 64px 28px; gap: 20px; }
+  .glamp-list    { padding: 0 64px 28px; gap: 20px; }
+  .month-sep { padding: 14px 64px 10px; }
+  .segmented { margin: 0 64px 20px; }
+  .private-cta { margin: 10px 64px; }
+  .teaser { margin: 6px 64px 8px; }
+  .value-card { margin: 0 64px 10px; }
+  .stat-row { padding: 8px 64px 32px; }
+  .dest-grid { padding: 0 64px 24px; }
+  .about-hero { padding: 28px 64px 28px; }
+  .about-hero h1 { font-size: 60px; }
+  .about-body { padding: 0 64px 24px; }
+  .form { padding: 4px 64px 32px; max-width: 760px; }
+  .cta-bar { padding: 18px 64px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .site-foot { padding: 56px 64px 60px; }
+}
+
+/* ============================================================
+   RESPONSIVE — Ultra-wide ≥1600px
+   ============================================================ */
+@media (min-width: 1600px) {
+  .app { max-width: 1600px; }
+  .wa-fab { right: max(48px, calc((100vw - 1600px) / 2 + 48px)); }
 }
