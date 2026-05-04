@@ -65,6 +65,17 @@ CREATE TABLE IF NOT EXISTS referrals (
 ALTER TABLE private_destinations
   ADD COLUMN IF NOT EXISTS meeting_point_prices JSONB DEFAULT '[]';
 
+-- ── Per-trip add-ons for open_trips ─────────────────────────
+ALTER TABLE open_trips ADD COLUMN IF NOT EXISTS addons JSONB DEFAULT '[]';
+
+-- ── Weekend / weekday pricing for glampings ──────────────────
+ALTER TABLE glampings ADD COLUMN IF NOT EXISTS price_weekday INTEGER DEFAULT 0;
+ALTER TABLE glampings ADD COLUMN IF NOT EXISTS price_weekend INTEGER DEFAULT 0;
+
+-- ── Status and notes columns for inquiries ───────────────────
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'new';
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS notes  TEXT DEFAULT '';
+
 -- ── RLS for referrals ────────────────────────────────────────
 ALTER TABLE referrals ENABLE ROW LEVEL SECURITY;
 
