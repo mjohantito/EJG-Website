@@ -30,6 +30,14 @@ function rowToTrip(r) {
     tag: r.tag, palette: r.palette, emoji: r.emoji, cover: r.cover,
     description: r.description,
     highlights: r.highlights || [], includes: r.includes || [], gallery: r.gallery || [],
+    addons: r.addons || [],
+  };
+}
+function rowToInquiry(r) {
+  return {
+    id: r.id, kind: r.kind, name: r.name, email: r.email, wa: r.wa,
+    data: r.data || {}, status: r.status || 'new', notes: r.notes || '',
+    createdAt: r.created_at,
   };
 }
 function rowToAddon(r) {
@@ -50,6 +58,7 @@ function rowToGlamping(r) {
     id: r.id, name: r.name, location: r.location, palette: r.palette,
     emoji: r.emoji, cover: r.cover, tag: r.tag, price: r.price,
     pricePerNight: r.price_per_night, unit: r.unit, cap: r.cap,
+    priceWeekday: r.price_weekday || 0, priceWeekend: r.price_weekend || 0,
     availability: r.availability, closedDays: r.closed_days || [],
     tagline: r.tagline, description: r.description,
     amenities: r.amenities || [], notIncluded: r.not_included || [],
@@ -84,6 +93,13 @@ export function tripToRow(t) {
     tag: t.tag || null, palette: t.palette, emoji: t.emoji, cover: t.cover || null,
     description: t.description,
     highlights: t.highlights || [], includes: t.includes || [], gallery: t.gallery || [],
+    addons: t.addons || [],
+  };
+}
+export function inquiryToRow(i) {
+  return {
+    id: i.id, kind: i.kind, name: i.name, email: i.email, wa: i.wa,
+    data: i.data || {}, status: i.status || 'new', notes: i.notes || '',
   };
 }
 export function addonToRow(a) {
@@ -105,6 +121,7 @@ export function glampingToRow(g) {
     id: g.id, name: g.name, location: g.location, palette: g.palette,
     emoji: g.emoji, cover: g.cover || null, tag: g.tag || null,
     price: g.price, price_per_night: g.pricePerNight, unit: g.unit,
+    price_weekday: g.priceWeekday || 0, price_weekend: g.priceWeekend || 0,
     cap: g.cap, availability: g.availability,
     closed_days: g.closedDays || [],
     tagline: g.tagline, description: g.description,
@@ -139,11 +156,12 @@ export function DataProvider({ children }) {
   const [events, setEventsState]                           = useState(D_EVENTS);
   const [whatsapp, setWhatsappState]                       = useState(D_WHATSAPP);
   const [referrals, setReferralsState]                     = useState([]);
+  const [inquiries, setInquiriesState]                     = useState([]);
   const [loading, setLoading]                              = useState(true);
 
   useEffect(() => {
     async function load() {
-      const [trips, addons, priv, glamp, evs, settings, refs] = await Promise.all([
+      const [trips, addons, priv, glamp, evs, settings, refs, inqs] = await Promise.all([
         supabase.from('open_trips').select('*').order('sort_order'),
         supabase.from('open_trip_addons').select('*').order('sort_order'),
         supabase.from('private_destinations').select('*').order('sort_order'),
@@ -151,6 +169,7 @@ export function DataProvider({ children }) {
         supabase.from('events').select('*').order('sort_order'),
         supabase.from('settings').select('*'),
         supabase.from('referrals').select('*').order('id'),
+        supabase.from('inquiries').select('*').order('created_at', { ascending: false }),
       ]);
 
       if (trips.data)    setOpenTripsState(trips.data.map(rowToTrip));
@@ -159,6 +178,7 @@ export function DataProvider({ children }) {
       if (glamp.data)    setGlampingsState(glamp.data.map(rowToGlamping));
       if (evs.data)      setEventsState(evs.data.map(rowToEvent));
       if (refs.data)     setReferralsState(refs.data.map(rowToReferral));
+      if (inqs.data)     setInquiriesState(inqs.data.map(rowToInquiry));
       const waSetting = settings.data?.find(s => s.key === 'whatsapp');
       if (waSetting)             setWhatsappState(waSetting.value);
 
@@ -237,6 +257,13 @@ export function DataProvider({ children }) {
     setReferralsState(p => p.map(r => r.id === id ? { ...r, usedCount: currentCount + 1 } : r));
   };
 
+  const setInquiries = async (items) => {
+    setInquiriesState(items);
+    for (const item of items) {
+      await upsertRow('inquiries', inquiryToRow(item));
+    }
+  };
+
   const deleteRow = async (table, id) => {
     try {
       const { error } = await supabase.from(table).delete().eq('id', id);
@@ -253,6 +280,7 @@ export function DataProvider({ children }) {
     }
   };
 
+  const deleteInquiry          = async (id) => { if (await deleteRow('inquiries', id))              setInquiriesState(p => p.filter(x => x.id !== id)); };
   const deleteOpenTrip         = async (id) => { if (await deleteRow('open_trips', id))           setOpenTripsState(p => p.filter(x => x.id !== id)); };
   const deleteOpenTripAddon    = async (id) => { if (await deleteRow('open_trip_addons', id))      setOpenTripAddonsState(p => p.filter(x => x.id !== id)); };
   const deletePrivateDestination = async (id) => { if (await deleteRow('private_destinations', id)) setPrivateDestinationsState(p => p.filter(x => x.id !== id)); };
@@ -284,6 +312,7 @@ export function DataProvider({ children }) {
   return (
     <DataContext.Provider value={{
       loading,
+      inquiries, setInquiries, deleteInquiry,
       openTrips, setOpenTrips, deleteOpenTrip,
       openTripAddons, setOpenTripAddons, deleteOpenTripAddon,
       privateDestinations, setPrivateDestinations, deletePrivateDestination,
