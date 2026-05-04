@@ -472,9 +472,8 @@ function GlampingFields({ state, set, glampings }) {
   })() : false;
 
   const activeTier = hasTiers ? lookupTier(glamp.priceTiers, state.pax) : null;
-  const pricePerNight = activeTier ? activeTier.price
-    : isWeekend && glamp?.priceWeekend ? glamp.priceWeekend
-    : !isWeekend && glamp?.priceWeekday ? glamp.priceWeekday
+  const pricePerNight = activeTier
+    ? (isWeekend ? (activeTier.priceWeekend ?? activeTier.price ?? 0) : (activeTier.priceWeekday ?? activeTier.price ?? 0))
     : (glamp?.pricePerNight ?? 0);
 
   const baseTotal = pricePerNight * state.nights;
