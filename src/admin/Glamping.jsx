@@ -6,7 +6,7 @@ const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
 
 const BLANK = {
   id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
-  price: '', pricePerNight: 0, priceWeekday: 0, priceWeekend: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
+  price: '', pricePerNight: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
   closedDays: [], tagline: '', description: '', amenities: [], notIncluded: [], gallery: [], addons: [],
   priceTiers: [],
 };
@@ -171,11 +171,7 @@ export default function AdminGlamping() {
           <AField label="Lokasi"><AInput value={draft.location} onChange={v => set('location', v)} placeholder="Tulungagung, Jawa Timur" /></AField>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="Harga tampil" half><AInput value={draft.price} onChange={v => set('price', v)} placeholder="650K" /></AField>
-            <AField label="Harga angka (default)" half><AInput value={draft.pricePerNight} onChange={v => set('pricePerNight', v)} type="number" /></AField>
-          </div>
-          <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
-            <AField label="Harga weekday (Rp)" half hint="Senin–Jumat. Kosongkan (0) jika sama."><AInput value={draft.priceWeekday} onChange={v => set('priceWeekday', v)} type="number" /></AField>
-            <AField label="Harga weekend (Rp)" half hint="Sabtu–Minggu. Kosongkan (0) jika sama."><AInput value={draft.priceWeekend} onChange={v => set('priceWeekend', v)} type="number" /></AField>
+            <AField label="Harga angka (fallback, Rp)" half hint="Dipakai jika tidak ada price tier."><AInput value={draft.pricePerNight} onChange={v => set('pricePerNight', v)} type="number" /></AField>
           </div>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="Kapasitas" half><AInput value={draft.cap} onChange={v => set('cap', v)} placeholder="2–4 org / tent" /></AField>
@@ -197,8 +193,8 @@ export default function AdminGlamping() {
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
           </AField>
-          <AField label="Harga per jumlah tamu (price tiers)" hint="Jika diisi, menggantikan 'Harga angka' di atas untuk kalkulasi estimasi.">
-            <PriceTierEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} unit="malam" />
+          <AField label="Harga per jumlah tamu (price tiers)" hint="Tiap tier punya harga weekday & weekend. Sistem otomatis pilih berdasarkan tanggal check-in.">
+            <PriceTierEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} unit="malam" weekend={true} />
           </AField>
           <AField label="Add-on"><AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} /></AField>
         </Panel>
