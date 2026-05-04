@@ -210,12 +210,13 @@ function AddonCheckboxes({ addons, selected, onChange }) {
   );
 }
 
-function OpenTripFields({ state, set, openTrips, openTripAddons }) {
+function OpenTripFields({ state, set, openTrips }) {
   const selectedTrip = openTrips.find(t => t.id === state.tripId);
   const avail = selectedTrip ? selectedTrip.slots : null;
   const low = avail !== null && avail <= 3;
+  const tripAddons = selectedTrip?.addons || [];
   const addonsTotal = (state.addons || []).reduce((sum, id) => {
-    const a = openTripAddons.find(x => x.id === id);
+    const a = tripAddons.find(x => x.id === id);
     return sum + (a ? a.price : 0);
   }, 0);
   const effectivePriceNum = selectedTrip?.priceNum || parsePriceNum(selectedTrip?.price);
@@ -234,7 +235,7 @@ function OpenTripFields({ state, set, openTrips, openTripAddons }) {
         <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
       </Field>
       <Field label="Pilih trip">
-        <select value={state.tripId} onChange={e => set('tripId', e.target.value)}>
+        <select value={state.tripId} onChange={e => { set('tripId', e.target.value); set('addons', []); }}>
           {openTrips.map(t => (
             <option key={t.id} value={t.id}>{t.dest} · {t.start} – {t.end}</option>
           ))}
@@ -255,9 +256,11 @@ function OpenTripFields({ state, set, openTrips, openTripAddons }) {
         )}
       </Field>
       <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
-      <Field label="Add-on (opsional)">
-        <AddonCheckboxes addons={openTripAddons} selected={state.addons || []} onChange={v => set('addons', v)} />
-      </Field>
+      {tripAddons.length > 0 && (
+        <Field label="Add-on (opsional)">
+          <AddonCheckboxes addons={tripAddons} selected={state.addons || []} onChange={v => set('addons', v)} />
+        </Field>
+      )}
       {estimate > 0 && (
         <EstimateBox
           total={estimate}
@@ -462,9 +465,18 @@ function GlampingFields({ state, set, glampings }) {
     return sum + (a ? a.price : 0);
   }, 0) : 0;
 
-  // Price from selected tier or fallback to pricePerNight
+  const isWeekend = state.date ? (() => {
+    const [y, m, d] = state.date.split('-').map(Number);
+    const day = new Date(y, m - 1, d).getDay();
+    return day === 0 || day === 6;
+  })() : false;
+
   const activeTier = hasTiers ? lookupTier(glamp.priceTiers, state.pax) : null;
-  const pricePerNight = activeTier ? activeTier.price : (glamp?.pricePerNight ?? 0);
+  const pricePerNight = activeTier ? activeTier.price
+    : isWeekend && glamp?.priceWeekend ? glamp.priceWeekend
+    : !isWeekend && glamp?.priceWeekday ? glamp.priceWeekday
+    : (glamp?.pricePerNight ?? 0);
+
   const baseTotal = pricePerNight * state.nights;
   const estimate = baseTotal > 0 ? baseTotal + addonsTotal : null;
   const perPax = estimate && state.pax > 0 ? Math.round(estimate / state.pax) : null;
@@ -551,8 +563,8 @@ function GlampingFields({ state, set, glampings }) {
           discountedTotal={applyDiscount(estimate, state.appliedReferral)}
           referral={state.appliedReferral}
           detail={perPax
-            ? `≈ ${formatRupiah(perPax)}/pax · ${state.nights} malam${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`
-            : `${state.nights} malam${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`
+            ? `≈ ${formatRupiah(perPax)}/pax · ${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`
+            : `${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`
           }
         />
       )}
@@ -568,7 +580,7 @@ function GlampingFields({ state, set, glampings }) {
 export default function InquiryScreen({ onSubmit }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { openTrips, openTripAddons, privateDestinations, glampings, validateReferral, useReferral } = useData();
+  const { openTrips, privateDestinations, glampings, validateReferral, useReferral } = useData();
   const ctx = location.state || {};
 
   const [kind, setKind] = useState(
@@ -659,7 +671,7 @@ export default function InquiryScreen({ onSubmit }) {
       </div>
 
       <div className="form">
-        {kind === 'open'     && <OpenTripFields state={form} set={set} openTrips={openTrips} openTripAddons={openTripAddons} />}
+        {kind === 'open'     && <OpenTripFields state={form} set={set} openTrips={openTrips} />}
         {kind === 'private'  && <PrivateFields state={form} set={set} privateDestinations={privateDestinations} />}
         {kind === 'glamping' && <GlampingFields state={form} set={set} glampings={glampings} />}
 
