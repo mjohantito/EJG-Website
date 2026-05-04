@@ -2,11 +2,63 @@ import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
+const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
+
 const BLANK = {
   id: '', dest: '', region: '', month: '', day: '', start: '', end: '', duration: '2D1N',
   price: '', priceNum: 0, slots: 10, totalSlots: 12, tag: '', palette: 'ink', emoji: '',
-  cover: '', description: '', highlights: [], includes: [], gallery: [],
+  cover: '', description: '', highlights: [], includes: [], gallery: [], addons: [],
 };
+
+function AddonEditor({ addons, onChange }) {
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= addons.length) return;
+    const next = [...addons];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  const update = (i, key, val) => {
+    const next = [...addons];
+    next[i] = { ...next[i], [key]: key === 'price' ? Number(val) : val };
+    onChange(next);
+  };
+  const remove = (i) => onChange(addons.filter((_, j) => j !== i));
+  const add = () => onChange([...addons, { ...BLANK_ADDON, id: `addon-${Date.now()}` }]);
+
+  return (
+    <div>
+      {addons.map((a, i) => (
+        <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Add-on #{i + 1}</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ ...S.btn, padding: '3px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === addons.length - 1}
+                style={{ ...S.btn, padding: '3px 7px', fontSize: 10, background: '#f3f4f6', color: '#6b7280', opacity: i === addons.length - 1 ? 0.3 : 1 }}>↓</button>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '3%', flexWrap: 'wrap' }}>
+            <div style={{ width: '48%' }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Label</label>
+              <input style={{ ...S.input, fontSize: 13 }} value={a.label} onChange={e => update(i, 'label', e.target.value)} placeholder="Kaos trip" />
+            </div>
+            <div style={{ width: '48%' }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Harga (Rp)</label>
+              <input style={{ ...S.input, fontSize: 13 }} type="number" value={a.price} onChange={e => update(i, 'price', e.target.value)} />
+            </div>
+          </div>
+          <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+            <input style={{ ...S.input, fontSize: 13, flex: 1 }} value={a.desc} onChange={e => update(i, 'desc', e.target.value)} placeholder="Deskripsi singkat…" />
+            <button type="button" onClick={() => remove(i)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}>×</button>
+          </div>
+        </div>
+      ))}
+      <button type="button" onClick={add} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', fontSize: 12 }}>+ Tambah add-on</button>
+    </div>
+  );
+}
 
 export default function AdminOpenTrips() {
   const { openTrips, setOpenTrips, deleteOpenTrip } = useData();
@@ -146,6 +198,9 @@ export default function AdminOpenTrips() {
           <AField label="Termasuk (includes)"><ListEditor items={draft.includes} onChange={v => set('includes', v)} placeholder="Transport AC" /></AField>
           <AField label="Galeri foto" hint="Upload atau paste URL untuk setiap foto.">
             <GalleryEditor items={draft.gallery} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
+          <AField label="Add-on (opsional)" hint="Add-on yang bisa dipilih peserta saat inquiry.">
+            <AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} />
           </AField>
         </Panel>
       )}
