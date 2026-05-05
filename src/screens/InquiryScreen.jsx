@@ -183,11 +183,13 @@ function EstimateBox({ total, discountedTotal, referral, detail }) {
 /* ── Open trip fields ── */
 const MEETING_POINTS_BASE = ['Kediri', 'Surabaya', 'Malang'];
 
-function AddonCheckboxes({ addons, selected, onChange }) {
+function AddonCheckboxes({ addons, selected, onChange, pax = 1 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {addons.map(addon => {
         const checked = selected.includes(addon.id);
+        const isPerGuest = addon.pricingType === 'per_guest';
+        const effectivePrice = isPerGuest ? addon.price * pax : addon.price;
         return (
           <label key={addon.id} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '10px 14px', background: 'var(--ejg-kertas-2)', borderRadius: 12, border: `1.5px solid ${checked ? 'var(--ejg-ink)' : 'var(--border)'}` }}>
             <input
@@ -198,10 +200,14 @@ function AddonCheckboxes({ addons, selected, onChange }) {
             />
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--ejg-ink)' }}>{addon.label}</div>
-              <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>{addon.desc}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>
+                {addon.desc}
+                {isPerGuest && <span style={{ color: 'var(--ejg-stone)', marginLeft: 4 }}>· {formatRupiah(addon.price)}/org</span>}
+              </div>
             </div>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12, color: 'var(--fg-2)', flexShrink: 0 }}>
-              +{formatRupiah(addon.price)}
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 12, color: 'var(--fg-2)', flexShrink: 0, textAlign: 'right' }}>
+              +{formatRupiah(effectivePrice)}
+              {isPerGuest && <div style={{ fontSize: 9, fontWeight: 600, color: 'var(--fg-3)', marginTop: 1 }}>{pax} org</div>}
             </span>
           </label>
         );
@@ -462,7 +468,8 @@ function GlampingFields({ state, set, glampings }) {
 
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
-    return sum + (a ? a.price : 0);
+    if (!a) return sum;
+    return sum + (a.pricingType === 'per_guest' ? a.price * state.pax : a.price);
   }, 0) : 0;
 
   const isWeekend = state.date ? (() => {
@@ -553,7 +560,7 @@ function GlampingFields({ state, set, glampings }) {
 
       {glamp?.addons?.length > 0 && (
         <Field label="Add-on (opsional)">
-          <AddonCheckboxes addons={glamp.addons} selected={state.addons || []} onChange={v => set('addons', v)} />
+          <AddonCheckboxes addons={glamp.addons} selected={state.addons || []} onChange={v => set('addons', v)} pax={state.pax} />
         </Field>
       )}
       {estimate > 0 && (
