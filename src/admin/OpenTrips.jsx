@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
@@ -66,6 +66,27 @@ export default function AdminOpenTrips() {
   const [deleteId, setDeleteId] = useState(null);
   const [draft, setDraft] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [sortCfg, setSortCfg] = useState({ key: null, dir: 'asc' });
+
+  const handleSort = key => setSortCfg(c => ({ key, dir: c.key === key && c.dir === 'asc' ? 'desc' : 'asc' }));
+
+  const sortedTrips = useMemo(() => {
+    if (!sortCfg.key) return openTrips;
+    return [...openTrips].sort((a, b) => {
+      const av = a[sortCfg.key], bv = b[sortCfg.key];
+      const cmp = typeof av === 'number' ? av - bv : String(av ?? '').localeCompare(String(bv ?? ''));
+      return sortCfg.dir === 'asc' ? cmp : -cmp;
+    });
+  }, [openTrips, sortCfg]);
+
+  const SortTh = ({ label, sk }) => {
+    const active = sortCfg.key === sk;
+    return (
+      <th style={{ ...S.th, cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }} onClick={() => handleSort(sk)}>
+        {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (sortCfg.dir === 'asc' ? '↑' : '↓') : '↕'}</span>
+      </th>
+    );
+  };
 
   const openAdd  = () => { setDraft({ ...BLANK }); setPanel({ mode: 'add' }); };
   const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
@@ -112,17 +133,17 @@ export default function AdminOpenTrips() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={S.th}>Trip</th>
-                <th style={S.th}>Tanggal</th>
-                <th style={S.th}>Durasi</th>
-                <th style={S.th}>Harga</th>
-                <th style={S.th}>Slot</th>
-                <th style={S.th}>Tag</th>
+                <SortTh label="Trip" sk="dest" />
+                <SortTh label="Tanggal" sk="day" />
+                <SortTh label="Durasi" sk="duration" />
+                <SortTh label="Harga" sk="priceNum" />
+                <SortTh label="Slot" sk="slots" />
+                <SortTh label="Tag" sk="tag" />
                 <th style={S.th}>Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {openTrips.map((t, idx) => (
+              {sortedTrips.map((t, idx) => (
                 <tr key={t.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
