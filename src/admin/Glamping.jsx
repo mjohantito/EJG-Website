@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
-const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
+const BLANK_ADDON = { id: '', label: '', price: 0, pricingType: 'per_group', desc: '' };
 
 const BLANK = {
   id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
@@ -50,9 +50,26 @@ function AddonEditor({ addons, onChange }) {
               <input style={{ ...S.input, fontSize: 13 }} type="number" value={a.price} onChange={e => update(i, 'price', e.target.value)} />
             </div>
           </div>
-          <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-            <input style={{ ...S.input, fontSize: 13, flex: 1 }} value={a.desc} onChange={e => update(i, 'desc', e.target.value)} placeholder="Deskripsi singkat…" />
+          <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+            <button type="button"
+              onClick={() => update(i, 'pricingType', 'per_group')}
+              style={{ ...S.btn, padding: '6px 12px', fontSize: 11, flexShrink: 0,
+                background: (a.pricingType || 'per_group') === 'per_group' ? '#252525' : '#f3f4f6',
+                color: (a.pricingType || 'per_group') === 'per_group' ? '#F3D543' : '#6b7280',
+              }}>Per grup</button>
+            <button type="button"
+              onClick={() => update(i, 'pricingType', 'per_guest')}
+              style={{ ...S.btn, padding: '6px 12px', fontSize: 11, flexShrink: 0,
+                background: a.pricingType === 'per_guest' ? '#252525' : '#f3f4f6',
+                color: a.pricingType === 'per_guest' ? '#F3D543' : '#6b7280',
+              }}>Per tamu</button>
+            <input style={{ ...S.input, fontSize: 13, flex: 1 }} value={a.desc} onChange={e => update(i, 'desc', e.target.value)} placeholder="Deskripsi…" />
             <button type="button" onClick={() => remove(i)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}>×</button>
+          </div>
+          <div style={{ marginTop: 4, fontSize: 10, color: '#9ca3af', paddingLeft: 2 }}>
+            {(a.pricingType || 'per_group') === 'per_group'
+              ? 'Harga tetap per grup (tidak tergantung jumlah tamu)'
+              : 'Harga dikali jumlah tamu (Rp ' + (a.price || 0).toLocaleString('id-ID') + ' × n tamu)'}
           </div>
         </div>
       ))}
@@ -67,6 +84,27 @@ export default function AdminGlamping() {
   const [deleteId, setDeleteId] = useState(null);
   const [draft, setDraft] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [sortCfg, setSortCfg] = useState({ key: null, dir: 'asc' });
+
+  const handleSort = key => setSortCfg(c => ({ key, dir: c.key === key && c.dir === 'asc' ? 'desc' : 'asc' }));
+
+  const sortedGlampings = useMemo(() => {
+    if (!sortCfg.key) return glampings;
+    return [...glampings].sort((a, b) => {
+      const av = a[sortCfg.key], bv = b[sortCfg.key];
+      const cmp = typeof av === 'number' ? av - bv : String(av ?? '').localeCompare(String(bv ?? ''));
+      return sortCfg.dir === 'asc' ? cmp : -cmp;
+    });
+  }, [glampings, sortCfg]);
+
+  const SortTh = ({ label, sk }) => {
+    const active = sortCfg.key === sk;
+    return (
+      <th style={{ ...S.th, cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }} onClick={() => handleSort(sk)}>
+        {label} <span style={{ opacity: active ? 1 : 0.3 }}>{active ? (sortCfg.dir === 'asc' ? '↑' : '↓') : '↕'}</span>
+      </th>
+    );
+  };
 
   const openAdd = () => { setDraft({ ...BLANK, amenities: [], gallery: [], addons: [], closedDays: [] }); setPanel({ mode: 'add' }); };
   const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
@@ -113,16 +151,16 @@ export default function AdminGlamping() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={S.th}>Nama</th>
-                <th style={S.th}>Lokasi</th>
-                <th style={S.th}>Harga/malam</th>
-                <th style={S.th}>Kapasitas</th>
-                <th style={S.th}>Ketersediaan</th>
+                <SortTh label="Nama" sk="name" />
+                <SortTh label="Lokasi" sk="location" />
+                <SortTh label="Harga/malam" sk="pricePerNight" />
+                <SortTh label="Kapasitas" sk="cap" />
+                <SortTh label="Ketersediaan" sk="availability" />
                 <th style={S.th}>Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {glampings.map((g, idx) => (
+              {sortedGlampings.map((g, idx) => (
                 <tr key={g.id}>
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
