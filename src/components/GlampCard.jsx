@@ -1,7 +1,10 @@
 function cheapestPerPax(tiers) {
   if (!tiers?.length) return null;
   const highest = [...tiers].sort((a, b) => b.minPax - a.minPax)[0];
-  const n = Math.round(highest.price / highest.minPax);
+  const prices = [highest.price, highest.priceWeekday, highest.priceWeekend].filter(p => p && p > 0);
+  if (!prices.length) return null;
+  const cheapest = Math.min(...prices);
+  const n = Math.round(cheapest / highest.minPax);
   if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1).replace('.0', '')} juta`;
   return `Rp ${(n / 1_000).toFixed(0)}rb`;
 }
@@ -20,7 +23,10 @@ export default function GlampCard({ g, onClick }) {
         <div className="tag-line">{g.tagline}</div>
         <div className="foot">
           <span className="price">
-            {perPax ?? `Rp ${g.price}`}<small> / pax / {g.unit}</small>
+            {perPax
+              ? <><small style={{ fontWeight: 500 }}>mulai</small> {perPax}<small> / pax / {g.unit}</small></>
+              : <>{`Rp ${g.price}`}<small> / pax / {g.unit}</small></>
+            }
           </span>
           <span className="cap">{g.cap}</span>
         </div>
