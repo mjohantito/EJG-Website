@@ -466,10 +466,14 @@ function GlampingFields({ state, set, glampings }) {
     : [];
   const hasTiers = sortedTiers.length > 0;
 
+  const validPax = hasTiers && !sortedTiers.find(t => t.minPax === state.pax)
+    ? sortedTiers[0].minPax
+    : state.pax;
+
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
     if (!a) return sum;
-    return sum + (a.pricingType === 'per_guest' ? a.price * state.pax : a.price);
+    return sum + (a.pricingType === 'per_guest' ? a.price * validPax : a.price);
   }, 0) : 0;
 
   const isWeekend = state.date ? (() => {
@@ -478,14 +482,14 @@ function GlampingFields({ state, set, glampings }) {
     return day === 0 || day === 6;
   })() : false;
 
-  const activeTier = hasTiers ? lookupTier(glamp.priceTiers, state.pax) : null;
+  const activeTier = hasTiers ? lookupTier(glamp.priceTiers, validPax) : null;
   const pricePerNight = activeTier
     ? (isWeekend ? (activeTier.priceWeekend ?? activeTier.price ?? 0) : (activeTier.priceWeekday ?? activeTier.price ?? 0))
     : (glamp?.pricePerNight ?? 0);
 
   const baseTotal = pricePerNight * state.nights;
   const estimate = baseTotal > 0 ? baseTotal + addonsTotal : null;
-  const perPax = estimate && state.pax > 0 ? Math.round(estimate / state.pax) : null;
+  const perPax = estimate && validPax > 0 ? Math.round(estimate / validPax) : null;
 
   const handleLocChange = (newId) => {
     const newGlamp = glampings.find(g => g.id === newId);
@@ -525,7 +529,7 @@ function GlampingFields({ state, set, glampings }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <Field label="Jumlah tamu">
-          <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
+          <select value={validPax} onChange={e => set('pax', Number(e.target.value))}>
             {hasTiers
               ? sortedTiers.map(tier => (
                   <option key={tier.minPax} value={tier.minPax}>{tier.minPax} orang</option>
@@ -589,22 +593,28 @@ export default function InquiryScreen({ onSubmit }) {
   const { openTrips, privateDestinations, glampings, validateReferral, useReferral } = useData();
   const ctx = location.state || {};
 
-  const [kind, setKind] = useState(
-    ['open', 'private', 'glamping'].includes(ctx.kind) ? ctx.kind : 'open'
-  );
+  const initialKind = ['open', 'private', 'glamping'].includes(ctx.kind) ? ctx.kind : 'open';
+  const [kind, setKind] = useState(initialKind);
 
   const initialPrivateDest = ctx.dest || privateDestinations[0]?.id;
   const initialDestData = privateDestinations.find(d => d.id === initialPrivateDest) || privateDestinations[0];
+  const initialGlampId = ctx.glampId || glampings[0]?.id;
+
+  const getFirstGlampPax = (glampId) => {
+    const g = glampings.find(x => x.id === glampId);
+    const sorted = [...(g?.priceTiers || [])].sort((a, b) => a.minPax - b.minPax);
+    return sorted.length ? sorted[0].minPax : 1;
+  };
 
   const [form, setForm] = useState({
     name: '', email: '', wa: '',
-    pax: ctx.pax || 1,
+    pax: ctx.pax || (initialKind === 'glamping' ? getFirstGlampPax(initialGlampId) : 1),
     date: '', notes: '',
     tripId: ctx.tripId || openTrips[0]?.id,
     privateDest: initialPrivateDest,
     privateDuration: ctx.duration || initialDestData?.durations[0],
     meetingPoint: 'Surabaya',
-    glampLoc: ctx.glampId || glampings[0]?.id,
+    glampLoc: initialGlampId,
     nights: 1,
     addons: [],
     appliedReferral: null,
@@ -613,6 +623,18 @@ export default function InquiryScreen({ onSubmit }) {
   const [submitting, setSubmitting] = useState(false);
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  const handleKindChange = (newKind) => {
+    setKind(newKind);
+    if (newKind === 'glamping') {
+      const firstPax = getFirstGlampPax(form.glampLoc);
+      const currentTiers = glampings.find(g => g.id === form.glampLoc)?.priceTiers || [];
+      const sorted = [...currentTiers].sort((a, b) => a.minPax - b.minPax);
+      if (sorted.length > 0 && !sorted.find(t => t.minPax === form.pax)) {
+        set('pax', firstPax);
+      }
+    }
+  };
 
   const handleApplyReferral = async (code) => {
     const result = await validateReferral(code);
@@ -667,7 +689,7 @@ export default function InquiryScreen({ onSubmit }) {
           ].map(k => (
             <button key={k.id} type="button"
               className={`radio-card${kind === k.id ? ' on' : ''}`}
-              onClick={() => setKind(k.id)}
+              onClick={() => handleKindChange(k.id)}
               style={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '12px 8px' }}
             >
               <span className="k">{k.label}</span>
