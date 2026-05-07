@@ -86,3 +86,19 @@ CREATE POLICY "anon update referrals" ON referrals
 -- Anon full CRUD for CMS
 CREATE POLICY "anon write referrals" ON referrals
   FOR ALL USING (true);
+
+-- ── Inquiries: anon SELECT + UPDATE + DELETE for CMS ─────────
+-- (INSERT already allowed via "public insert inquiries" in schema)
+CREATE POLICY IF NOT EXISTS "anon read inquiries" ON inquiries
+  FOR SELECT USING (true);
+
+CREATE POLICY IF NOT EXISTS "anon update inquiries" ON inquiries
+  FOR UPDATE USING (true);
+
+CREATE POLICY IF NOT EXISTS "anon delete inquiries" ON inquiries
+  FOR DELETE USING (true);
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON inquiries TO anon;
+
+-- ── meeting_points column for open_trips ─────────────────────
+ALTER TABLE open_trips ADD COLUMN IF NOT EXISTS meeting_points JSONB DEFAULT '[]';
