@@ -176,6 +176,7 @@ export function DataProvider({ children }) {
       if (glamp.data)    setGlampingsState(glamp.data.map(rowToGlamping));
       if (evs.data)      setEventsState(evs.data.map(rowToEvent));
       if (refs.data)     setReferralsState(refs.data.map(rowToReferral));
+      if (inqs.error)    console.error('Inquiries load error:', inqs.error.message, inqs.error);
       if (inqs.data)     setInquiriesState(inqs.data.map(rowToInquiry));
       const waSetting = settings.data?.find(s => s.key === 'whatsapp');
       if (waSetting)             setWhatsappState(waSetting.value);
