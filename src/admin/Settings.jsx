@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput } from './shared';
+import { S, AField, AInput, ImageField } from './shared';
 
 const BLANK_ADDON = { id: '', label: '', price: 0, desc: '' };
 
@@ -61,6 +61,7 @@ export default function AdminSettings() {
   const [companyEmail, setCompanyEmail] = useState(siteSettings?.company_email || '');
   const [instagram,    setInstagram]    = useState(siteSettings?.instagram     || '');
   const [issuerName,   setIssuerName]   = useState(siteSettings?.issuer_name   || '');
+  const [logoUrl,      setLogoUrl]      = useState(siteSettings?.logo_url      || '');
 
   const save = async () => {
     await Promise.all([
@@ -72,6 +73,7 @@ export default function AdminSettings() {
       updateSetting('company_email', companyEmail),
       updateSetting('instagram',     instagram),
       updateSetting('issuer_name',   issuerName),
+      updateSetting('logo_url',      logoUrl),
     ]);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -100,6 +102,9 @@ export default function AdminSettings() {
       {/* Company & Invoice */}
       <div style={{ ...S.card, marginBottom: 20 }}>
         <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: '#111' }}>Info Perusahaan & Invoice</h3>
+        <AField label="Logo perusahaan" hint="Tampil di pojok kiri atas invoice. Jika kosong, teks 'EJG' digunakan.">
+          <ImageField value={logoUrl} onChange={setLogoUrl} folder="settings" label="Logo" />
+        </AField>
         <AField label="Email perusahaan" hint="Tampil di invoice dan footer halaman.">
           <AInput value={companyEmail} onChange={setCompanyEmail} placeholder="halo@ehjadiga.com" />
         </AField>
