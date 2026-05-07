@@ -89,14 +89,13 @@ CREATE POLICY "anon write referrals" ON referrals
 
 -- ── Inquiries: anon SELECT + UPDATE + DELETE for CMS ─────────
 -- (INSERT already allowed via "public insert inquiries" in schema)
-CREATE POLICY IF NOT EXISTS "anon read inquiries" ON inquiries
-  FOR SELECT USING (true);
+DROP POLICY IF EXISTS "anon read inquiries"   ON inquiries;
+DROP POLICY IF EXISTS "anon update inquiries" ON inquiries;
+DROP POLICY IF EXISTS "anon delete inquiries" ON inquiries;
 
-CREATE POLICY IF NOT EXISTS "anon update inquiries" ON inquiries
-  FOR UPDATE USING (true);
-
-CREATE POLICY IF NOT EXISTS "anon delete inquiries" ON inquiries
-  FOR DELETE USING (true);
+CREATE POLICY "anon read inquiries"   ON inquiries FOR SELECT USING (true);
+CREATE POLICY "anon update inquiries" ON inquiries FOR UPDATE USING (true);
+CREATE POLICY "anon delete inquiries" ON inquiries FOR DELETE USING (true);
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON inquiries TO anon;
 
