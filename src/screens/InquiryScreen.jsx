@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useData, lookupTier } from '../context/DataContext';
 import { submitInquiry } from '../lib/submitInquiry';
@@ -220,6 +220,7 @@ function OpenTripFields({ state, set, openTrips }) {
   const selectedTrip = openTrips.find(t => t.id === state.tripId);
   const avail = selectedTrip ? selectedTrip.slots : null;
   const low = avail !== null && avail <= 3;
+  const tripMeetingPoints = selectedTrip?.meetingPoints || [];
   const tripAddons = selectedTrip?.addons || [];
   const addonsTotal = (state.addons || []).reduce((sum, id) => {
     const a = tripAddons.find(x => x.id === id);
@@ -241,7 +242,12 @@ function OpenTripFields({ state, set, openTrips }) {
         <input type="email" value={state.email} onChange={e => set('email', e.target.value)} placeholder="kamu@email.com" />
       </Field>
       <Field label="Pilih trip">
-        <select value={state.tripId} onChange={e => { set('tripId', e.target.value); set('addons', []); }}>
+        <select value={state.tripId} onChange={e => {
+          const newTrip = openTrips.find(t => t.id === e.target.value);
+          set('tripId', e.target.value);
+          set('addons', []);
+          set('meetingPoint', newTrip?.meetingPoints?.[0] || '');
+        }}>
           {openTrips.map(t => (
             <option key={t.id} value={t.id}>{t.dest} · {t.start} – {t.end}</option>
           ))}
@@ -261,6 +267,15 @@ function OpenTripFields({ state, set, openTrips }) {
           </div>
         )}
       </Field>
+      {tripMeetingPoints.length > 0 && (
+        <Field label="Meeting point">
+          <select value={state.meetingPoint || tripMeetingPoints[0]} onChange={e => set('meetingPoint', e.target.value)}>
+            {tripMeetingPoints.map(mp => (
+              <option key={mp} value={mp}>{mp}</option>
+            ))}
+          </select>
+        </Field>
+      )}
       <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={50} />
       {tripAddons.length > 0 && (
         <Field label="Add-on (opsional)">
@@ -469,6 +484,12 @@ function GlampingFields({ state, set, glampings }) {
   const validPax = hasTiers && !sortedTiers.find(t => t.minPax === state.pax)
     ? sortedTiers[0].minPax
     : state.pax;
+
+  useEffect(() => {
+    if (hasTiers && !sortedTiers.find(t => t.minPax === state.pax)) {
+      set('pax', sortedTiers[0].minPax);
+    }
+  }, [state.glampLoc]); // sync form.pax when location changes or on first render
 
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
