@@ -8,6 +8,7 @@ const BLANK = {
   id: '', dest: '', region: '', month: '', day: '', start: '', end: '', duration: '2D1N',
   price: '', priceNum: 0, slots: 10, totalSlots: 12, tag: '', palette: 'ink', emoji: '',
   cover: '', description: '', highlights: [], includes: [], gallery: [], addons: [],
+  meetingPoints: [],
 };
 
 function AddonEditor({ addons, onChange }) {
@@ -219,6 +220,9 @@ export default function AdminOpenTrips() {
           <AField label="Termasuk (includes)"><ListEditor items={draft.includes} onChange={v => set('includes', v)} placeholder="Transport AC" /></AField>
           <AField label="Galeri foto" hint="Upload atau paste URL untuk setiap foto.">
             <GalleryEditor items={draft.gallery} onChange={v => set('gallery', v)} folder="gallery" />
+          </AField>
+          <AField label="Meeting points" hint="Daftar titik jemput yang bisa dipilih peserta saat inquiry.">
+            <ListEditor items={draft.meetingPoints || []} onChange={v => set('meetingPoints', v)} placeholder="Surabaya" />
           </AField>
           <AField label="Add-on (opsional)" hint="Add-on yang bisa dipilih peserta saat inquiry.">
             <AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} />
