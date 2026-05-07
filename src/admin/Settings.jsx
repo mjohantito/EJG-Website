@@ -49,15 +49,30 @@ function AddonTable({ addons, onChange }) {
 }
 
 export default function AdminSettings() {
-  const { whatsapp, setWhatsapp, openTripAddons, setOpenTripAddons, resetAll } = useData();
-  const [waInput, setWaInput] = useState(whatsapp);
-  const [addons, setAddons] = useState(openTripAddons);
-  const [saved, setSaved] = useState(false);
+  const { whatsapp, setWhatsapp, openTripAddons, setOpenTripAddons, resetAll, siteSettings, updateSetting } = useData();
+  const [waInput, setWaInput]         = useState(whatsapp);
+  const [addons, setAddons]           = useState(openTripAddons);
+  const [saved, setSaved]             = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
 
-  const save = () => {
-    setWhatsapp(waInput);
-    setOpenTripAddons(addons);
+  const [bankName,     setBankName]     = useState(siteSettings?.bank_name     || '');
+  const [bankAccount,  setBankAccount]  = useState(siteSettings?.bank_account  || '');
+  const [bankHolder,   setBankHolder]   = useState(siteSettings?.bank_holder   || '');
+  const [companyEmail, setCompanyEmail] = useState(siteSettings?.company_email || '');
+  const [instagram,    setInstagram]    = useState(siteSettings?.instagram     || '');
+  const [issuerName,   setIssuerName]   = useState(siteSettings?.issuer_name   || '');
+
+  const save = async () => {
+    await Promise.all([
+      setWhatsapp(waInput),
+      setOpenTripAddons(addons),
+      updateSetting('bank_name',     bankName),
+      updateSetting('bank_account',  bankAccount),
+      updateSetting('bank_holder',   bankHolder),
+      updateSetting('company_email', companyEmail),
+      updateSetting('instagram',     instagram),
+      updateSetting('issuer_name',   issuerName),
+    ]);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -79,6 +94,32 @@ export default function AdminSettings() {
         <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: '#111' }}>Nomor WhatsApp</h3>
         <AField label="Nomor WA aktif" hint="Gunakan format internasional tanpa + (contoh: 6285117322207)">
           <AInput value={waInput} onChange={setWaInput} placeholder="6285117322207" />
+        </AField>
+      </div>
+
+      {/* Company & Invoice */}
+      <div style={{ ...S.card, marginBottom: 20 }}>
+        <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: '#111' }}>Info Perusahaan & Invoice</h3>
+        <AField label="Email perusahaan" hint="Tampil di invoice dan footer halaman.">
+          <AInput value={companyEmail} onChange={setCompanyEmail} placeholder="halo@ehjadiga.com" />
+        </AField>
+        <AField label="Instagram" hint="Tanpa @, contoh: eh.jadi.ga">
+          <AInput value={instagram} onChange={setInstagram} placeholder="eh.jadi.ga" />
+        </AField>
+        <AField label="Default nama penerbit invoice" hint="Tampil di footer invoice, bisa diedit per invoice.">
+          <AInput value={issuerName} onChange={setIssuerName} placeholder="Nama — Tour Manager" />
+        </AField>
+      </div>
+
+      {/* Bank / Payment */}
+      <div style={{ ...S.card, marginBottom: 20 }}>
+        <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: '#111' }}>Info Pembayaran (untuk Invoice)</h3>
+        <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
+          <AField label="Nama bank" half><AInput value={bankName} onChange={setBankName} placeholder="BCA" /></AField>
+          <AField label="Nomor rekening" half><AInput value={bankAccount} onChange={setBankAccount} placeholder="1234 5678 9012" /></AField>
+        </div>
+        <AField label="Atas nama rekening">
+          <AInput value={bankHolder} onChange={setBankHolder} placeholder="PT EH JADI GA" />
         </AField>
       </div>
 
