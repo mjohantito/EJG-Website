@@ -152,7 +152,9 @@ table.items tbody td:last-child{text-align:right;font-weight:600}
 <div class="wrapper">
 <div class="top-strip">
   <div class="brand">
-    <div class="brand-mark">EJG</div>
+    ${st.logo_url
+      ? `<img src="${esc(st.logo_url)}" alt="Logo" style="height:42px;width:auto;object-fit:contain;border-radius:8px">`
+      : '<div class="brand-mark">EJG</div>'}
     <div>
       <div class="brand-name">EH! JADI GA?</div>
       <div class="brand-sub">Travel &amp; Glamping</div>
@@ -456,7 +458,7 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
                 <tr>
                   <th style={{ ...S.th, width: '28%' }}>Item</th>
                   <th style={{ ...S.th, width: '22%' }}>Deskripsi</th>
-                  <th style={{ ...S.th, width: 55 }}>Qty</th>
+                  <th style={{ ...S.th, width: 65 }}>Qty</th>
                   <th style={{ ...S.th, width: 120 }}>Harga/unit (Rp)</th>
                   <th style={{ ...S.th, width: 110 }}>Total</th>
                   <th style={{ ...S.th, width: 40 }}></th>
@@ -483,7 +485,7 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
                     </td>
                     <td style={S.td}>
                       <input
-                        style={{ ...S.input, fontSize: 13, textAlign: 'center' }}
+                        style={{ ...S.input, fontSize: 13, textAlign: 'center', padding: '6px 2px' }}
                         type="number" min={1}
                         value={item.qty}
                         onChange={e => updateItem(item.id, 'qty', e.target.value)}
