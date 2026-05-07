@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { S, AField, ATextarea, Panel, ConfirmModal, EmptyState } from './shared';
+import InvoiceModal from './InvoiceModal';
 
 const STATUS_OPTIONS = [
   { value: 'new',         label: 'New Inquiry' },
@@ -108,6 +109,7 @@ function Row({ label, value }) {
 export default function AdminInquiries() {
   const { inquiries, setInquiries, deleteInquiry, openTrips, privateDestinations, glampings } = useData();
   const [detail, setDetail]       = useState(null);
+  const [invoiceInq, setInvoiceInq] = useState(null);
   const [deleteId, setDeleteId]   = useState(null);
   const [saving, setSaving]       = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
@@ -230,6 +232,16 @@ export default function AdminInquiries() {
           onSave={saveDetail}
           saving={saving}
         >
+          {/* Invoice button */}
+          <div style={{ marginBottom: 16 }}>
+            <button
+              onClick={() => { setDetail(null); setInvoiceInq(detail); }}
+              style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px', width: '100%', fontSize: 13 }}
+            >
+              📄 Buat Invoice untuk Inquiry ini
+            </button>
+          </div>
+
           {/* Editable fields */}
           <AField label="Status">
             <select style={{ ...S.input }} value={detail.status} onChange={e => setField('status', e.target.value)}>
@@ -259,6 +271,10 @@ export default function AdminInquiries() {
             <Row label="Referral"      value={detail.data?.referralCode || detail.data?.appliedReferral?.code || null} />
           </div>
         </Panel>
+      )}
+
+      {invoiceInq && (
+        <InvoiceModal inquiry={invoiceInq} onClose={() => setInvoiceInq(null)} />
       )}
 
       {deleteId && (
