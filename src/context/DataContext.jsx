@@ -30,7 +30,7 @@ function rowToTrip(r) {
     tag: r.tag, palette: r.palette, emoji: r.emoji, cover: r.cover,
     description: r.description,
     highlights: r.highlights || [], includes: r.includes || [], gallery: r.gallery || [],
-    addons: r.addons || [],
+    addons: r.addons || [], meetingPoints: r.meeting_points || [],
   };
 }
 function rowToInquiry(r) {
@@ -92,7 +92,7 @@ export function tripToRow(t) {
     tag: t.tag || null, palette: t.palette, emoji: t.emoji, cover: t.cover || null,
     description: t.description,
     highlights: t.highlights || [], includes: t.includes || [], gallery: t.gallery || [],
-    addons: t.addons || [],
+    addons: t.addons || [], meeting_points: t.meetingPoints || [],
   };
 }
 export function inquiryToRow(i) {
