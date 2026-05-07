@@ -153,6 +153,7 @@ export function DataProvider({ children }) {
   const [glampings, setGlampingsState]                     = useState(D_GLAMPINGS);
   const [events, setEventsState]                           = useState(D_EVENTS);
   const [whatsapp, setWhatsappState]                       = useState(D_WHATSAPP);
+  const [siteSettings, setSiteSettingsState]               = useState({});
   const [referrals, setReferralsState]                     = useState([]);
   const [inquiries, setInquiriesState]                     = useState([]);
   const [loading, setLoading]                              = useState(true);
@@ -178,8 +179,10 @@ export function DataProvider({ children }) {
       if (refs.data)     setReferralsState(refs.data.map(rowToReferral));
       if (inqs.error)    console.error('Inquiries load error:', inqs.error.message, inqs.error);
       if (inqs.data)     setInquiriesState(inqs.data.map(rowToInquiry));
-      const waSetting = settings.data?.find(s => s.key === 'whatsapp');
-      if (waSetting)             setWhatsappState(waSetting.value);
+      const settingsMap = {};
+      settings.data?.forEach(s => { settingsMap[s.key] = s.value; });
+      setSiteSettingsState(settingsMap);
+      if (settingsMap.whatsapp) setWhatsappState(settingsMap.whatsapp);
 
       setLoading(false);
     }
@@ -226,10 +229,12 @@ export function DataProvider({ children }) {
       await upsertRow('events', { ...eventToRow(items[i]), sort_order: i });
     }
   };
-  const setWhatsapp = async (val) => {
-    setWhatsappState(val);
-    await supabase.from('settings').upsert({ key: 'whatsapp', value: val });
+  const updateSetting = async (key, val) => {
+    setSiteSettingsState(p => ({ ...p, [key]: val }));
+    await supabase.from('settings').upsert({ key, value: val });
+    if (key === 'whatsapp') setWhatsappState(val);
   };
+  const setWhatsapp = async (val) => updateSetting('whatsapp', val);
 
   const setReferrals = async (items) => {
     setReferralsState(items);
@@ -311,6 +316,7 @@ export function DataProvider({ children }) {
   return (
     <DataContext.Provider value={{
       loading,
+      siteSettings, updateSetting,
       inquiries, setInquiries, deleteInquiry,
       openTrips, setOpenTrips, deleteOpenTrip,
       openTripAddons, setOpenTripAddons, deleteOpenTripAddon,
