@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useData } from '../context/DataContext';
+import { useData, lookupTier } from '../context/DataContext';
 import { S, AField, AInput, ATextarea } from './shared';
 
 const KIND_LABELS = { open: 'Open Trip', private: 'Private Trip', glamping: 'Glamping', corporate: 'Corporate' };
@@ -54,7 +54,11 @@ function buildItems(inq, openTrips, glampings, privateDestinations) {
     }
   } else if (inq.kind === 'glamping') {
     const g = glampings.find(x => x.id === d.glampLoc);
-    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang · ${d.nights || 1} malam` }));
+    const nights = d.nights || 1;
+    const tier = lookupTier(g?.priceTiers, pax);
+    const pricePerNight = tier ? (tier.priceWeekday ?? tier.price ?? 0) : (g?.pricePerNight ?? 0);
+    const glampTotal = pricePerNight * nights;
+    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang · ${nights} malam`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
     if (g) {
       (d.addons || []).forEach(id => {
         const a = g.addons?.find(x => x.id === id);
@@ -450,9 +454,9 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
               <thead>
                 <tr>
-                  <th style={{ ...S.th, width: '30%' }}>Item</th>
-                  <th style={S.th}>Deskripsi</th>
-                  <th style={{ ...S.th, width: 60 }}>Qty</th>
+                  <th style={{ ...S.th, width: '28%' }}>Item</th>
+                  <th style={{ ...S.th, width: '22%' }}>Deskripsi</th>
+                  <th style={{ ...S.th, width: 55 }}>Qty</th>
                   <th style={{ ...S.th, width: 120 }}>Harga/unit (Rp)</th>
                   <th style={{ ...S.th, width: 110 }}>Total</th>
                   <th style={{ ...S.th, width: 40 }}></th>
