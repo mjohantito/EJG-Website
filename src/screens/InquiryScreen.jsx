@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useData, lookupTier } from '../context/DataContext';
+import { useData } from '../context/DataContext';
 import { submitInquiry } from '../lib/submitInquiry';
 import Footer from '../components/Footer';
 
@@ -476,26 +476,11 @@ function GlampingFields({ state, set, glampings }) {
   const avStatus = dateAvailability(state.date, state.glampLoc);
   const glamp = glampings.find(g => g.id === state.glampLoc);
 
-  const sortedTiers = glamp?.priceTiers?.length
-    ? [...glamp.priceTiers].sort((a, b) => a.minPax - b.minPax)
-    : [];
-  const hasTiers = sortedTiers.length > 0;
-
-  const validPax = hasTiers && !sortedTiers.find(t => t.minPax === state.pax)
-    ? sortedTiers[0].minPax
-    : state.pax;
-
-  useEffect(() => {
-    if (hasTiers && !sortedTiers.find(t => t.minPax === state.pax)) {
-      set('pax', sortedTiers[0].minPax);
-    }
-  }, [state.glampLoc]); // sync form.pax when location changes or on first render
-
-  const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
-    const a = glamp.addons.find(x => x.id === id);
-    if (!a) return sum;
-    return sum + (a.pricingType === 'per_guest' ? a.price * validPax : a.price);
-  }, 0) : 0;
+  const tentTiers = glamp?.priceTiers || [];
+  const hasTentTiers = tentTiers.length > 0;
+  const activeTentTier = hasTentTiers
+    ? (tentTiers.find(t => t.id === state.tentType) || tentTiers[0])
+    : null;
 
   const isWeekend = state.date ? (() => {
     const [y, m, d] = state.date.split('-').map(Number);
@@ -503,22 +488,23 @@ function GlampingFields({ state, set, glampings }) {
     return day === 0 || day === 6;
   })() : false;
 
-  const activeTier = hasTiers ? lookupTier(glamp.priceTiers, validPax) : null;
-  const pricePerNight = activeTier
-    ? (isWeekend ? (activeTier.priceWeekend ?? activeTier.price ?? 0) : (activeTier.priceWeekday ?? activeTier.price ?? 0))
+  const pricePerNight = activeTentTier
+    ? (isWeekend ? (activeTentTier.priceWeekend ?? 0) : (activeTentTier.priceWeekday ?? 0))
     : (glamp?.pricePerNight ?? 0);
+
+  const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
+    const a = glamp.addons.find(x => x.id === id);
+    if (!a) return sum;
+    return sum + (a.pricingType === 'per_guest' ? a.price * state.pax : a.price);
+  }, 0) : 0;
 
   const baseTotal = pricePerNight * state.nights;
   const estimate = baseTotal > 0 ? baseTotal + addonsTotal : null;
-  const perPax = estimate && validPax > 0 ? Math.round(estimate / validPax) : null;
 
   const handleLocChange = (newId) => {
     const newGlamp = glampings.find(g => g.id === newId);
-    const tiers = newGlamp?.priceTiers?.length
-      ? [...newGlamp.priceTiers].sort((a, b) => a.minPax - b.minPax)
-      : [];
     set('glampLoc', newId);
-    set('pax', tiers.length ? tiers[0].minPax : 1);
+    set('tentType', newGlamp?.priceTiers?.[0]?.id || '');
     set('date', '');
     set('addons', []);
   };
@@ -548,17 +534,22 @@ function GlampingFields({ state, set, glampings }) {
         )}
       </Field>
 
+      {hasTentTiers && (
+        <Field label="Tipe tenda">
+          <select value={state.tentType || tentTiers[0]?.id} onChange={e => set('tentType', e.target.value)}>
+            {tentTiers.map(t => (
+              <option key={t.id} value={t.id}>{t.name}{t.capacity ? ` (maks. ${t.capacity} orang)` : ''}</option>
+            ))}
+          </select>
+        </Field>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <Field label="Jumlah tamu">
-          <select value={validPax} onChange={e => set('pax', Number(e.target.value))}>
-            {hasTiers
-              ? sortedTiers.map(tier => (
-                  <option key={tier.minPax} value={tier.minPax}>{tier.minPax} orang</option>
-                ))
-              : Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
-                  <option key={n} value={n}>{n} orang</option>
-                ))
-            }
+          <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
+            {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+              <option key={n} value={n}>{n} orang</option>
+            ))}
           </select>
         </Field>
         <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={3} />
@@ -593,10 +584,7 @@ function GlampingFields({ state, set, glampings }) {
           total={estimate}
           discountedTotal={applyDiscount(estimate, state.appliedReferral)}
           referral={state.appliedReferral}
-          detail={perPax
-            ? `≈ ${formatRupiah(perPax)}/pax · ${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`
-            : `${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`
-          }
+          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
         />
       )}
       <Field label="Catatan / request">
@@ -620,22 +608,18 @@ export default function InquiryScreen({ onSubmit }) {
   const initialPrivateDest = ctx.dest || privateDestinations[0]?.id;
   const initialDestData = privateDestinations.find(d => d.id === initialPrivateDest) || privateDestinations[0];
   const initialGlampId = ctx.glampId || glampings[0]?.id;
-
-  const getFirstGlampPax = (glampId) => {
-    const g = glampings.find(x => x.id === glampId);
-    const sorted = [...(g?.priceTiers || [])].sort((a, b) => a.minPax - b.minPax);
-    return sorted.length ? sorted[0].minPax : 1;
-  };
+  const initialGlamp = glampings.find(g => g.id === initialGlampId);
 
   const [form, setForm] = useState({
     name: '', email: '', wa: '',
-    pax: ctx.pax || (initialKind === 'glamping' ? getFirstGlampPax(initialGlampId) : 1),
+    pax: ctx.pax || 1,
     date: '', notes: '',
     tripId: ctx.tripId || openTrips[0]?.id,
     privateDest: initialPrivateDest,
     privateDuration: ctx.duration || initialDestData?.durations[0],
     meetingPoint: 'Surabaya',
     glampLoc: initialGlampId,
+    tentType: ctx.tentType || initialGlamp?.priceTiers?.[0]?.id || '',
     nights: 1,
     addons: [],
     appliedReferral: null,
@@ -647,14 +631,6 @@ export default function InquiryScreen({ onSubmit }) {
 
   const handleKindChange = (newKind) => {
     setKind(newKind);
-    if (newKind === 'glamping') {
-      const firstPax = getFirstGlampPax(form.glampLoc);
-      const currentTiers = glampings.find(g => g.id === form.glampLoc)?.priceTiers || [];
-      const sorted = [...currentTiers].sort((a, b) => a.minPax - b.minPax);
-      if (sorted.length > 0 && !sorted.find(t => t.minPax === form.pax)) {
-        set('pax', firstPax);
-      }
-    }
   };
 
   const handleApplyReferral = async (code) => {
