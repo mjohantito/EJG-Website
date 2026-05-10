@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useData, lookupTier } from '../context/DataContext';
+import { useData } from '../context/DataContext';
 import { S, AField, AInput, ATextarea } from './shared';
 
 const KIND_LABELS = { open: 'Open Trip', private: 'Private Trip', glamping: 'Glamping', corporate: 'Corporate' };
@@ -55,10 +55,11 @@ function buildItems(inq, openTrips, glampings, privateDestinations) {
   } else if (inq.kind === 'glamping') {
     const g = glampings.find(x => x.id === d.glampLoc);
     const nights = d.nights || 1;
-    const tier = lookupTier(g?.priceTiers, pax);
-    const pricePerNight = tier ? (tier.priceWeekday ?? tier.price ?? 0) : (g?.pricePerNight ?? 0);
+    const tentTier = d.tentType ? g?.priceTiers?.find(t => t.id === d.tentType) : g?.priceTiers?.[0];
+    const pricePerNight = tentTier ? (tentTier.priceWeekday ?? 0) : (g?.pricePerNight ?? 0);
     const glampTotal = pricePerNight * nights;
-    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang · ${nights} malam`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
+    const tentDesc = tentTier?.name ? ` · ${tentTier.name}` : '';
+    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang${tentDesc} · ${nights} malam`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
     if (g) {
       (d.addons || []).forEach(id => {
         const a = g.addons?.find(x => x.id === id);
