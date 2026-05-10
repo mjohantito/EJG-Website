@@ -350,6 +350,49 @@ export function PriceTierEditor({ tiers = [], onChange, unit = 'malam', weekend 
   );
 }
 
+/* ── Tent Type Price Editor: [{ id, name, capacity, priceWeekday, priceWeekend }] ── */
+export function TentTypePriceEditor({ tiers = [], onChange }) {
+  const add = () => onChange([...tiers, { id: `tent-${Date.now()}`, name: '', capacity: 2, priceWeekday: 0, priceWeekend: 0 }]);
+  const remove = (i) => onChange(tiers.filter((_, j) => j !== i));
+  const update = (i, key, val) => {
+    const next = [...tiers];
+    next[i] = { ...next[i], [key]: ['capacity', 'priceWeekday', 'priceWeekend'].includes(key) ? Number(val) : val };
+    onChange(next);
+  };
+  return (
+    <div>
+      {tiers.length === 0 && (
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8 }}>
+          Belum ada tipe tenda. Jika kosong, harga fallback ke field "Harga per malam" di atas.
+        </p>
+      )}
+      {tiers.map((tier, i) => (
+        <div key={tier.id || i} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'flex-end' }}>
+          <div style={{ flex: 2 }}>
+            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Tipe Tenda</label>
+            <input style={{ ...S.input, fontSize: 13 }} value={tier.name} onChange={e => update(i, 'name', e.target.value)} placeholder="Standard Tent" />
+          </div>
+          <div style={{ width: 80 }}>
+            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Kapasitas</label>
+            <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.capacity ?? 2} onChange={e => update(i, 'capacity', e.target.value)} />
+          </div>
+          <div style={{ flex: 2 }}>
+            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Weekday (Rp) / malam</label>
+            <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekday ?? 0} onChange={e => update(i, 'priceWeekday', e.target.value)} />
+          </div>
+          <div style={{ flex: 2 }}>
+            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Weekend (Rp) / malam</label>
+            <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekend ?? 0} onChange={e => update(i, 'priceWeekend', e.target.value)} />
+          </div>
+          <button type="button" onClick={() => remove(i)}
+            style={{ ...S.btn, background: '#fee2e2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={add} style={{ ...S.btn, background: '#f0fdf4', color: '#16a34a', fontSize: 12 }}>+ Tambah tipe tenda</button>
+    </div>
+  );
+}
+
 /* ── Meeting Point Price Editor: [{ point, tiers }] ── */
 export function MeetingPointPriceEditor({ items = [], onChange }) {
   const add    = () => onChange([...items, { point: '', tiers: [] }]);
