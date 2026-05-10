@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
-import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, PriceTierEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
+import { S, AField, AInput, ATextarea, ASelect, PaletteSelect, ListEditor, ImageField, GalleryEditor, TentTypePriceEditor, ReorderButtons, Panel, ConfirmModal, EmptyState } from './shared';
 
 const BLANK_ADDON = { id: '', label: '', price: 0, pricingType: 'per_group', desc: '' };
 
@@ -231,8 +231,8 @@ export default function AdminGlamping() {
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
           </AField>
-          <AField label="Harga per jumlah tamu (price tiers)" hint="Tiap tier punya harga weekday & weekend. Sistem otomatis pilih berdasarkan tanggal check-in.">
-            <PriceTierEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} unit="malam" weekend={true} />
+          <AField label="Tipe tenda & harga" hint="Tiap tipe tenda punya harga weekday & weekend. Tamu pilih tenda saat inquiry.">
+            <TentTypePriceEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} />
           </AField>
           <AField label="Add-on"><AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} /></AField>
         </Panel>
