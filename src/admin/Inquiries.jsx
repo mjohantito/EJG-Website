@@ -262,6 +262,9 @@ export default function AdminInquiries() {
             <Row label="Email"         value={detail.email} />
             <Row label="WhatsApp"      value={detail.wa} />
             <Row label="Destination"   value={getDestLabel(detail, openTrips, privateDestinations, glampings)} />
+            <Row label="Tent Type"     value={detail.kind === 'glamping' && detail.data?.tentType
+              ? (glampings.find(g => g.id === detail.data?.glampLoc)?.priceTiers?.find(t => t.id === detail.data?.tentType)?.name || detail.data?.tentType)
+              : null} />
             <Row label="Meeting Point" value={detail.kind === 'glamping' ? null : (detail.data?.meetingPoint || null)} />
             <Row label="Departure"     value={getDepartureDate(detail, openTrips)} />
             <Row label="Pax"           value={detail.data?.pax != null ? String(detail.data.pax) : null} />
