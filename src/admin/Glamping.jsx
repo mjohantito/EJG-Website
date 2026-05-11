@@ -236,7 +236,7 @@ export default function AdminGlamping() {
           <AField label="Galeri foto" hint="Upload atau paste URL.">
             <GalleryEditor items={draft.gallery || []} onChange={v => set('gallery', v)} folder="gallery" />
           </AField>
-          <AField label="Tipe tenda & harga" hint="Tiap tipe tenda punya harga weekday & weekend. Tamu pilih tenda saat inquiry.">
+          <AField label="Tipe tenda & harga" hint="Harga weekday: Senin–Kamis. Harga weekend/libur/H-1: Jumat–Minggu, hari libur nasional, dan H-1 sebelum libur nasional. Tamu pilih tenda saat inquiry.">
             <TentTypePriceEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} />
           </AField>
           <AField label="Add-on"><AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} /></AField>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { S, AField, AInput, ATextarea } from './shared';
+import { isPeakDay } from '../lib/holidays';
 
 const KIND_LABELS = { open: 'Open Trip', private: 'Private Trip', glamping: 'Glamping', corporate: 'Corporate' };
 const EMAIL_WORKER_URL = import.meta.env.VITE_EMAIL_WORKER_URL;
@@ -56,10 +57,19 @@ function buildItems(inq, openTrips, glampings, privateDestinations) {
     const g = glampings.find(x => x.id === d.glampLoc);
     const nights = d.nights || 1;
     const tentTier = d.tentType ? g?.priceTiers?.find(t => t.id === d.tentType) : g?.priceTiers?.[0];
-    const pricePerNight = tentTier ? (tentTier.priceWeekday ?? 0) : (g?.pricePerNight ?? 0);
+    const peak = isPeakDay(d.date);
+    const wkdPrice = tentTier?.priceWeekday ?? 0;
+    const peakPrice = tentTier?.priceWeekend ?? 0;
+    const pricePerNight = tentTier
+      ? (peak ? peakPrice : wkdPrice)
+      : (g?.pricePerNight ?? 0);
     const glampTotal = pricePerNight * nights;
     const tentDesc = tentTier?.name ? ` · ${tentTier.name}` : '';
-    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang${tentDesc} · ${nights} malam`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
+    const rateLabel = d.date ? (peak ? 'Peak' : 'Weekday') : 'Weekday*';
+    const priceHint = (tentTier && wkdPrice > 0 && peakPrice > 0 && wkdPrice !== peakPrice && !d.date)
+      ? `  —  wkd: ${fmtRp(wkdPrice)} / peak: ${fmtRp(peakPrice)}`
+      : '';
+    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang${tentDesc} · ${nights} malam · ${rateLabel}${priceHint}`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
     const extraBeds = tentTier ? Math.max(0, pax - (tentTier.capacity || 0)) : 0;
     if (extraBeds > 0 && tentTier?.extraBedPrice) {
       const ebTotal = extraBeds * tentTier.extraBedPrice * nights;
@@ -286,6 +296,13 @@ function Section({ title, children }) {
 export default function InvoiceModal({ inquiry: inq, onClose }) {
   const { openTrips, glampings, privateDestinations, siteSettings } = useData();
 
+  // Glamping price recalc helpers
+  const gData = inq.kind === 'glamping' ? glampings.find(x => x.id === inq.data?.glampLoc) : null;
+  const tentTierForCalc = gData
+    ? (inq.data?.tentType ? gData.priceTiers?.find(t => t.id === inq.data.tentType) || gData.priceTiers?.[0] : gData.priceTiers?.[0])
+    : null;
+  const nightsForCalc = Number(inq.data?.nights || 1);
+
   const [inv, setInv] = useState(() => ({
     num: autoNum(),
     date: todayStr(),
@@ -306,6 +323,7 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent]       = useState(false);
   const [sendError, setSendError] = useState('');
+  const [glampCheckIn, setGlampCheckIn] = useState(inq.data?.date || '');
 
   const setF = (k, v) => setInv(p => ({ ...p, [k]: v }));
 
@@ -328,6 +346,27 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
   }));
 
   const removeItem = (id) => setInv(p => ({ ...p, items: p.items.filter(i => i.id !== id) }));
+
+  const handleGlampCheckIn = (newDate) => {
+    setGlampCheckIn(newDate);
+    if (!tentTierForCalc) return;
+    const peak = isPeakDay(newDate);
+    const wkd = tentTierForCalc.priceWeekday ?? 0;
+    const pk = tentTierForCalc.priceWeekend ?? 0;
+    const newPricePerNight = newDate ? (peak ? pk : wkd) : wkd;
+    const newTotal = newPricePerNight * nightsForCalc;
+    const rateLabel = newDate ? (peak ? 'Peak' : 'Weekday') : 'Weekday*';
+    const pax = Number(inq.data?.pax || 1);
+    const tentDesc = tentTierForCalc.name ? ` · ${tentTierForCalc.name}` : '';
+    setInv(p => ({
+      ...p,
+      items: p.items.map(item =>
+        item.id === 'main'
+          ? { ...item, unitPrice: newTotal, total: newTotal, desc: `${pax} orang${tentDesc} · ${nightsForCalc} malam · ${rateLabel}` }
+          : item
+      ),
+    }));
+  };
 
   const subtotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
   const total = Math.max(0, subtotal - (inv.deposit || 0));
@@ -458,6 +497,16 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
 
         {/* Line Items */}
         <Section title="Rincian Biaya">
+          {inq.kind === 'glamping' && (
+            <AField
+              label="Tanggal check-in (kalkulasi tarif)"
+              hint={glampCheckIn
+                ? (isPeakDay(glampCheckIn) ? '⭐ Peak — harga weekend/libur/H-1 diterapkan.' : '📆 Weekday — harga weekday diterapkan.')
+                : 'Pilih tanggal untuk otomatis sesuaikan harga weekday / peak.'}
+            >
+              <AInput type="date" value={glampCheckIn} onChange={handleGlampCheckIn} />
+            </AField>
+          )}
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
               <thead>

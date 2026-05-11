@@ -631,8 +631,13 @@ function GlampingFields({ state, set, glampings }) {
         </div>
       )}
 
-      <Field label="Tanggal check-in">
+      <Field label="Tanggal check-in *">
         <GlampDatePicker value={state.date} onChange={v => set('date', v)} min={TODAY} glampId={state.glampLoc} />
+        {!state.date && (
+          <div style={{ marginTop: 6, fontSize: 12, color: '#C23B2A', fontFamily: 'var(--font-display)', fontWeight: 700 }}>
+            Pilih tanggal check-in untuk melanjutkan.
+          </div>
+        )}
         {avStatus === 'unavailable' && (
           <div style={{ marginTop: 6, fontSize: 12, color: '#C23B2A', fontFamily: 'var(--font-display)', fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#C23B2A', display: 'inline-block' }} />
@@ -651,7 +656,7 @@ function GlampingFields({ state, set, glampings }) {
           total={estimate}
           discountedTotal={applyDiscount(estimate, state.appliedReferral)}
           referral={state.appliedReferral}
-          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${peak ? 'weekend/libur' : 'weekday'}${extraBedTotal > 0 ? ` · ${extraBeds} extra bed ${formatRupiah(extraBedTotal)}` : ''}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
+          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${peak ? 'weekend/libur/H-1' : 'weekday'}${extraBedTotal > 0 ? ` · ${extraBeds} extra bed ${formatRupiah(extraBedTotal)}` : ''}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
         />
       )}
       <Field label="Catatan / request">
@@ -713,7 +718,7 @@ export default function InquiryScreen({ onSubmit }) {
   const canSubmit = (() => {
     const base = form.name.trim().length > 1 && form.email.trim().length > 3 && form.wa.trim().length > 5;
     if (!base) return false;
-    if (kind === 'glamping') return glampDateStatus !== 'unavailable';
+    if (kind === 'glamping') return !!form.date && glampDateStatus !== 'unavailable';
     return true;
   })();
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { S, AField, ATextarea, Panel, ConfirmModal, EmptyState } from './shared';
 import InvoiceModal from './InvoiceModal';
+import { isPeakDay } from '../lib/holidays';
 
 const STATUS_OPTIONS = [
   { value: 'new',         label: 'New Inquiry' },
@@ -267,6 +268,13 @@ export default function AdminInquiries() {
               : null} />
             <Row label="Meeting Point" value={detail.kind === 'glamping' ? null : (detail.data?.meetingPoint || null)} />
             <Row label="Departure"     value={getDepartureDate(detail, openTrips)} />
+            <Row label="Tarif check-in" value={
+              detail.kind === 'glamping'
+                ? (detail.data?.date
+                    ? (isPeakDay(detail.data.date) ? '⭐ Peak — Weekend / Libur / H-1 Libur' : '📆 Weekday (Senin–Kamis)')
+                    : '(tanggal belum dipilih)')
+                : null
+            } />
             <Row label="Pax"           value={detail.data?.pax != null ? String(detail.data.pax) : null} />
             <Row label="Duration"      value={getDuration(detail, openTrips)} />
             <Row label="Add-Ons"       value={getAddons(detail, openTrips, glampings)} />

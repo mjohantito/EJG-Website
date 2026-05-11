@@ -394,13 +394,16 @@ export function TentTypePriceEditor({ tiers = [], onChange }) {
               <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekday ?? 0} onChange={e => update(i, 'priceWeekday', e.target.value)} />
             </div>
             <div style={{ flex: '1 1 120px' }}>
-              <label style={lbl()}>Weekend (Rp) / malam</label>
+              <label style={lbl()}>Weekend / Libur / H-1 Libur (Rp) / malam</label>
               <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekend ?? 0} onChange={e => update(i, 'priceWeekend', e.target.value)} />
             </div>
             <div style={{ flex: '1 1 120px' }}>
               <label style={lbl()}>Extra bed (Rp) / orang / malam</label>
               <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.extraBedPrice ?? 0} onChange={e => update(i, 'extraBedPrice', e.target.value)} />
             </div>
+          </div>
+          <div style={{ marginTop: 6, fontSize: 10, color: '#9ca3af', paddingLeft: 2 }}>
+            Harga weekday: Senin–Kamis (bukan libur). Harga weekend/libur/H-1: Jumat–Minggu, hari libur nasional, dan hari sebelum libur nasional.
           </div>
         </div>
       ))}
