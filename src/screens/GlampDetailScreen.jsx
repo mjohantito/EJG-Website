@@ -52,7 +52,7 @@ export default function GlampDetailScreen() {
 
       {/* Description */}
       <div style={{ padding: '16px 20px 0' }}>
-        <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65 }}>{g.description}</p>
+        <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{g.description}</p>
       </div>
 
       {/* Gallery */}
