@@ -350,15 +350,17 @@ export function PriceTierEditor({ tiers = [], onChange, unit = 'malam', weekend 
   );
 }
 
-/* ── Tent Type Price Editor: [{ id, name, capacity, priceWeekday, priceWeekend }] ── */
+/* ── Tent Type Price Editor: [{ id, name, capacity, maxCapacity, extraBedPrice, priceWeekday, priceWeekend }] ── */
 export function TentTypePriceEditor({ tiers = [], onChange }) {
-  const add = () => onChange([...tiers, { id: `tent-${Date.now()}`, name: '', capacity: 2, priceWeekday: 0, priceWeekend: 0 }]);
+  const numKeys = ['capacity', 'maxCapacity', 'extraBedPrice', 'priceWeekday', 'priceWeekend'];
+  const add = () => onChange([...tiers, { id: `tent-${Date.now()}`, name: '', capacity: 4, maxCapacity: 6, extraBedPrice: 0, priceWeekday: 0, priceWeekend: 0 }]);
   const remove = (i) => onChange(tiers.filter((_, j) => j !== i));
   const update = (i, key, val) => {
     const next = [...tiers];
-    next[i] = { ...next[i], [key]: ['capacity', 'priceWeekday', 'priceWeekend'].includes(key) ? Number(val) : val };
+    next[i] = { ...next[i], [key]: numKeys.includes(key) ? Number(val) : val };
     onChange(next);
   };
+  const lbl = (text) => ({ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 });
   return (
     <div>
       {tiers.length === 0 && (
@@ -367,25 +369,39 @@ export function TentTypePriceEditor({ tiers = [], onChange }) {
         </p>
       )}
       {tiers.map((tier, i) => (
-        <div key={tier.id || i} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'flex-end' }}>
-          <div style={{ flex: 2 }}>
-            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Tipe Tenda</label>
-            <input style={{ ...S.input, fontSize: 13 }} value={tier.name} onChange={e => update(i, 'name', e.target.value)} placeholder="Standard Tent" />
+        <div key={tier.id || i} style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tipe #{i + 1}</span>
+            <button type="button" onClick={() => remove(i)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '3px 10px', fontSize: 13 }}>× Hapus</button>
           </div>
-          <div style={{ width: 80 }}>
-            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Kapasitas</label>
-            <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.capacity ?? 2} onChange={e => update(i, 'capacity', e.target.value)} />
+          <div style={{ display: 'flex', gap: '2%', flexWrap: 'wrap', marginBottom: 8 }}>
+            <div style={{ flex: '2 1 180px' }}>
+              <label style={lbl()}>Nama Tenda</label>
+              <input style={{ ...S.input, fontSize: 13 }} value={tier.name} onChange={e => update(i, 'name', e.target.value)} placeholder="Peak Villa Tent" />
+            </div>
+            <div style={{ flex: '1 1 80px' }}>
+              <label style={lbl()}>Kap. Normal</label>
+              <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.capacity ?? 4} onChange={e => update(i, 'capacity', e.target.value)} />
+            </div>
+            <div style={{ flex: '1 1 80px' }}>
+              <label style={lbl()}>Kap. Maks.</label>
+              <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.maxCapacity ?? 6} onChange={e => update(i, 'maxCapacity', e.target.value)} />
+            </div>
           </div>
-          <div style={{ flex: 2 }}>
-            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Weekday (Rp) / malam</label>
-            <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekday ?? 0} onChange={e => update(i, 'priceWeekday', e.target.value)} />
+          <div style={{ display: 'flex', gap: '2%', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 120px' }}>
+              <label style={lbl()}>Weekday (Rp) / malam</label>
+              <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekday ?? 0} onChange={e => update(i, 'priceWeekday', e.target.value)} />
+            </div>
+            <div style={{ flex: '1 1 120px' }}>
+              <label style={lbl()}>Weekend (Rp) / malam</label>
+              <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekend ?? 0} onChange={e => update(i, 'priceWeekend', e.target.value)} />
+            </div>
+            <div style={{ flex: '1 1 120px' }}>
+              <label style={lbl()}>Extra bed (Rp) / orang / malam</label>
+              <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.extraBedPrice ?? 0} onChange={e => update(i, 'extraBedPrice', e.target.value)} />
+            </div>
           </div>
-          <div style={{ flex: 2 }}>
-            <label style={{ fontSize: 10, fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: 4 }}>Weekend (Rp) / malam</label>
-            <input style={{ ...S.input, fontSize: 13 }} type="number" min={0} value={tier.priceWeekend ?? 0} onChange={e => update(i, 'priceWeekend', e.target.value)} />
-          </div>
-          <button type="button" onClick={() => remove(i)}
-            style={{ ...S.btn, background: '#fee2e2', color: '#dc2626', padding: '0 10px', flexShrink: 0 }}>×</button>
         </div>
       ))}
       <button type="button" onClick={add} style={{ ...S.btn, background: '#f0fdf4', color: '#16a34a', fontSize: 12 }}>+ Tambah tipe tenda</button>
