@@ -107,7 +107,12 @@ export default function AdminGlamping() {
   };
 
   const openAdd = () => { setDraft({ ...BLANK, amenities: [], gallery: [], addons: [], closedDays: [] }); setPanel({ mode: 'add' }); };
-  const openEdit = (item) => { setDraft({ ...item }); setPanel({ mode: 'edit', id: item.id }); };
+  const normTiers = (tiers) => (tiers || []).map(t => ({
+    extraBedPrice: 0,
+    maxCapacity: t.capacity,
+    ...t,
+  }));
+  const openEdit = (item) => { setDraft({ ...item, priceTiers: normTiers(item.priceTiers) }); setPanel({ mode: 'edit', id: item.id }); };
   const set = (key, val) => setDraft(d => ({ ...d, [key]: val }));
 
   const save = async () => {
