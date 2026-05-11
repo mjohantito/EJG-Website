@@ -385,7 +385,7 @@ export function TentTypePriceEditor({ tiers = [], onChange }) {
             </div>
             <div style={{ flex: '1 1 80px' }}>
               <label style={lbl()}>Kap. Maks.</label>
-              <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.maxCapacity ?? 6} onChange={e => update(i, 'maxCapacity', e.target.value)} />
+              <input style={{ ...S.input, fontSize: 13 }} type="number" min={1} value={tier.maxCapacity ?? tier.capacity ?? 4} onChange={e => update(i, 'maxCapacity', e.target.value)} />
             </div>
           </div>
           <div style={{ display: 'flex', gap: '2%', flexWrap: 'wrap' }}>
