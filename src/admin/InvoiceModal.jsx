@@ -60,6 +60,11 @@ function buildItems(inq, openTrips, glampings, privateDestinations) {
     const glampTotal = pricePerNight * nights;
     const tentDesc = tentTier?.name ? ` · ${tentTier.name}` : '';
     items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang${tentDesc} · ${nights} malam`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
+    const extraBeds = tentTier ? Math.max(0, pax - (tentTier.capacity || 0)) : 0;
+    if (extraBeds > 0 && tentTier?.extraBedPrice) {
+      const ebTotal = extraBeds * tentTier.extraBedPrice * nights;
+      items.push(mk({ id: 'extra-bed', name: 'Extra Bed', desc: `${extraBeds} extra bed × ${nights} malam`, qty: extraBeds, unitPrice: tentTier.extraBedPrice * nights, total: ebTotal }));
+    }
     if (g) {
       (d.addons || []).forEach(id => {
         const a = g.addons?.find(x => x.id === id);
