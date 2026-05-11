@@ -530,7 +530,7 @@ function GlampDatePicker({ value, onChange, min, glampId }) {
           <span style={{ width: 10, height: 10, background: 'rgba(243,213,67,0.35)', borderRadius: 2, display: 'inline-block' }} />Libur nasional
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 10, height: 10, background: 'rgba(243,213,67,0.12)', borderRadius: 2, display: 'inline-block' }} />Harga weekend
+          <span style={{ width: 10, height: 10, background: 'rgba(243,213,67,0.12)', borderRadius: 2, display: 'inline-block' }} />High season
         </span>
       </div>
     </div>
