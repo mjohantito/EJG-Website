@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { submitInquiry } from '../lib/submitInquiry';
+import { isPeakDay, isHoliday } from '../lib/holidays';
 import Footer from '../components/Footer';
 
 /* ── Glamping availability rules ── */
@@ -470,6 +471,72 @@ function CorporateFields({ state, set }) {
   );
 }
 
+/* ── Custom date picker (Monday-first, highlights peak days & holidays) ── */
+const MONTH_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const DAY_LABELS = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+
+function GlampDatePicker({ value, onChange, min, glampId }) {
+  const [view, setView] = useState(() => {
+    const d = value ? new Date(value + 'T00:00:00') : new Date();
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+
+  const prevMonth = () => setView(v => v.month === 0 ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 });
+  const nextMonth = () => setView(v => v.month === 11 ? { year: v.year + 1, month: 0 } : { ...v, month: v.month + 1 });
+
+  const firstDayRaw = new Date(view.year, view.month, 1).getDay(); // 0=Sun
+  const firstDayMon = firstDayRaw === 0 ? 6 : firstDayRaw - 1;    // convert to Mon=0
+  const daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
+  const cells = [...Array(firstDayMon).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+
+  const today = new Date().toISOString().split('T')[0];
+  const ds = (d) => `${view.year}-${String(view.month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+  return (
+    <div style={{ background: '#fff', border: '1.5px solid #d1d5db', borderRadius: 12, padding: '12px 14px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <button type="button" onClick={prevMonth} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 18, color: '#374151', lineHeight: 1, padding: '0 4px' }}>‹</button>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{MONTH_ID[view.month]} {view.year}</span>
+        <button type="button" onClick={nextMonth} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 18, color: '#374151', lineHeight: 1, padding: '0 4px' }}>›</button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: 4 }}>
+        {DAY_LABELS.map(d => <div key={d} style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', padding: '2px 0' }}>{d}</div>)}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, textAlign: 'center' }}>
+        {cells.map((day, i) => {
+          if (!day) return <div key={i} />;
+          const date = ds(day);
+          const past = date < (min || today);
+          const unavail = dateAvailability(date, glampId) === 'unavailable';
+          const disabled = past || unavail;
+          const selected = date === value;
+          const peak = isPeakDay(date);
+          const holiday = isHoliday(date);
+          return (
+            <button key={i} type="button" disabled={disabled} onClick={() => onChange(date)} style={{
+              border: 'none', borderRadius: 6, padding: '5px 0', fontSize: 12, cursor: disabled ? 'default' : 'pointer',
+              fontWeight: selected ? 800 : 400,
+              background: selected ? '#252525' : holiday ? 'rgba(243,213,67,0.35)' : peak ? 'rgba(243,213,67,0.12)' : 'transparent',
+              color: selected ? '#F3D543' : disabled ? '#d1d5db' : '#111',
+              textDecoration: unavail ? 'line-through' : 'none',
+              outline: date === today && !selected ? '1.5px solid #e5e7eb' : 'none',
+              outlineOffset: '-1px',
+            }}>{day}</button>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 8, display: 'flex', gap: 10, fontSize: 10, color: '#9ca3af' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ width: 10, height: 10, background: 'rgba(243,213,67,0.35)', borderRadius: 2, display: 'inline-block' }} />Libur nasional
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ width: 10, height: 10, background: 'rgba(243,213,67,0.12)', borderRadius: 2, display: 'inline-block' }} />Harga weekend
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* ── Glamping fields ── */
 function GlampingFields({ state, set, glampings }) {
   const rule = GLAMP_AVAIL[state.glampLoc];
@@ -482,14 +549,10 @@ function GlampingFields({ state, set, glampings }) {
     ? (tentTiers.find(t => t.id === state.tentType) || tentTiers[0])
     : null;
 
-  const isWeekend = state.date ? (() => {
-    const [y, m, d] = state.date.split('-').map(Number);
-    const day = new Date(y, m - 1, d).getDay();
-    return day === 0 || day === 6;
-  })() : false;
+  const peak = isPeakDay(state.date);
 
   const pricePerNight = activeTentTier
-    ? (isWeekend ? (activeTentTier.priceWeekend ?? 0) : (activeTentTier.priceWeekday ?? 0))
+    ? (peak ? (activeTentTier.priceWeekend ?? 0) : (activeTentTier.priceWeekday ?? 0))
     : (glamp?.pricePerNight ?? 0);
 
   const maxPax = activeTentTier?.maxCapacity || activeTentTier?.capacity || 20;
@@ -569,16 +632,7 @@ function GlampingFields({ state, set, glampings }) {
       )}
 
       <Field label="Tanggal check-in">
-        <input type="date" value={state.date} min={TODAY} max={MAX_DATE}
-          onChange={e => set('date', e.target.value)}
-          style={{ borderColor: avStatus === 'unavailable' ? '#C23B2A' : undefined }}
-        />
-        {avStatus === 'available' && state.date && (
-          <div style={{ marginTop: 6, fontSize: 12, color: '#3E7A35', fontFamily: 'var(--font-display)', fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#3E7A35', display: 'inline-block' }} />
-            Tanggal tersedia
-          </div>
-        )}
+        <GlampDatePicker value={state.date} onChange={v => set('date', v)} min={TODAY} glampId={state.glampLoc} />
         {avStatus === 'unavailable' && (
           <div style={{ marginTop: 6, fontSize: 12, color: '#C23B2A', fontFamily: 'var(--font-display)', fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#C23B2A', display: 'inline-block' }} />
@@ -597,7 +651,7 @@ function GlampingFields({ state, set, glampings }) {
           total={estimate}
           discountedTotal={applyDiscount(estimate, state.appliedReferral)}
           referral={state.appliedReferral}
-          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${extraBedTotal > 0 ? ` · ${extraBeds} extra bed ${formatRupiah(extraBedTotal)}` : ''}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
+          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${peak ? 'weekend/libur' : 'weekday'}${extraBedTotal > 0 ? ` · ${extraBeds} extra bed ${formatRupiah(extraBedTotal)}` : ''}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
         />
       )}
       <Field label="Catatan / request">
