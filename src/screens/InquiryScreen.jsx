@@ -492,7 +492,7 @@ function GlampingFields({ state, set, glampings }) {
     ? (isWeekend ? (activeTentTier.priceWeekend ?? 0) : (activeTentTier.priceWeekday ?? 0))
     : (glamp?.pricePerNight ?? 0);
 
-  const maxPax = activeTentTier?.maxCapacity || 20;
+  const maxPax = activeTentTier?.maxCapacity || activeTentTier?.capacity || 20;
   const extraBeds = activeTentTier ? Math.max(0, state.pax - (activeTentTier.capacity || 0)) : 0;
   const extraBedTotal = extraBeds > 0 ? extraBeds * (activeTentTier?.extraBedPrice || 0) * state.nights : 0;
 
