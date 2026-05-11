@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useData, lookupTier } from '../context/DataContext';
+import { useData } from '../context/DataContext';
 import Icon from '../components/Icon';
 import Footer from '../components/Footer';
 
@@ -8,10 +8,11 @@ function fmt(n) {
   return `Rp ${(n / 1_000).toFixed(0)}rb`;
 }
 
-function fmtPerPax(tiers) {
+function cheapestTentPrice(tiers) {
   if (!tiers?.length) return null;
-  const highest = [...tiers].sort((a, b) => b.minPax - a.minPax)[0];
-  return fmt(Math.round(highest.price / highest.minPax));
+  const prices = tiers.flatMap(t => [t.priceWeekday, t.priceWeekend].filter(p => p && p > 0));
+  if (!prices.length) return null;
+  return fmt(Math.min(...prices));
 }
 
 export default function GlampDetailScreen() {
@@ -163,10 +164,8 @@ export default function GlampDetailScreen() {
               MULAI
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 22, color: '#F3D543', letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              {g.priceTiers?.length > 0 ? fmtPerPax(g.priceTiers) : `Rp ${g.price}`}
-              {g.priceTiers?.length > 0 && (
-                <span style={{ fontWeight: 500, fontSize: 13, color: 'rgba(243,213,67,0.55)', letterSpacing: 0 }}>/pax</span>
-              )}
+              {cheapestTentPrice(g.priceTiers) ?? `Rp ${g.price}`}
+              <span style={{ fontWeight: 500, fontSize: 13, color: 'rgba(243,213,67,0.55)', letterSpacing: 0 }}>/malam</span>
             </div>
           </div>
           <button
