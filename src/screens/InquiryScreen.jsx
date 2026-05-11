@@ -492,6 +492,10 @@ function GlampingFields({ state, set, glampings }) {
     ? (isWeekend ? (activeTentTier.priceWeekend ?? 0) : (activeTentTier.priceWeekday ?? 0))
     : (glamp?.pricePerNight ?? 0);
 
+  const maxPax = activeTentTier?.maxCapacity || 20;
+  const extraBeds = activeTentTier ? Math.max(0, state.pax - (activeTentTier.capacity || 0)) : 0;
+  const extraBedTotal = extraBeds > 0 ? extraBeds * (activeTentTier?.extraBedPrice || 0) * state.nights : 0;
+
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
     if (!a) return sum;
@@ -499,14 +503,23 @@ function GlampingFields({ state, set, glampings }) {
   }, 0) : 0;
 
   const baseTotal = pricePerNight * state.nights;
-  const estimate = baseTotal > 0 ? baseTotal + addonsTotal : null;
+  const estimate = baseTotal > 0 ? baseTotal + addonsTotal + extraBedTotal : null;
 
   const handleLocChange = (newId) => {
     const newGlamp = glampings.find(g => g.id === newId);
     set('glampLoc', newId);
     set('tentType', newGlamp?.priceTiers?.[0]?.id || '');
+    set('pax', 1);
     set('date', '');
     set('addons', []);
+  };
+
+  const handleTentChange = (tentId) => {
+    const newTier = tentTiers.find(t => t.id === tentId);
+    set('tentType', tentId);
+    if (newTier?.maxCapacity && state.pax > newTier.maxCapacity) {
+      set('pax', newTier.maxCapacity);
+    }
   };
 
   return (
@@ -536,24 +549,24 @@ function GlampingFields({ state, set, glampings }) {
 
       {hasTentTiers && (
         <Field label="Tipe tenda">
-          <select value={state.tentType || tentTiers[0]?.id} onChange={e => set('tentType', e.target.value)}>
+          <select value={state.tentType || tentTiers[0]?.id} onChange={e => handleTentChange(e.target.value)}>
             {tentTiers.map(t => (
-              <option key={t.id} value={t.id}>{t.name}{t.capacity ? ` (maks. ${t.capacity} orang)` : ''}</option>
+              <option key={t.id} value={t.id}>{t.name}{t.capacity ? ` for ${t.capacity}` : ''}</option>
             ))}
           </select>
         </Field>
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <Field label="Jumlah tamu">
-          <select value={state.pax} onChange={e => set('pax', Number(e.target.value))}>
-            {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
-              <option key={n} value={n}>{n} orang</option>
-            ))}
-          </select>
-        </Field>
+        <Stepper label="Jumlah tamu" value={state.pax} onChange={v => set('pax', v)} min={1} max={maxPax} />
         <Stepper label="Jumlah malam" value={state.nights} onChange={v => set('nights', v)} min={1} max={3} />
       </div>
+      {extraBeds > 0 && (
+        <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: -4, paddingLeft: 2 }}>
+          {extraBeds} extra bed · {formatRupiah(extraBedTotal > 0 ? extraBedTotal : 0)}
+          {extraBedTotal === 0 && ' (harga menyusul)'}
+        </div>
+      )}
 
       <Field label="Tanggal check-in">
         <input type="date" value={state.date} min={TODAY} max={MAX_DATE}
@@ -584,7 +597,7 @@ function GlampingFields({ state, set, glampings }) {
           total={estimate}
           discountedTotal={applyDiscount(estimate, state.appliedReferral)}
           referral={state.appliedReferral}
-          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
+          detail={`${formatRupiah(pricePerNight)}/malam · ${state.nights} malam · ${isWeekend ? 'weekend' : 'weekday'}${extraBedTotal > 0 ? ` · ${extraBeds} extra bed ${formatRupiah(extraBedTotal)}` : ''}${addonsTotal > 0 ? ` + add-on ${formatRupiah(addonsTotal)}` : ''}`}
         />
       )}
       <Field label="Catatan / request">
