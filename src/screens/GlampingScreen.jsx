@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import GlampCard from '../components/GlampCard';
@@ -6,6 +7,12 @@ import Footer from '../components/Footer';
 export default function GlampingScreen() {
   const navigate = useNavigate();
   const { glampings } = useData();
+  const [filter, setFilter] = useState('Semua');
+
+  const cities = ['Semua', ...new Set(glampings.map(g => g.location.split(',')[0].trim()))];
+  const filtered = filter === 'Semua'
+    ? glampings
+    : glampings.filter(g => g.location.split(',')[0].trim() === filter);
 
   return (
     <>
@@ -15,11 +22,30 @@ export default function GlampingScreen() {
           Outdoor yang<br />
           beneran <span className="italic" style={{ fontStyle: 'italic', fontWeight: 500 }}>nyaman</span><span className="q-stamp">.</span>
         </h1>
-        <p className="lead">{glampings.length} lokasi di Jawa Timur. Bisa di-add ke private trip kamu juga.</p>
+        <p className="lead">{filtered.length} lokasi{filter !== 'Semua' ? ` di ${filter}` : ' di Jawa Timur'}. Bisa di-add ke private trip kamu juga.</p>
+      </div>
+
+      <div style={{ padding: '0 20px 16px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {cities.map(city => (
+          <button
+            key={city}
+            onClick={() => setFilter(city)}
+            style={{
+              padding: '8px 16px', borderRadius: 999, cursor: 'pointer',
+              border: filter === city ? '2px solid var(--ejg-ink)' : '1.5px solid var(--border)',
+              background: filter === city ? 'var(--ejg-ink)' : 'transparent',
+              color: filter === city ? 'var(--ejg-matahari)' : 'var(--fg-2)',
+              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13,
+              transition: 'all 140ms ease',
+            }}
+          >
+            {city}
+          </button>
+        ))}
       </div>
 
       <div className="glamp-list">
-        {glampings.map(g => (
+        {filtered.map(g => (
           <GlampCard key={g.id} g={g} onClick={() => navigate(`/glamping/${g.id}`)} />
         ))}
       </div>
