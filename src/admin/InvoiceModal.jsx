@@ -104,178 +104,189 @@ function generateHtml(inv, st = {}) {
   const subtotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
   const total = Math.max(0, subtotal - (inv.deposit || 0));
 
+  const tdL = `style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0;border-bottom:1px dashed #EEEAE2"`;
+  const tdR = `style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0;border-bottom:1px dashed #EEEAE2;text-align:right"`;
+
   return `<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Invoice EJG-${esc(inv.num)}</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#F0ECE4;font-family:'Plus Jakarta Sans',sans-serif;padding:40px 20px;color:#252525}
-.wrapper{max-width:680px;margin:0 auto}
-.top-strip{background:#252525;border-radius:16px 16px 0 0;padding:28px 40px;display:flex;align-items:center;justify-content:space-between}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-mark{width:42px;height:42px;background:#F3D543;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#252525;letter-spacing:-0.5px}
-.brand-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.3px}
-.brand-sub{font-size:10px;color:rgba(255,255,255,.45);font-weight:400;margin-top:1px}
-.invoice-badge{background:#F3D543;color:#252525;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
-.card{background:#fff;padding:40px}
-.meta-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:28px;border-bottom:1.5px solid #EEEAE2}
-.meta-label{font-size:10px;color:rgba(37,37,37,.4);font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
-.meta-value{font-size:14px;font-weight:600;color:#252525}
-.invoice-num{font-size:22px;font-weight:800;color:#252525;letter-spacing:-.5px}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
-.info-box{background:#F7F5F0;border-radius:12px;padding:18px 20px}
-.info-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:10px}
-.info-row{margin-bottom:4px}
-.info-row .key{font-size:11px;color:rgba(37,37,37,.5)}
-.info-row .val{font-size:13px;font-weight:600;color:#252525}
-.items-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:12px}
-table.items{width:100%;border-collapse:collapse;margin-bottom:24px}
-table.items thead th{background:#252525;color:rgba(255,255,255,.55);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:10px 14px;text-align:left}
-table.items thead th:first-child{border-radius:8px 0 0 8px}
-table.items thead th:last-child{border-radius:0 8px 8px 0;text-align:right}
-table.items tbody tr{border-bottom:1px solid #EEEAE2}
-table.items tbody tr:last-child{border-bottom:none}
-table.items tbody td{padding:14px;font-size:13px;color:#252525;vertical-align:top}
-table.items tbody td:last-child{text-align:right;font-weight:600}
-.item-name{font-weight:600;margin-bottom:2px}
-.item-desc{font-size:11px;color:rgba(37,37,37,.45)}
-.totals-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;color:rgba(37,37,37,.6);border-bottom:1px dashed #EEEAE2}
-.totals-row:last-of-type{border-bottom:none}
-.totals-final{display:flex;justify-content:space-between;align-items:center;background:#252525;border-radius:12px;padding:18px 20px;margin-top:12px}
-.totals-final .label{font-size:12px;color:rgba(255,255,255,.55);font-weight:500}
-.totals-final .amount{font-size:24px;font-weight:800;color:#F3D543;letter-spacing:-.5px}
-.section-divider{height:1.5px;background:#EEEAE2;margin:32px 0}
-.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
-.payment-box{border:1.5px solid #EEEAE2;border-radius:12px;padding:16px 18px}
-.payment-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:8px}
-.payment-val{font-size:13px;font-weight:700;color:#252525}
-.payment-sub{font-size:11px;color:rgba(37,37,37,.45);margin-top:2px}
-.notes{background:#FFFBEA;border-left:3px solid #F3D543;border-radius:0 8px 8px 0;padding:14px 16px;font-size:12px;color:rgba(37,37,37,.65);line-height:1.7}
-.notes strong{color:#252525}
-.footer-strip{background:#252525;border-radius:0 0 16px 16px;padding:22px 40px;display:flex;justify-content:space-between;align-items:center}
-.footer-issued{font-size:11px;color:rgba(255,255,255,.4)}
-.footer-issued strong{color:#fff;display:block;font-size:13px;margin-top:2px}
-.footer-contact{text-align:right}
-.footer-contact a{display:block;font-size:11px;color:rgba(255,255,255,.55);text-decoration:none}
-@media print{body{background:#fff;padding:0}.wrapper{max-width:100%}}
+body{margin:0;padding:0;background:#F0ECE4;font-family:Arial,Helvetica,sans-serif;color:#252525}
+a{color:inherit;text-decoration:none}
+@media print{body{background:#fff}}
 </style>
 </head>
 <body>
-<div class="wrapper">
-<div class="top-strip">
-  <div class="brand">
-    ${st.logo_url
-      ? `<img src="${esc(st.logo_url)}" alt="Logo" style="height:42px;width:auto;object-fit:contain;border-radius:8px">`
-      : '<div class="brand-mark">EJG</div>'}
-    <div>
-      <div class="brand-name">EH! JADI GA?</div>
-      <div class="brand-sub">Travel &amp; Glamping</div>
-    </div>
-  </div>
-  <div class="invoice-badge">Invoice</div>
-</div>
-<div class="card">
-  <div class="meta-row">
-    <div>
-      <div class="meta-label">Nomor Invoice</div>
-      <div class="invoice-num">EJG-${esc(inv.num)}</div>
-    </div>
-    <div style="text-align:right">
-      <div style="margin-bottom:12px">
-        <div class="meta-label">Tanggal Invoice</div>
-        <div class="meta-value">${esc(inv.date)}</div>
-      </div>
-      <div>
-        <div class="meta-label">Batas Pembayaran</div>
-        <div class="meta-value" style="color:#D63A2F">${esc(inv.due)}</div>
-      </div>
-    </div>
-  </div>
-  <div class="info-grid">
-    <div class="info-box">
-      <div class="info-box-label">Bill To</div>
-      <div class="info-row"><div class="val" style="font-size:15px;font-weight:700">${esc(inv.customerName)}</div></div>
-      <div class="info-row" style="margin-top:6px"><div class="key">Telepon</div><div class="val">${esc(inv.customerPhone)}</div></div>
-      <div class="info-row"><div class="key">Email</div><div class="val">${esc(inv.customerEmail)}</div></div>
-    </div>
-    <div class="info-box">
-      <div class="info-box-label">Detail Booking</div>
-      <div class="info-row"><div class="key">Jenis Trip</div><div class="val">${esc(inv.tripType)}</div></div>
-      <div class="info-row"><div class="key">Tanggal</div><div class="val">${esc(inv.tripDate)}</div></div>
-      <div class="info-row"><div class="key">Jumlah Orang</div><div class="val">${esc(inv.paxCount)}</div></div>
-      <div class="info-row"><div class="key">Booking ID</div><div class="val">${esc(inv.bookingId)}</div></div>
-    </div>
-  </div>
-  <div class="items-label">Rincian Biaya</div>
-  <table class="items">
-    <thead><tr>
-      <th style="width:45%">Item</th>
-      <th>Qty</th>
-      <th>Harga Satuan</th>
-      <th>Total</th>
-    </tr></thead>
-    <tbody>
-      ${inv.items.map(it => `
-      <tr>
-        <td>
-          <div class="item-name">${esc(it.name)}</div>
-          ${it.desc ? `<div class="item-desc">${esc(it.desc)}</div>` : ''}
-        </td>
-        <td>${esc(it.qty)}</td>
-        <td>${fmtRp(it.unitPrice)}</td>
-        <td>${fmtRp(it.total)}</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>
-  <div style="display:flex;justify-content:flex-end">
-    <div style="width:280px">
-      <div class="totals-row"><span>Subtotal</span><span>${fmtRp(subtotal)}</span></div>
-      <div class="totals-row ${inv.deposit > 0 ? 'deposit' : ''}">
-        <span>DP yang sudah dibayar</span>
-        <span style="${inv.deposit > 0 ? 'color:#2B8A3E;font-weight:600' : ''}">${inv.deposit > 0 ? `− ${fmtRp(inv.deposit)}` : '−'}</span>
-      </div>
-      <div class="totals-final">
-        <div class="label">Total Tagihan</div>
-        <div class="amount">${fmtRp(total)}</div>
-      </div>
-    </div>
-  </div>
-  <div class="section-divider"></div>
-  <div class="items-label" style="margin-bottom:14px">Informasi Pembayaran</div>
-  <div class="payment-grid">
-    <div class="payment-box">
-      <div class="payment-box-label">Transfer Bank</div>
-      <div class="payment-val">${esc(st.bank_name)}</div>
-      <div class="payment-sub">No. Rek: ${esc(st.bank_account)}</div>
-      <div class="payment-sub">a/n ${esc(st.bank_holder)}</div>
-    </div>
-    <div class="payment-box">
-      <div class="payment-box-label">Konfirmasi Pembayaran</div>
-      <div class="payment-val">WhatsApp</div>
-      <div class="payment-sub">${esc(st.whatsapp)}</div>
-      <div class="payment-sub" style="margin-top:6px">${esc(st.company_email)}</div>
-    </div>
-  </div>
-  <div class="notes">
-    <strong>Catatan:</strong> ${esc(inv.notes)}
-  </div>
-</div>
-<div class="footer-strip">
-  <div class="footer-issued">
-    Diterbitkan oleh
-    <strong>${esc(inv.issuerName)}</strong>
-  </div>
-  <div class="footer-contact">
-    <a href="mailto:${esc(st.company_email)}">${esc(st.company_email)}</a>
-    <a href="https://wa.me/${esc(st.whatsapp)}">wa.me/${esc(st.whatsapp)}</a>
-    <a href="https://instagram.com/${esc(st.instagram)}">@${esc(st.instagram)}</a>
-  </div>
-</div>
-</div>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F0ECE4;padding:40px 20px">
+<tr><td align="center">
+<table width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%">
+
+  <!-- Header -->
+  <tr><td style="background:#252525;border-radius:16px 16px 0 0;padding:24px 36px">
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td>
+        <table cellpadding="0" cellspacing="0"><tr>
+          <td style="vertical-align:middle;padding-right:12px">
+            ${st.logo_url
+              ? `<img src="${esc(st.logo_url)}" alt="Logo" height="42" style="display:block;height:42px;width:auto;border-radius:8px">`
+              : `<div style="width:42px;height:42px;background:#F3D543;border-radius:10px;font-size:13px;font-weight:800;color:#252525;text-align:center;line-height:42px">EJG</div>`}
+          </td>
+          <td style="vertical-align:middle">
+            <div style="font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.3px">EH! JADI GA?</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:1px">Travel &amp; Glamping</div>
+          </td>
+        </tr></table>
+      </td>
+      <td align="right" style="vertical-align:middle">
+        <span style="background:#F3D543;color:#252525;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;letter-spacing:.5px">INVOICE</span>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Card body -->
+  <tr><td style="background:#fff;padding:36px">
+
+    <!-- Invoice meta -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;padding-bottom:24px;border-bottom:1.5px solid #EEEAE2"><tr>
+      <td style="vertical-align:top">
+        <div style="font-size:10px;color:rgba(37,37,37,.4);font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Nomor Invoice</div>
+        <div style="font-size:22px;font-weight:800;color:#252525;letter-spacing:-.5px">EJG-${esc(inv.num)}</div>
+      </td>
+      <td style="vertical-align:top;text-align:right">
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;color:rgba(37,37,37,.4);font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Tanggal Invoice</div>
+          <div style="font-size:14px;font-weight:600;color:#252525">${esc(inv.date)}</div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:rgba(37,37,37,.4);font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Batas Pembayaran</div>
+          <div style="font-size:14px;font-weight:600;color:#D63A2F">${esc(inv.due)}</div>
+        </div>
+      </td>
+    </tr></table>
+
+    <!-- Bill To / Detail Booking -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px"><tr>
+      <td width="48%" style="vertical-align:top;background:#F7F5F0;border-radius:12px;padding:16px 18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:10px">Bill To</div>
+        <div style="font-size:15px;font-weight:700;color:#252525;margin-bottom:6px">${esc(inv.customerName)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.5);margin-bottom:2px">Telepon</div>
+        <div style="font-size:13px;font-weight:600;color:#252525;margin-bottom:4px">${esc(inv.customerPhone)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.5);margin-bottom:2px">Email</div>
+        <div style="font-size:13px;font-weight:600;color:#252525">${esc(inv.customerEmail)}</div>
+      </td>
+      <td width="4%"></td>
+      <td width="48%" style="vertical-align:top;background:#F7F5F0;border-radius:12px;padding:16px 18px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:10px">Detail Booking</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.5);margin-bottom:2px">Jenis Trip</div>
+        <div style="font-size:13px;font-weight:600;color:#252525;margin-bottom:4px">${esc(inv.tripType)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.5);margin-bottom:2px">Tanggal</div>
+        <div style="font-size:13px;font-weight:600;color:#252525;margin-bottom:4px">${esc(inv.tripDate)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.5);margin-bottom:2px">Jumlah Orang</div>
+        <div style="font-size:13px;font-weight:600;color:#252525;margin-bottom:4px">${esc(inv.paxCount)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.5);margin-bottom:2px">Booking ID</div>
+        <div style="font-size:13px;font-weight:600;color:#252525">${esc(inv.bookingId)}</div>
+      </td>
+    </tr></table>
+
+    <!-- Items table -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:10px">Rincian Biaya</div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:16px">
+      <thead>
+        <tr style="background:#252525">
+          <th style="padding:10px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.55);text-align:left;border-radius:8px 0 0 8px;width:44%">Item</th>
+          <th style="padding:10px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.55);text-align:left">Qty</th>
+          <th style="padding:10px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.55);text-align:left">Harga Satuan</th>
+          <th style="padding:10px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.55);text-align:right;border-radius:0 8px 8px 0">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${inv.items.map(it => `
+        <tr style="border-bottom:1px solid #EEEAE2">
+          <td style="padding:12px 14px;font-size:13px;color:#252525;vertical-align:top">
+            <div style="font-weight:600;margin-bottom:2px">${esc(it.name)}</div>
+            ${it.desc ? `<div style="font-size:11px;color:rgba(37,37,37,.45)">${esc(it.desc)}</div>` : ''}
+          </td>
+          <td style="padding:12px 14px;font-size:13px;color:#252525;vertical-align:top">${esc(it.qty)}</td>
+          <td style="padding:12px 14px;font-size:13px;color:#252525;vertical-align:top">${fmtRp(it.unitPrice)}</td>
+          <td style="padding:12px 14px;font-size:13px;color:#252525;vertical-align:top;text-align:right;font-weight:600">${fmtRp(it.total)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+
+    <!-- Totals -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">
+      <tr><td width="50%"></td><td width="50%">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td ${tdL}>Subtotal</td>
+            <td ${tdR}>${fmtRp(subtotal)}</td>
+          </tr>
+          <tr>
+            <td style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0">DP yang sudah dibayar</td>
+            <td style="font-size:13px;padding:7px 0;text-align:right;${inv.deposit > 0 ? 'color:#2B8A3E;font-weight:600' : 'color:rgba(37,37,37,.6)'}">${inv.deposit > 0 ? `− ${fmtRp(inv.deposit)}` : '−'}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding-top:10px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#252525;border-radius:12px"><tr>
+                <td style="padding:16px 18px;font-size:12px;color:rgba(255,255,255,.55);font-weight:500;vertical-align:middle">Total Tagihan</td>
+                <td style="padding:16px 18px;font-size:22px;font-weight:800;color:#F3D543;letter-spacing:-.5px;text-align:right;vertical-align:middle">${fmtRp(total)}</td>
+              </tr></table>
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+
+    <!-- Divider -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0"><tr><td style="height:1px;background:#EEEAE2;font-size:0">&nbsp;</td></tr></table>
+
+    <!-- Payment info -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:12px">Informasi Pembayaran</div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px"><tr>
+      <td width="48%" style="vertical-align:top;border:1.5px solid #EEEAE2;border-radius:12px;padding:14px 16px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:8px">Transfer Bank</div>
+        <div style="font-size:13px;font-weight:700;color:#252525">${esc(st.bank_name)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.45);margin-top:3px">No. Rek: ${esc(st.bank_account)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.45);margin-top:2px">a/n ${esc(st.bank_holder)}</div>
+      </td>
+      <td width="4%"></td>
+      <td width="48%" style="vertical-align:top;border:1.5px solid #EEEAE2;border-radius:12px;padding:14px 16px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(37,37,37,.35);margin-bottom:8px">Konfirmasi Pembayaran</div>
+        <div style="font-size:13px;font-weight:700;color:#252525">WhatsApp</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.45);margin-top:3px">${esc(st.whatsapp)}</div>
+        <div style="font-size:11px;color:rgba(37,37,37,.45);margin-top:4px">${esc(st.company_email)}</div>
+      </td>
+    </tr></table>
+
+    <!-- Notes -->
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="background:#FFFBEA;border-left:3px solid #F3D543;border-radius:0 8px 8px 0;padding:14px 16px;font-size:12px;color:rgba(37,37,37,.65);line-height:1.7">
+        <strong style="color:#252525">Catatan:</strong> ${esc(inv.notes)}
+      </td>
+    </tr></table>
+
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td style="background:#252525;border-radius:0 0 16px 16px;padding:20px 36px">
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="vertical-align:middle">
+        <div style="font-size:11px;color:rgba(255,255,255,.4)">Diterbitkan oleh</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px">${esc(inv.issuerName)}</div>
+      </td>
+      <td style="vertical-align:middle;text-align:right">
+        <a href="mailto:${esc(st.company_email)}" style="display:block;font-size:11px;color:rgba(255,255,255,.55)">${esc(st.company_email)}</a>
+        <a href="https://wa.me/${esc(st.whatsapp)}" style="display:block;font-size:11px;color:rgba(255,255,255,.55);margin-top:2px">wa.me/${esc(st.whatsapp)}</a>
+        <a href="https://instagram.com/${esc(st.instagram)}" style="display:block;font-size:11px;color:rgba(255,255,255,.55);margin-top:2px">@${esc(st.instagram)}</a>
+      </td>
+    </tr></table>
+  </td></tr>
+
+</table>
+</td></tr></table>
 </body>
 </html>`;
 }
