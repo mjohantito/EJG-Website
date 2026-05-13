@@ -382,7 +382,7 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
 
   const handleSendEmail = async () => {
     if (!EMAIL_WORKER_URL) {
-      setSendError('VITE_EMAIL_WORKER_URL belum dikonfigurasi di .env — tambahkan URL Cloudflare Worker kamu.');
+      setSendError('VITE_EMAIL_WORKER_URL belum dikonfigurasi di .env.');
       return;
     }
     setSending(true); setSendError(''); setSent(false);
