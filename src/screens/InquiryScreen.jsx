@@ -663,6 +663,34 @@ function GlampingFields({ state, set, glampings }) {
         <textarea value={state.notes} onChange={e => set('notes', e.target.value)}
           placeholder="Ada request makanan atau hal lain yang perlu kami siapkan?" />
       </Field>
+
+      <label style={{
+        display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer',
+        padding: '14px 16px', borderRadius: 14,
+        background: state.agreedToTerms ? 'var(--ejg-kertas-2)' : '#fff',
+        border: `1.5px solid ${state.agreedToTerms ? 'var(--ejg-ink)' : 'var(--border)'}`,
+        transition: 'all 140ms ease',
+      }}>
+        <input
+          type="checkbox"
+          checked={state.agreedToTerms}
+          onChange={e => set('agreedToTerms', e.target.checked)}
+          style={{ width: 18, height: 18, accentColor: 'var(--ejg-ink)', flexShrink: 0, marginTop: 1 }}
+        />
+        <span style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
+          Saya telah membaca dan menyetujui{' '}
+          <a
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            style={{ color: 'var(--ejg-ink)', fontWeight: 700, textDecoration: 'underline' }}
+          >
+            Syarat &amp; Ketentuan Glamping
+          </a>
+          {' '}EH! JADI GA?
+        </span>
+      </label>
     </>
   );
 }
@@ -695,6 +723,7 @@ export default function InquiryScreen({ onSubmit }) {
     nights: 1,
     addons: [],
     appliedReferral: null,
+    agreedToTerms: false,
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -718,7 +747,7 @@ export default function InquiryScreen({ onSubmit }) {
   const canSubmit = (() => {
     const base = form.name.trim().length > 1 && form.email.trim().length > 3 && form.wa.trim().length > 5;
     if (!base) return false;
-    if (kind === 'glamping') return !!form.date && glampDateStatus !== 'unavailable';
+    if (kind === 'glamping') return !!form.date && glampDateStatus !== 'unavailable' && form.agreedToTerms;
     return true;
   })();
 
