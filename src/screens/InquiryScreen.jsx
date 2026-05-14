@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useData } from '../context/DataContext';
+import { useData, lookupTier } from '../context/DataContext';
 import { submitInquiry } from '../lib/submitInquiry';
 import { isPeakDay, isHoliday } from '../lib/holidays';
 import Footer from '../components/Footer';
