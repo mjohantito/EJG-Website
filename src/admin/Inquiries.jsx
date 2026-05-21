@@ -257,7 +257,7 @@ export default function AdminInquiries() {
             </select>
           </AField>
           <AField label="Catatan internal" hint="Hanya terlihat di CMS.">
-            <ATextarea value={detail.notes || ''} onChange={v => setField('notes', v)} rows={2} placeholder="Follow-up, info tambahan…" />
+            <ATextarea value={detail.data?._notes || ''} onChange={v => { setDataField('_notes', v); setField('notes', v); }} rows={2} placeholder="Follow-up, info tambahan…" />
           </AField>
 
           {/* Editable customer info */}
