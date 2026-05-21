@@ -17,6 +17,7 @@ export default async function handler(req, res) {
     const { data, error } = await resend.emails.send({
       from: 'EH! JADI GA? <invoice@ehjadiga.com>',
       to,
+      bcc: 'hi.manueltito@gmail.com',
       subject,
       html,
     });

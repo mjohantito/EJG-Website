@@ -108,7 +108,7 @@ function Row({ label, value }) {
 }
 
 export default function AdminInquiries() {
-  const { inquiries, setInquiries, deleteInquiry, openTrips, privateDestinations, glampings } = useData();
+  const { inquiries, updateInquiry, deleteInquiry, openTrips, privateDestinations, glampings } = useData();
   const [detail, setDetail]       = useState(null);
   const [invoiceInq, setInvoiceInq] = useState(null);
   const [deleteId, setDeleteId]   = useState(null);
@@ -116,11 +116,12 @@ export default function AdminInquiries() {
   const [filterStatus, setFilterStatus] = useState('all');
 
   const openDetail = (inq) => setDetail({ ...inq });
-  const setField   = (key, val) => setDetail(d => ({ ...d, [key]: val }));
+  const setField     = (key, val) => setDetail(d => ({ ...d, [key]: val }));
+  const setDataField = (key, val) => setDetail(d => ({ ...d, data: { ...d.data, [key]: val } }));
 
   const saveDetail = async () => {
     setSaving(true);
-    await setInquiries(inquiries.map(i => i.id === detail.id ? detail : i));
+    await updateInquiry(detail);
     setSaving(false);
     setDetail(null);
   };
@@ -243,7 +244,7 @@ export default function AdminInquiries() {
             </button>
           </div>
 
-          {/* Editable fields */}
+          {/* Status & internal notes */}
           <AField label="Status">
             <select style={{ ...S.input }} value={detail.status} onChange={e => setField('status', e.target.value)}>
               {STATUS_OPTIONS.map(o => (
@@ -255,19 +256,47 @@ export default function AdminInquiries() {
             <ATextarea value={detail.notes || ''} onChange={v => setField('notes', v)} rows={2} placeholder="Follow-up, info tambahan…" />
           </AField>
 
-          {/* Read-only info */}
+          {/* Editable customer info */}
+          <div style={{ height: 1, background: '#e5e7eb', margin: '8px 0' }} />
+          <AField label="Nama">
+            <input style={S.input} value={detail.name || ''} onChange={e => setField('name', e.target.value)} />
+          </AField>
+          <AField label="Email">
+            <input type="email" style={S.input} value={detail.email || ''} onChange={e => setField('email', e.target.value)} />
+          </AField>
+          <AField label="WhatsApp">
+            <input style={S.input} value={detail.wa || ''} onChange={e => setField('wa', e.target.value)} />
+          </AField>
+          <AField label="Jumlah tamu (pax)">
+            <input type="number" min={1} style={S.input} value={detail.data?.pax || ''} onChange={e => setDataField('pax', Number(e.target.value))} />
+          </AField>
+          {detail.kind !== 'open' && (
+            <AField label={detail.kind === 'glamping' ? 'Tanggal check-in' : 'Tanggal'}>
+              <input type="date" style={S.input} value={detail.data?.date || ''} onChange={e => setDataField('date', e.target.value)} />
+            </AField>
+          )}
+          {detail.kind === 'private' && (
+            <AField label="Meeting point">
+              <input style={S.input} value={detail.data?.meetingPoint || ''} onChange={e => setDataField('meetingPoint', e.target.value)} />
+            </AField>
+          )}
+          {detail.kind === 'glamping' && (
+            <AField label="Jumlah malam">
+              <input type="number" min={1} style={S.input} value={detail.data?.nights || ''} onChange={e => setDataField('nights', Number(e.target.value))} />
+            </AField>
+          )}
+          <AField label="Catatan dari tamu">
+            <ATextarea value={detail.data?.notes || ''} onChange={v => setDataField('notes', v)} rows={2} placeholder="–" />
+          </AField>
+
+          {/* Read-only metadata */}
           <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: '4px 16px', marginTop: 8 }}>
             <Row label="Timestamp"     value={detail.createdAt ? new Date(detail.createdAt).toLocaleString('id-ID') : '–'} />
             <Row label="Kind"          value={KIND_LABELS[detail.kind] || detail.kind} />
-            <Row label="Name"          value={detail.name} />
-            <Row label="Email"         value={detail.email} />
-            <Row label="WhatsApp"      value={detail.wa} />
             <Row label="Destination"   value={getDestLabel(detail, openTrips, privateDestinations, glampings)} />
             <Row label="Tent Type"     value={detail.kind === 'glamping' && detail.data?.tentType
               ? (glampings.find(g => g.id === detail.data?.glampLoc)?.priceTiers?.find(t => t.id === detail.data?.tentType)?.name || detail.data?.tentType)
               : null} />
-            <Row label="Meeting Point" value={detail.kind === 'glamping' ? null : (detail.data?.meetingPoint || null)} />
-            <Row label="Departure"     value={getDepartureDate(detail, openTrips)} />
             <Row label="Tarif check-in" value={
               detail.kind === 'glamping'
                 ? (detail.data?.date
@@ -275,10 +304,8 @@ export default function AdminInquiries() {
                     : '(tanggal belum dipilih)')
                 : null
             } />
-            <Row label="Pax"           value={detail.data?.pax != null ? String(detail.data.pax) : null} />
             <Row label="Duration"      value={getDuration(detail, openTrips)} />
             <Row label="Add-Ons"       value={getAddons(detail, openTrips, glampings)} />
-            <Row label="Notes"         value={detail.data?.notes} />
             <Row label="Referral"      value={detail.data?.referralCode || detail.data?.appliedReferral?.code || null} />
           </div>
         </Panel>

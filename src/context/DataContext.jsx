@@ -268,6 +268,14 @@ export function DataProvider({ children }) {
     }
   };
 
+  const updateInquiry = async (updatedInq) => {
+    const row = inquiryToRow(updatedInq);
+    const { error } = await supabase.from('inquiries').update(row).eq('id', updatedInq.id);
+    if (error) { console.error('updateInquiry error:', error.message); return false; }
+    setInquiriesState(p => p.map(i => i.id === updatedInq.id ? updatedInq : i));
+    return true;
+  };
+
   const deleteRow = async (table, id) => {
     try {
       const { error } = await supabase.from(table).delete().eq('id', id);
@@ -317,7 +325,7 @@ export function DataProvider({ children }) {
     <DataContext.Provider value={{
       loading,
       siteSettings, updateSetting,
-      inquiries, setInquiries, deleteInquiry,
+      inquiries, setInquiries, updateInquiry, deleteInquiry,
       openTrips, setOpenTrips, deleteOpenTrip,
       openTripAddons, setOpenTripAddons, deleteOpenTripAddon,
       privateDestinations, setPrivateDestinations, deletePrivateDestination,
