@@ -269,8 +269,8 @@ export function DataProvider({ children }) {
   };
 
   const updateInquiry = async (updatedInq) => {
-    const row = inquiryToRow(updatedInq);
-    const { error } = await supabase.from('inquiries').update(row).eq('id', updatedInq.id);
+    const { id, ...fields } = inquiryToRow(updatedInq);
+    const { error } = await supabase.from('inquiries').update(fields).eq('id', updatedInq.id);
     if (error) { console.error('updateInquiry error:', error.message); return false; }
     setInquiriesState(p => p.map(i => i.id === updatedInq.id ? updatedInq : i));
     return true;

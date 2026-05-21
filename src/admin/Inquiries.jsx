@@ -121,9 +121,13 @@ export default function AdminInquiries() {
 
   const saveDetail = async () => {
     setSaving(true);
-    await updateInquiry(detail);
+    const ok = await updateInquiry(detail);
     setSaving(false);
-    setDetail(null);
+    if (ok) {
+      setDetail(null);
+    } else {
+      alert('Gagal menyimpan — cek console untuk detail error dari Supabase.');
+    }
   };
 
   const confirmDelete = async () => {
