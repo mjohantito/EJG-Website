@@ -121,12 +121,12 @@ export default function AdminInquiries() {
 
   const saveDetail = async () => {
     setSaving(true);
-    const ok = await updateInquiry(detail);
+    const err = await updateInquiry(detail);
     setSaving(false);
-    if (ok) {
+    if (!err) {
       setDetail(null);
     } else {
-      alert('Gagal menyimpan — cek console untuk detail error dari Supabase.');
+      alert(`Gagal menyimpan: ${err}`);
     }
   };
 
