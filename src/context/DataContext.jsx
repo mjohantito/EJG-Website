@@ -37,7 +37,7 @@ function rowToInquiry(r) {
   const data = r.data || {};
   return {
     id: r.id, kind: r.kind, name: r.name, email: r.email, wa: r.wa,
-    data, status: r.status || 'new', notes: data._notes || '',
+    data, status: data._status || 'new', notes: data._notes || '',
     createdAt: r.created_at,
   };
 }
@@ -99,8 +99,7 @@ export function tripToRow(t) {
 export function inquiryToRow(i) {
   return {
     id: i.id, kind: i.kind, name: i.name, email: i.email, wa: i.wa,
-    data: { ...(i.data || {}), _notes: i.notes || undefined },
-    status: i.status || 'new',
+    data: { ...(i.data || {}), _status: i.status || 'new', _notes: i.notes || undefined },
   };
 }
 export function addonToRow(a) {
