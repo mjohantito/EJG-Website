@@ -277,6 +277,17 @@ export function DataProvider({ children }) {
     return null;
   };
 
+  const createInquiry = async (inq) => {
+    const row = {
+      kind: inq.kind, name: inq.name || '', email: inq.email || '', wa: inq.wa || '',
+      data: { ...(inq.data || {}), _status: inq.status || 'new', _notes: inq.notes || undefined },
+    };
+    const { data, error } = await supabase.from('inquiries').insert(row).select().single();
+    if (error) { console.error('createInquiry error:', error.message); return error.message; }
+    setInquiriesState(p => [rowToInquiry(data), ...p]);
+    return null;
+  };
+
   const deleteRow = async (table, id) => {
     try {
       const { error } = await supabase.from(table).delete().eq('id', id);
@@ -326,7 +337,7 @@ export function DataProvider({ children }) {
     <DataContext.Provider value={{
       loading,
       siteSettings, updateSetting,
-      inquiries, setInquiries, updateInquiry, deleteInquiry,
+      inquiries, setInquiries, updateInquiry, createInquiry, deleteInquiry,
       openTrips, setOpenTrips, deleteOpenTrip,
       openTripAddons, setOpenTripAddons, deleteOpenTripAddon,
       privateDestinations, setPrivateDestinations, deletePrivateDestination,

@@ -62,6 +62,9 @@ export default function AdminSettings() {
   const [instagram,    setInstagram]    = useState(siteSettings?.instagram     || '');
   const [issuerName,   setIssuerName]   = useState(siteSettings?.issuer_name   || '');
   const [logoUrl,      setLogoUrl]      = useState(siteSettings?.logo_url      || '');
+  const [showGlamping, setShowGlamping] = useState(siteSettings?.inquiry_show_glamping !== 'false');
+  const [showPrivate,  setShowPrivate]  = useState(siteSettings?.inquiry_show_private  !== 'false');
+  const [showOpen,     setShowOpen]     = useState(siteSettings?.inquiry_show_open     !== 'false');
 
   const save = async () => {
     await Promise.all([
@@ -74,6 +77,9 @@ export default function AdminSettings() {
       updateSetting('instagram',     instagram),
       updateSetting('issuer_name',   issuerName),
       updateSetting('logo_url',      logoUrl),
+      updateSetting('inquiry_show_glamping', String(showGlamping)),
+      updateSetting('inquiry_show_private',  String(showPrivate)),
+      updateSetting('inquiry_show_open',     String(showOpen)),
     ]);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -133,6 +139,24 @@ export default function AdminSettings() {
         <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 700, color: '#111' }}>Add-on Open Trip</h3>
         <p style={{ margin: '0 0 16px', fontSize: 13, color: '#6b7280' }}>Add-on ini muncul di halaman detail trip dan form inquiry open trip.</p>
         <AddonTable addons={addons} onChange={setAddons} />
+      </div>
+
+      {/* Inquiry page visibility */}
+      <div style={{ ...S.card, marginBottom: 20 }}>
+        <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 700, color: '#111' }}>Tampilan Halaman Inquiry</h3>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: '#6b7280' }}>Centang jenis inquiry yang ingin tampil di halaman publik /inquiry.</p>
+        {[
+          { label: 'Glamping',     state: showGlamping, set: setShowGlamping },
+          { label: 'Private Trip', state: showPrivate,  set: setShowPrivate },
+          { label: 'Open Trip',    state: showOpen,     set: setShowOpen },
+        ].map(({ label, state, set }) => (
+          <label key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', cursor: 'pointer', borderBottom: '1px solid #f3f4f6' }}>
+            <input type="checkbox" checked={state} onChange={e => set(e.target.checked)}
+              style={{ width: 16, height: 16, accentColor: '#252525', flexShrink: 0 }} />
+            <span style={{ fontSize: 14, color: '#374151', fontWeight: state ? 600 : 400 }}>{label}</span>
+            <span style={{ fontSize: 12, color: state ? '#16a34a' : '#9ca3af', marginLeft: 'auto' }}>{state ? 'Tampil' : 'Disembunyikan'}</span>
+          </label>
+        ))}
       </div>
 
       {/* Save button */}

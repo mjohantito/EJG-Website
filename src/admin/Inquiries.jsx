@@ -107,17 +107,26 @@ function Row({ label, value }) {
   );
 }
 
+const BLANK_DRAFT = {
+  kind: 'glamping', name: '', email: '', wa: '', status: 'new', notes: '',
+  data: { pax: 1, date: '', nights: 1, notes: '' },
+};
+
 export default function AdminInquiries() {
-  const { inquiries, updateInquiry, deleteInquiry, openTrips, privateDestinations, glampings } = useData();
-  const [detail, setDetail]       = useState(null);
-  const [invoiceInq, setInvoiceInq] = useState(null);
-  const [deleteId, setDeleteId]   = useState(null);
-  const [saving, setSaving]       = useState(false);
+  const { inquiries, updateInquiry, createInquiry, deleteInquiry, openTrips, privateDestinations, glampings } = useData();
+  const [detail, setDetail]           = useState(null);
+  const [createDraft, setCreateDraft] = useState(null);
+  const [invoiceInq, setInvoiceInq]   = useState(null);
+  const [deleteId, setDeleteId]       = useState(null);
+  const [saving, setSaving]           = useState(false);
+  const [creating, setCreating]       = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
 
   const openDetail = (inq) => setDetail({ ...inq });
   const setField     = (key, val) => setDetail(d => ({ ...d, [key]: val }));
   const setDataField = (key, val) => setDetail(d => ({ ...d, data: { ...d.data, [key]: val } }));
+  const setCD        = (key, val) => setCreateDraft(d => ({ ...d, [key]: val }));
+  const setCDData    = (key, val) => setCreateDraft(d => ({ ...d, data: { ...d.data, [key]: val } }));
 
   const saveDetail = async () => {
     setSaving(true);
@@ -128,6 +137,14 @@ export default function AdminInquiries() {
     } else {
       alert(`Gagal menyimpan: ${err}`);
     }
+  };
+
+  const handleCreate = async () => {
+    setCreating(true);
+    const err = await createInquiry(createDraft);
+    setCreating(false);
+    if (!err) setCreateDraft(null);
+    else alert(`Gagal membuat inquiry: ${err}`);
   };
 
   const confirmDelete = async () => {
@@ -148,6 +165,12 @@ export default function AdminInquiries() {
           <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111' }}>Inquiry</h1>
           <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{inquiries.length} total inquiry</p>
         </div>
+        <button
+          onClick={() => setCreateDraft({ ...BLANK_DRAFT, data: { ...BLANK_DRAFT.data } })}
+          style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px', fontSize: 13 }}
+        >
+          + Buat Inquiry
+        </button>
       </div>
 
       {/* Status filter tabs */}
@@ -312,6 +335,48 @@ export default function AdminInquiries() {
             <Row label="Add-Ons"       value={getAddons(detail, openTrips, glampings)} />
             <Row label="Referral"      value={detail.data?.referralCode || detail.data?.appliedReferral?.code || null} />
           </div>
+        </Panel>
+      )}
+
+      {createDraft && (
+        <Panel title="Buat Inquiry Baru" onClose={() => setCreateDraft(null)} onSave={handleCreate} saving={creating}>
+          <AField label="Jenis Inquiry">
+            <select style={S.input} value={createDraft.kind} onChange={e => setCD('kind', e.target.value)}>
+              <option value="glamping">Glamping</option>
+              <option value="private">Private Trip</option>
+              <option value="open">Open Trip</option>
+              <option value="corporate">Corporate</option>
+            </select>
+          </AField>
+          <AField label="Status">
+            <select style={S.input} value={createDraft.status} onChange={e => setCD('status', e.target.value)}>
+              {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </AField>
+          <div style={{ height: 1, background: '#e5e7eb', margin: '4px 0' }} />
+          <AField label="Nama">
+            <input style={S.input} value={createDraft.name} onChange={e => setCD('name', e.target.value)} placeholder="Nama pelanggan" />
+          </AField>
+          <AField label="Email">
+            <input type="email" style={S.input} value={createDraft.email} onChange={e => setCD('email', e.target.value)} placeholder="email@example.com" />
+          </AField>
+          <AField label="WhatsApp">
+            <input style={S.input} value={createDraft.wa} onChange={e => setCD('wa', e.target.value)} placeholder="+62 812…" />
+          </AField>
+          <AField label="Jumlah tamu (pax)">
+            <input type="number" min={1} style={S.input} value={createDraft.data.pax} onChange={e => setCDData('pax', Number(e.target.value))} />
+          </AField>
+          <AField label={createDraft.kind === 'glamping' ? 'Tanggal check-in' : 'Tanggal'}>
+            <input type="date" style={S.input} value={createDraft.data.date} onChange={e => setCDData('date', e.target.value)} />
+          </AField>
+          {createDraft.kind === 'glamping' && (
+            <AField label="Jumlah malam">
+              <input type="number" min={1} style={S.input} value={createDraft.data.nights} onChange={e => setCDData('nights', Number(e.target.value))} />
+            </AField>
+          )}
+          <AField label="Catatan internal">
+            <ATextarea value={createDraft.notes} onChange={v => setCD('notes', v)} rows={2} placeholder="Catatan internal…" />
+          </AField>
         </Panel>
       )}
 

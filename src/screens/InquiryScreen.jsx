@@ -699,10 +699,16 @@ function GlampingFields({ state, set, glampings }) {
 export default function InquiryScreen({ onSubmit }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { openTrips, privateDestinations, glampings, validateReferral, useReferral } = useData();
+  const { openTrips, privateDestinations, glampings, validateReferral, useReferral, siteSettings } = useData();
   const ctx = location.state || {};
 
-  const initialKind = ['open', 'private', 'glamping'].includes(ctx.kind) ? ctx.kind : 'open';
+  const visibleKinds = [
+    { id: 'glamping', label: 'Glamping' },
+    { id: 'private',  label: 'Private trip' },
+    { id: 'open',     label: 'Open trip' },
+  ].filter(k => siteSettings?.[`inquiry_show_${k.id}`] !== 'false');
+
+  const initialKind = visibleKinds.find(k => k.id === ctx.kind)?.id || visibleKinds[0]?.id || 'glamping';
   const [kind, setKind] = useState(initialKind);
 
   const initialPrivateDest = ctx.dest || privateDestinations[0]?.id;
@@ -780,11 +786,7 @@ export default function InquiryScreen({ onSubmit }) {
       <div style={{ padding: '0 20px 14px' }}>
         <label className="eyebrow" style={{ display: 'block', marginBottom: 8 }}>Jenis inquiry</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {[
-            { id: 'open',     label: 'Open trip' },
-            { id: 'private',  label: 'Private trip' },
-            { id: 'glamping', label: 'Glamping' },
-          ].map(k => (
+          {visibleKinds.map(k => (
             <button key={k.id} type="button"
               className={`radio-card${kind === k.id ? ' on' : ''}`}
               onClick={() => handleKindChange(k.id)}
