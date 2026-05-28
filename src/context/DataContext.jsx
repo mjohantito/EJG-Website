@@ -157,11 +157,12 @@ export function DataProvider({ children }) {
   const [siteSettings, setSiteSettingsState]               = useState({});
   const [referrals, setReferralsState]                     = useState([]);
   const [inquiries, setInquiriesState]                     = useState([]);
+  const [feedbacks, setFeedbacksState]                     = useState([]);
   const [loading, setLoading]                              = useState(true);
 
   useEffect(() => {
     async function load() {
-      const [trips, addons, priv, glamp, evs, settings, refs, inqs] = await Promise.all([
+      const [trips, addons, priv, glamp, evs, settings, refs, inqs, fbs] = await Promise.all([
         supabase.from('open_trips').select('*').order('sort_order'),
         supabase.from('open_trip_addons').select('*').order('sort_order'),
         supabase.from('private_destinations').select('*').order('sort_order'),
@@ -170,6 +171,7 @@ export function DataProvider({ children }) {
         supabase.from('settings').select('*'),
         supabase.from('referrals').select('*').order('id'),
         supabase.from('inquiries').select('*').order('created_at', { ascending: false }),
+        supabase.from('feedback').select('*').order('created_at', { ascending: false }),
       ]);
 
       if (trips.data)    setOpenTripsState(trips.data.map(rowToTrip));
@@ -180,6 +182,10 @@ export function DataProvider({ children }) {
       if (refs.data)     setReferralsState(refs.data.map(rowToReferral));
       if (inqs.error)    console.error('Inquiries load error:', inqs.error.message, inqs.error);
       if (inqs.data)     setInquiriesState(inqs.data.map(rowToInquiry));
+      if (fbs.data)      setFeedbacksState(fbs.data.map(r => ({
+        id: r.id, name: r.name, email: r.email, rating: r.rating,
+        category: r.category, message: r.message, createdAt: r.created_at,
+      })));
       const settingsMap = {};
       settings.data?.forEach(s => { settingsMap[s.key] = s.value; });
       setSiteSettingsState(settingsMap);
@@ -338,6 +344,7 @@ export function DataProvider({ children }) {
       loading,
       siteSettings, updateSetting,
       inquiries, setInquiries, updateInquiry, createInquiry, deleteInquiry,
+      feedbacks,
       openTrips, setOpenTrips, deleteOpenTrip,
       openTripAddons, setOpenTripAddons, deleteOpenTripAddon,
       privateDestinations, setPrivateDestinations, deletePrivateDestination,

@@ -20,6 +20,7 @@ import TermsScreen from './screens/TermsScreen';
 import EventsScreen from './screens/EventsScreen';
 import EventDetailScreen from './screens/EventDetailScreen';
 import EventInquiryScreen from './screens/EventInquiryScreen';
+import FeedbackScreen from './screens/FeedbackScreen';
 import AdminApp from './admin/index';
 
 function getBackLabel(pathname) {
@@ -117,6 +118,7 @@ export default function App() {
         <Route path="/events" element={<EventsScreen />} />
         <Route path="/events/:id" element={<EventDetailScreen />} />
         <Route path="/events/:id/inquiry" element={<EventInquiryScreen />} />
+        <Route path="/feedback" element={<FeedbackScreen />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
 

@@ -8,6 +8,7 @@ import PrivateTrips from './PrivateTrips';
 import Glamping from './Glamping';
 import Events from './Events';
 import Inquiries from './Inquiries';
+import Feedback from './Feedback';
 import Referrals from './Referrals';
 import Settings from './Settings';
 
@@ -27,6 +28,7 @@ export default function AdminApp() {
         <Route path="glamping" element={<Glamping />} />
         <Route path="events" element={<Events />} />
         <Route path="inquiries" element={<Inquiries />} />
+        <Route path="feedback" element={<Feedback />} />
         <Route path="referrals" element={<Referrals />} />
         <Route path="settings" element={<Settings />} />
       </Routes>
