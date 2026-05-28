@@ -20,6 +20,7 @@ export default function Footer({ onNav }) {
             <li><a onClick={() => onNav('about')}>Tentang Kami</a></li>
             <li><a onClick={() => onNav('inquiry')}>Inquiry</a></li>
             <li><a href="/terms" style={{ color: 'var(--ejg-kertas)', textDecoration: 'none', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14 }}>Syarat & Ketentuan</a></li>
+            <li><a href="/feedback" style={{ color: 'var(--ejg-kertas)', textDecoration: 'none', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14 }}>Kasih Feedback</a></li>
           </ul>
         </div>
         <div>

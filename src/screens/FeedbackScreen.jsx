@@ -19,8 +19,9 @@ function StarRating({ value, onChange }) {
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 2,
             fontSize: 36, lineHeight: 1,
-            color: star <= (hover || value) ? '#F3D543' : '#e5e7eb',
+            color: star <= (hover || value) ? '#F3D543' : '#c8cdd6',
             filter: star <= (hover || value) ? 'drop-shadow(0 0 4px rgba(243,213,67,0.5))' : 'none',
+            textShadow: star <= (hover || value) ? 'none' : '0 1px 2px rgba(0,0,0,0.15)',
             transition: 'all 100ms ease',
           }}
         >
