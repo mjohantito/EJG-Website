@@ -305,7 +305,7 @@ function Section({ title, children }) {
 /* ── Main component ────────────────────────────────────────────────────────── */
 
 export default function InvoiceModal({ inquiry: inq, onClose }) {
-  const { openTrips, glampings, privateDestinations, siteSettings } = useData();
+  const { openTrips, glampings, privateDestinations, siteSettings, updateInquiry } = useData();
 
   // Glamping price recalc helpers
   const gData = inq.kind === 'glamping' ? glampings.find(x => x.id === inq.data?.glampLoc) : null;
@@ -314,27 +314,33 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
     : null;
   const nightsForCalc = Number(inq.data?.nights || 1);
 
-  const [inv, setInv] = useState(() => ({
-    num: autoNum(),
-    date: todayStr(),
-    due: dueDateStr(7),
-    customerName: inq.name || '',
-    customerPhone: inq.wa || '',
-    customerEmail: inq.email || '',
-    tripType: KIND_LABELS[inq.kind] || '',
-    tripDate: getDepartureDate(inq, openTrips),
-    paxCount: `${inq.data?.pax || 1} orang`,
-    bookingId: `#EJG-${(inq.id || '').slice(-8).toUpperCase()}`,
-    items: buildItems(inq, openTrips, glampings, privateDestinations),
-    deposit: 0,
-    notes: 'Mohon konfirmasi pembayaran via WhatsApp dengan mengirimkan bukti transfer. Invoice ini berlaku sebagai bukti pemesanan resmi. Pembayaran setelah batas waktu dapat menyebabkan pembatalan booking.',
-    issuerName: siteSettings?.issuer_name || '',
-  }));
+  const [inv, setInv] = useState(() => {
+    const saved = inq.data?._invoice;
+    if (saved) return saved;
+    return {
+      num: autoNum(),
+      date: todayStr(),
+      due: dueDateStr(7),
+      customerName: inq.name || '',
+      customerPhone: inq.wa || '',
+      customerEmail: inq.email || '',
+      tripType: KIND_LABELS[inq.kind] || '',
+      tripDate: getDepartureDate(inq, openTrips),
+      paxCount: `${inq.data?.pax || 1} orang`,
+      bookingId: `#EJG-${(inq.id || '').slice(-8).toUpperCase()}`,
+      items: buildItems(inq, openTrips, glampings, privateDestinations),
+      deposit: 0,
+      notes: 'Mohon konfirmasi pembayaran via WhatsApp dengan mengirimkan bukti transfer. Invoice ini berlaku sebagai bukti pemesanan resmi. Pembayaran setelah batas waktu dapat menyebabkan pembatalan booking.',
+      issuerName: siteSettings?.issuer_name || '',
+    };
+  });
 
-  const [sending, setSending] = useState(false);
-  const [sent, setSent]       = useState(false);
-  const [sendError, setSendError] = useState('');
-  const [glampCheckIn, setGlampCheckIn] = useState(inq.data?.date || '');
+  const [sending, setSending]         = useState(false);
+  const [sent, setSent]               = useState(false);
+  const [sendError, setSendError]     = useState('');
+  const [savingInv, setSavingInv]     = useState(false);
+  const [savedInv, setSavedInv]       = useState(false);
+  const [glampCheckIn, setGlampCheckIn] = useState(inq.data?._invoice ? (inq.data._invoice._glampCheckIn || '') : (inq.data?.date || ''));
 
   const setF = (k, v) => setInv(p => ({ ...p, [k]: v }));
 
@@ -417,6 +423,17 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
     }
   };
 
+  const handleSaveInvoice = async () => {
+    setSavingInv(true);
+    await updateInquiry({
+      ...inq,
+      data: { ...inq.data, _invoice: { ...inv, subtotal, total, _glampCheckIn: glampCheckIn } },
+    });
+    setSavingInv(false);
+    setSavedInv(true);
+    setTimeout(() => setSavedInv(false), 2500);
+  };
+
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: '#f3f4f6', overflowY: 'auto' }}>
 
@@ -434,6 +451,13 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={handlePrint} style={{ ...S.btn, background: '#f3f4f6', color: '#374151', padding: '8px 16px', fontSize: 13 }}>
             🖨 Pratinjau &amp; Print
+          </button>
+          <button
+            onClick={handleSaveInvoice}
+            disabled={savingInv}
+            style={{ ...S.btn, background: savedInv ? '#f0fdf4' : '#e0e7ff', color: savedInv ? '#16a34a' : '#3730a3', padding: '8px 16px', fontSize: 13 }}
+          >
+            {savingInv ? 'Menyimpan…' : savedInv ? '✓ Tersimpan' : '💾 Simpan Invoice'}
           </button>
           <button
             onClick={handleSendEmail}
