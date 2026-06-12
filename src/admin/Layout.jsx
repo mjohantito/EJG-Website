@@ -10,7 +10,8 @@ const NAV = [
   { path: '/admin/inquiries',    label: 'Inquiry',         icon: '📬' },
   { path: '/admin/feedback',     label: 'Feedback',        icon: '💬' },
   { path: '/admin/referrals',    label: 'Referral Codes',  icon: '🎟️' },
-  { path: '/admin/settings',     label: 'Settings',        icon: '⚙️' },
+  { path: '/admin/settings',         label: 'Settings',        icon: '⚙️' },
+  { path: '/admin/optimize-images', label: 'Optimize Images', icon: '🗜️' },
 ];
 
 export default function AdminLayout({ children }) {

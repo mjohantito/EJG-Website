@@ -11,6 +11,7 @@ import Inquiries from './Inquiries';
 import Feedback from './Feedback';
 import Referrals from './Referrals';
 import Settings from './Settings';
+import OptimizeImages from './OptimizeImages';
 
 export default function AdminApp() {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem('ejg_admin_session') === '1');
@@ -31,6 +32,7 @@ export default function AdminApp() {
         <Route path="feedback" element={<Feedback />} />
         <Route path="referrals" element={<Referrals />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="optimize-images" element={<OptimizeImages />} />
       </Routes>
     </Layout>
   );
