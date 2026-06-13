@@ -45,7 +45,7 @@ export default function PrivateTripDetailScreen() {
   }
 
   const handleInquiry = () => {
-    navigate('/inquiry', { state: { kind: 'private', dest: dest.id, duration: selectedDuration } });
+    navigate('/bookingform', { state: { kind: 'private', dest: dest.id, duration: selectedDuration } });
   };
 
   return (
@@ -146,7 +146,7 @@ export default function PrivateTripDetailScreen() {
           ))}
         </div>
         <p style={{ marginTop: 10, fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.5 }}>
-          Tanggal & jumlah peserta bisa diisi di form inquiry setelah ini.
+          Tanggal & jumlah peserta bisa diisi di booking form setelah ini.
         </p>
       </div>
 
@@ -162,7 +162,7 @@ export default function PrivateTripDetailScreen() {
           className="btn btn-pri btn-block"
           onClick={handleInquiry}
         >
-          Mulai inquiry →
+          Mulai booking →
         </button>
       </div>
 

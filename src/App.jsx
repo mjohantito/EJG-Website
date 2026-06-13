@@ -29,7 +29,7 @@ function getBackLabel(pathname) {
   if (/^\/glamping\/.+/.test(pathname)) return 'Glamping';
   if (/^\/events\/.+\/inquiry$/.test(pathname)) return 'Event detail';
   if (/^\/events\/.+/.test(pathname)) return 'Special Event';
-  if (pathname === '/inquiry') return 'Inquiry';
+  if (pathname === '/bookingform') return 'Booking Form';
   if (pathname === '/thanks') return '';
   if (pathname === '/terms') return 'Syarat & Ketentuan';
   return null;
@@ -40,7 +40,7 @@ function getActiveNav(pathname) {
   if (pathname.startsWith('/trips')) return 'trips';
   if (pathname.startsWith('/glamping')) return 'glamping';
   if (pathname === '/corporate') return 'corporate';
-  if (pathname === '/inquiry' || pathname === '/thanks') return 'inquiry';
+  if (pathname === '/bookingform' || pathname === '/thanks') return 'inquiry';
   if (pathname === '/about') return 'about';
   if (pathname.startsWith('/events')) return 'events';
   return 'home';
@@ -51,7 +51,7 @@ const NAV_ROUTES = {
   trips:     '/trips',
   glamping:  '/glamping',
   corporate: '/corporate',
-  inquiry:   '/inquiry',
+  inquiry:   '/bookingform',
   about:     '/about',
   events:    '/events',
 };
@@ -66,7 +66,7 @@ export default function App() {
   const isAdmin = pathname.startsWith('/admin');
   const backLabel = getBackLabel(pathname);
   const activeNav = getActiveNav(pathname);
-  const showFab = !isAdmin && pathname !== '/inquiry' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
+  const showFab = !isAdmin && pathname !== '/bookingform' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -111,7 +111,7 @@ export default function App() {
         <Route path="/glamping" element={<GlampingScreen />} />
         <Route path="/glamping/:id" element={<GlampDetailScreen />} />
         <Route path="/corporate" element={<CorporateScreen />} />
-        <Route path="/inquiry" element={<InquiryScreen onSubmit={handleSubmitInquiry} />} />
+        <Route path="/bookingform" element={<InquiryScreen onSubmit={handleSubmitInquiry} />} />
         <Route path="/about" element={<AboutScreen />} />
         <Route path="/thanks" element={<ThanksScreen />} />
         <Route path="/terms" element={<TermsScreen />} />

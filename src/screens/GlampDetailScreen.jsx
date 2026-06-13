@@ -171,7 +171,7 @@ export default function GlampDetailScreen() {
           <button
             className="btn btn-pri"
             style={{ background: 'var(--ejg-matahari)', color: 'var(--ejg-ink)', flexShrink: 0 }}
-            onClick={() => navigate('/inquiry', { state: { kind: 'glamping', glampId: g.id } })}
+            onClick={() => navigate('/bookingform', { state: { kind: 'glamping', glampId: g.id } })}
           >
             Booking →
           </button>

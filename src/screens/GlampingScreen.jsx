@@ -59,7 +59,7 @@ export default function GlampingScreen() {
         </p>
         <button
           className="btn btn-pri"
-          onClick={() => navigate('/inquiry', { state: { kind: 'glamping' } })}
+          onClick={() => navigate('/bookingform', { state: { kind: 'glamping' } })}
         >
           Bikin paket custom →
         </button>

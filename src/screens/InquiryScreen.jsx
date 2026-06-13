@@ -776,7 +776,7 @@ export default function InquiryScreen({ onSubmit }) {
   return (
     <>
       <div className="page-header">
-        <span className="eyebrow">Inquiry · Langkah pertama ke petualanganmu</span>
+        <span className="eyebrow">Booking Form · Langkah pertama ke petualanganmu</span>
         <h1 style={{ marginTop: 6 }}>
           Kamu selangkah lebih dekat<span className="q-stamp">.</span>
         </h1>
@@ -784,7 +784,7 @@ export default function InquiryScreen({ onSubmit }) {
       </div>
 
       <div style={{ padding: '0 20px 14px' }}>
-        <label className="eyebrow" style={{ display: 'block', marginBottom: 8 }}>Jenis inquiry</label>
+        <label className="eyebrow" style={{ display: 'block', marginBottom: 8 }}>Jenis booking</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {visibleKinds.map(k => (
             <button key={k.id} type="button"
@@ -821,7 +821,7 @@ export default function InquiryScreen({ onSubmit }) {
           onClick={handleSubmit}
           style={{ opacity: canSubmit && !submitting ? 1 : 0.45 }}
         >
-          {submitting ? 'Mengirim…' : 'Kirim inquiry →'}
+          {submitting ? 'Mengirim…' : 'Kirim booking →'}
         </button>
       </div>
 

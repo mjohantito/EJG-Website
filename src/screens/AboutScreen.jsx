@@ -75,9 +75,9 @@ export default function AboutScreen() {
           <button
             className="btn"
             style={{ background: 'transparent', color: '#F3D543', border: '1.5px solid #F3D543' }}
-            onClick={() => navigate('/inquiry')}
+            onClick={() => navigate('/bookingform')}
           >
-            Inquiry
+            Booking Form
           </button>
         </div>
         <span className="deco">✌️</span>

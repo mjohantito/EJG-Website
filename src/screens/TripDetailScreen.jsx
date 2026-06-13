@@ -192,7 +192,7 @@ export default function TripDetailScreen() {
           <button
             className="btn btn-pri"
             style={{ background: 'var(--ejg-matahari)', color: 'var(--ejg-ink)', flexShrink: 0 }}
-            onClick={() => navigate('/inquiry', { state: { kind: 'open', tripId: trip.id } })}
+            onClick={() => navigate('/bookingform', { state: { kind: 'open', tripId: trip.id } })}
           >
             Booking →
           </button>

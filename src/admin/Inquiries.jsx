@@ -5,7 +5,7 @@ import InvoiceModal from './InvoiceModal';
 import { isPeakDay } from '../lib/holidays';
 
 const STATUS_OPTIONS = [
-  { value: 'new',         label: 'New Inquiry' },
+  { value: 'new',         label: 'New Order' },
   { value: 'pending',     label: 'Pending' },
   { value: 'confirmed',   label: 'Confirmed' },
   { value: 'canceled',    label: 'Canceled' },
@@ -29,7 +29,7 @@ const KIND_LABELS = {
 
 const FILTER_OPTIONS = [
   { value: 'all',       label: 'Semua' },
-  { value: 'new',       label: 'New Inquiry' },
+  { value: 'new',       label: 'New Order' },
   { value: 'pending',   label: 'Pending' },
   { value: 'confirmed', label: 'Confirmed' },
   { value: 'canceled',  label: 'Canceled' },
@@ -144,7 +144,7 @@ export default function AdminInquiries() {
     const err = await createInquiry(createDraft);
     setCreating(false);
     if (!err) setCreateDraft(null);
-    else alert(`Gagal membuat inquiry: ${err}`);
+    else alert(`Gagal membuat order: ${err}`);
   };
 
   const confirmDelete = async () => {
@@ -162,14 +162,14 @@ export default function AdminInquiries() {
     <div style={{ padding: '32px 36px', maxWidth: 1200 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111' }}>Inquiry</h1>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{inquiries.length} total inquiry</p>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111' }}>Order</h1>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{inquiries.length} total order</p>
         </div>
         <button
           onClick={() => setCreateDraft({ ...BLANK_DRAFT, data: { ...BLANK_DRAFT.data } })}
           style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px', fontSize: 13 }}
         >
-          + Buat Inquiry
+          + Buat Order
         </button>
       </div>
 
@@ -192,7 +192,7 @@ export default function AdminInquiries() {
 
       <div style={{ ...S.card, overflowX: 'auto' }}>
         {filtered.length === 0 ? (
-          <EmptyState icon="📬" title="Belum ada inquiry" sub="Inquiry dari form publik akan muncul di sini." />
+          <EmptyState icon="📬" title="Belum ada order" sub="Order dari booking form publik akan muncul di sini." />
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 800 }}>
             <thead>
@@ -256,7 +256,7 @@ export default function AdminInquiries() {
 
       {detail && (
         <Panel
-          title="Detail Inquiry"
+          title="Detail Order"
           onClose={() => setDetail(null)}
           onSave={saveDetail}
           saving={saving}
@@ -267,7 +267,7 @@ export default function AdminInquiries() {
               onClick={() => { setDetail(null); setInvoiceInq(detail); }}
               style={{ ...S.btn, background: '#252525', color: '#F3D543', padding: '10px 20px', width: '100%', fontSize: 13 }}
             >
-              📄 Buat Invoice untuk Inquiry ini
+              📄 Buat Invoice untuk Order ini
             </button>
           </div>
 
@@ -339,8 +339,8 @@ export default function AdminInquiries() {
       )}
 
       {createDraft && (
-        <Panel title="Buat Inquiry Baru" onClose={() => setCreateDraft(null)} onSave={handleCreate} saving={creating}>
-          <AField label="Jenis Inquiry">
+        <Panel title="Buat Order Baru" onClose={() => setCreateDraft(null)} onSave={handleCreate} saving={creating}>
+          <AField label="Jenis Order">
             <select style={S.input} value={createDraft.kind} onChange={e => setCD('kind', e.target.value)}>
               <option value="glamping">Glamping</option>
               <option value="private">Private Trip</option>
@@ -386,7 +386,7 @@ export default function AdminInquiries() {
 
       {deleteId && (
         <ConfirmModal
-          message={`Hapus inquiry dari "${inquiries.find(i => i.id === deleteId)?.name || deleteId}"? Aksi ini tidak bisa dibatalkan.`}
+          message={`Hapus order dari "${inquiries.find(i => i.id === deleteId)?.name || deleteId}"? Aksi ini tidak bisa dibatalkan.`}
           onConfirm={confirmDelete}
           onCancel={() => setDeleteId(null)}
         />
