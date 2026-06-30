@@ -63,14 +63,20 @@ function buildItems(inq, openTrips, glampings, privateDestinations) {
     const pricePerNight = tentTier
       ? (peak ? peakPrice : wkdPrice)
       : (g?.pricePerNight ?? 0);
-    const glampTotal = pricePerNight * nights;
+    const singleTentCap = tentTier?.capacity ?? 4;
+    const singleTentMax = tentTier?.maxCapacity ?? 6;
+    const tentCount = pax > singleTentMax ? 2 : 1;
+    const extraBeds = tentCount === 1
+      ? Math.max(0, pax - singleTentCap)
+      : Math.max(0, pax - singleTentCap * 2);
+    const glampTotal = pricePerNight * tentCount * nights;
     const tentDesc = tentTier?.name ? ` · ${tentTier.name}` : '';
+    const tentCountLabel = tentCount > 1 ? ` · ${tentCount} tenda` : '';
     const rateLabel = d.date ? (peak ? 'Peak' : 'Weekday') : 'Weekday*';
     const priceHint = (tentTier && wkdPrice > 0 && peakPrice > 0 && wkdPrice !== peakPrice && !d.date)
       ? `  —  wkd: ${fmtRp(wkdPrice)} / peak: ${fmtRp(peakPrice)}`
       : '';
-    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang${tentDesc} · ${nights} malam · ${rateLabel}${priceHint}`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
-    const extraBeds = tentTier ? Math.max(0, pax - (tentTier.capacity || 0)) : 0;
+    items.push(mk({ id: 'main', name: g ? `Glamping — ${g.name}` : 'Glamping', desc: `${pax} orang${tentDesc}${tentCountLabel} · ${nights} malam · ${rateLabel}${priceHint}`, qty: 1, unitPrice: glampTotal, total: glampTotal }));
     if (extraBeds > 0 && tentTier?.extraBedPrice) {
       const ebTotal = extraBeds * tentTier.extraBedPrice * nights;
       items.push(mk({ id: 'extra-bed', name: 'Extra Bed', desc: `${extraBeds} extra bed × ${nights} malam`, qty: extraBeds, unitPrice: tentTier.extraBedPrice * nights, total: ebTotal }));
@@ -371,15 +377,18 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
     const wkd = tentTierForCalc.priceWeekday ?? 0;
     const pk = tentTierForCalc.priceWeekend ?? 0;
     const newPricePerNight = newDate ? (peak ? pk : wkd) : wkd;
-    const newTotal = newPricePerNight * nightsForCalc;
-    const rateLabel = newDate ? (peak ? 'Peak' : 'Weekday') : 'Weekday*';
     const pax = Number(inq.data?.pax || 1);
+    const singleTentMax = tentTierForCalc.maxCapacity ?? 6;
+    const tentCount = pax > singleTentMax ? 2 : 1;
+    const newTotal = newPricePerNight * tentCount * nightsForCalc;
+    const rateLabel = newDate ? (peak ? 'Peak' : 'Weekday') : 'Weekday*';
     const tentDesc = tentTierForCalc.name ? ` · ${tentTierForCalc.name}` : '';
+    const tentCountLabel = tentCount > 1 ? ` · ${tentCount} tenda` : '';
     setInv(p => ({
       ...p,
       items: p.items.map(item =>
         item.id === 'main'
-          ? { ...item, unitPrice: newTotal, total: newTotal, desc: `${pax} orang${tentDesc} · ${nightsForCalc} malam · ${rateLabel}` }
+          ? { ...item, unitPrice: newTotal, total: newTotal, desc: `${pax} orang${tentDesc}${tentCountLabel} · ${nightsForCalc} malam · ${rateLabel}` }
           : item
       ),
     }));
