@@ -39,8 +39,11 @@ export default function TripsScreen() {
   const { openTrips, privateDestinations } = useData();
   const [mode, setMode] = useState(location.state?.tab === 'private' ? 'private' : 'open');
 
+  const visibleOpenTrips = openTrips.filter(t => !t.hidden);
+  const visiblePrivateDests = privateDestinations.filter(d => !d.hidden);
+
   const grouped = {};
-  openTrips.forEach(t => {
+  visibleOpenTrips.forEach(t => {
     const key = `${t.month} 2025`;
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(t);
@@ -64,7 +67,7 @@ export default function TripsScreen() {
       {mode === 'open' && (
         <>
           <div style={{ padding: '0 20px 6px', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.45 }}>
-            {openTrips.length} keberangkatan terjadwal. Tap untuk detail & booking.
+            {visibleOpenTrips.length} keberangkatan terjadwal. Tap untuk detail & booking.
           </div>
           {Object.entries(grouped).map(([mo, trips]) => (
             <div key={mo}>
@@ -91,7 +94,7 @@ export default function TripsScreen() {
             Pilih destinasi. Tanggal & jumlah orang diskusi bareng via form.
           </div>
           <div className="opentrip-list">
-            {privateDestinations.map(d => (
+            {visiblePrivateDests.map(d => (
               <PrivateDestCard key={d.id} dest={d} onClick={() => navigate(`/trips/private/${d.id}`)} />
             ))}
           </div>

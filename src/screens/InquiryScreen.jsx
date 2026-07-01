@@ -733,9 +733,11 @@ export default function InquiryScreen({ onSubmit }) {
   const initialKind = visibleKinds.find(k => k.id === ctx.kind)?.id || visibleKinds[0]?.id || 'glamping';
   const [kind, setKind] = useState(initialKind);
 
-  const initialPrivateDest = ctx.dest || privateDestinations[0]?.id;
-  const initialDestData = privateDestinations.find(d => d.id === initialPrivateDest) || privateDestinations[0];
   const visibleGlampings = glampings.filter(g => !g.hidden);
+  const visibleOpenTrips = openTrips.filter(t => !t.hidden);
+  const visiblePrivateDestinations = privateDestinations.filter(d => !d.hidden);
+  const initialPrivateDest = ctx.dest || visiblePrivateDestinations[0]?.id;
+  const initialDestData = visiblePrivateDestinations.find(d => d.id === initialPrivateDest) || visiblePrivateDestinations[0];
   const initialGlampId = ctx.glampId || visibleGlampings[0]?.id;
   const initialGlamp = visibleGlampings.find(g => g.id === initialGlampId);
 
@@ -743,7 +745,7 @@ export default function InquiryScreen({ onSubmit }) {
     name: '', email: '', wa: '',
     pax: ctx.pax || 1,
     date: '', notes: '',
-    tripId: ctx.tripId || openTrips[0]?.id,
+    tripId: ctx.tripId || visibleOpenTrips[0]?.id,
     privateDest: initialPrivateDest,
     privateDuration: ctx.duration || initialDestData?.durations[0],
     meetingPoint: 'Surabaya',
@@ -822,8 +824,8 @@ export default function InquiryScreen({ onSubmit }) {
       </div>
 
       <div className="form">
-        {kind === 'open'     && <OpenTripFields state={form} set={set} openTrips={openTrips} />}
-        {kind === 'private'  && <PrivateFields state={form} set={set} privateDestinations={privateDestinations} />}
+        {kind === 'open'     && <OpenTripFields state={form} set={set} openTrips={visibleOpenTrips} />}
+        {kind === 'private'  && <PrivateFields state={form} set={set} privateDestinations={visiblePrivateDestinations} />}
         {kind === 'glamping' && <GlampingFields state={form} set={set} glampings={visibleGlampings} />}
 
         {kind !== 'corporate' && (

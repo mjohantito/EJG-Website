@@ -30,7 +30,7 @@ export default function PrivateTripDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { privateDestinations } = useData();
-  const dest = privateDestinations.find(d => d.id === id);
+  const dest = privateDestinations.find(d => d.id === id && !d.hidden);
 
   const [selectedDuration, setSelectedDuration] = useState(
     dest ? dest.durations[0] : null

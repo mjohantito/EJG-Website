@@ -12,7 +12,7 @@ export default function TripDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { openTrips, openTripAddons } = useData();
-  const trip = openTrips.find(t => t.id === id) || openTrips[0];
+  const trip = openTrips.find(t => t.id === id && !t.hidden) || openTrips.find(t => !t.hidden);
   const low = trip.slots <= 3;
   const pct = Math.round(((trip.totalSlots - trip.slots) / trip.totalSlots) * 100);
 
