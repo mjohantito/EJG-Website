@@ -8,7 +8,7 @@ const BLANK = {
   id: '', dest: '', region: '', month: '', day: '', start: '', end: '', duration: '2D1N',
   price: '', priceNum: 0, slots: 10, totalSlots: 12, tag: '', palette: 'ink', emoji: '',
   cover: '', description: '', highlights: [], includes: [], gallery: [], addons: [],
-  meetingPoints: [],
+  meetingPoints: [], hidden: false,
 };
 
 function AddonEditor({ addons, onChange }) {
@@ -117,6 +117,10 @@ export default function AdminOpenTrips() {
     await setOpenTrips(next);
   };
 
+  const toggleHidden = async (t) => {
+    await setOpenTrips(openTrips.map(x => x.id === t.id ? { ...x, hidden: !x.hidden } : x));
+  };
+
   return (
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
@@ -149,12 +153,15 @@ export default function AdminOpenTrips() {
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {t.cover
-                        ? <img src={t.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
-                        : <span style={{ fontSize: 20 }}>{t.emoji}</span>
+                        ? <img src={t.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0, opacity: t.hidden ? 0.4 : 1 }} />
+                        : <span style={{ fontSize: 20, opacity: t.hidden ? 0.4 : 1 }}>{t.emoji}</span>
                       }
                       <div>
-                        <div style={{ fontWeight: 600 }}>{t.dest}</div>
-                        <div style={{ fontSize: 12, color: '#9ca3af' }}>{t.region}</div>
+                        <div style={{ fontWeight: 600, color: t.hidden ? '#9ca3af' : undefined }}>{t.dest}</div>
+                        {t.hidden
+                          ? <span style={{ ...S.badge, background: '#f3f4f6', color: '#6b7280' }}>Disembunyikan</span>
+                          : <div style={{ fontSize: 12, color: '#9ca3af' }}>{t.region}</div>
+                        }
                       </div>
                     </div>
                   </td>
@@ -172,6 +179,9 @@ export default function AdminOpenTrips() {
                   <td style={S.td}>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <ReorderButtons index={idx} total={openTrips.length} onMove={dir => reorder(idx, dir)} />
+                      <button onClick={() => toggleHidden(t)} style={{ ...S.btn, padding: '5px 12px', background: t.hidden ? '#f0fdf4' : '#f3f4f6', color: t.hidden ? '#16a34a' : '#6b7280' }}>
+                        {t.hidden ? 'Tampilkan' : 'Sembunyikan'}
+                      </button>
                       <button onClick={() => openEdit(t)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(t.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
                     </div>
@@ -185,6 +195,14 @@ export default function AdminOpenTrips() {
 
       {panel && draft && (
         <Panel title={panel.mode === 'add' ? 'Tambah Open Trip' : 'Edit Open Trip'} onClose={() => setPanel(null)} onSave={save} saving={saving}>
+          <AField label="Visibilitas">
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '10px 14px', background: draft.hidden ? '#f3f4f6' : '#f0fdf4', borderRadius: 10, border: `1.5px solid ${draft.hidden ? '#e5e7eb' : '#86efac'}` }}>
+              <input type="checkbox" checked={!draft.hidden} onChange={e => set('hidden', !e.target.checked)} style={{ width: 16, height: 16, accentColor: '#16a34a' }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: draft.hidden ? '#6b7280' : '#15803d' }}>
+                {draft.hidden ? 'Disembunyikan dari user site' : 'Tampil di user site'}
+              </span>
+            </label>
+          </AField>
           <div style={{ display: 'flex', gap: '4%', flexWrap: 'wrap' }}>
             <AField label="ID (unik)" half><AInput value={draft.id} onChange={v => set('id', v)} placeholder="ot-bromo-jun" /></AField>
             <AField label="Emoji (fallback)" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🌋" /></AField>

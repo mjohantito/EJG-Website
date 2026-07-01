@@ -200,7 +200,7 @@ export default function AdminGlamping() {
                         style={{ ...S.btn, padding: '5px 12px', background: g.hidden ? '#f0fdf4' : '#f3f4f6', color: g.hidden ? '#16a34a' : '#6b7280' }}
                         title={g.hidden ? 'Tampilkan ke user' : 'Sembunyikan dari user'}
                       >
-                        {g.hidden ? '👁 Tampilkan' : '🙈 Sembunyikan'}
+                        {g.hidden ? 'Tampilkan' : 'Sembunyikan'}
                       </button>
                       <button onClick={() => openEdit(g)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(g.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
@@ -223,7 +223,7 @@ export default function AdminGlamping() {
             <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '10px 14px', background: draft.hidden ? '#f3f4f6' : '#f0fdf4', borderRadius: 10, border: `1.5px solid ${draft.hidden ? '#e5e7eb' : '#86efac'}` }}>
               <input type="checkbox" checked={!draft.hidden} onChange={e => set('hidden', !e.target.checked)} style={{ width: 16, height: 16, accentColor: '#16a34a' }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: draft.hidden ? '#6b7280' : '#15803d' }}>
-                {draft.hidden ? '🙈 Disembunyikan dari user site' : '👁 Tampil di user site'}
+                {draft.hidden ? 'Disembunyikan dari user site' : 'Tampil di user site'}
               </span>
             </label>
           </AField>

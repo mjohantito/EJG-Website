@@ -31,6 +31,7 @@ function rowToTrip(r) {
     description: r.description,
     highlights: r.highlights || [], includes: r.includes || [], gallery: r.gallery || [],
     addons: r.addons || [], meetingPoints: r.meeting_points || [],
+    hidden: r.hidden || false,
   };
 }
 function rowToInquiry(r) {
@@ -52,6 +53,7 @@ function rowToPrivate(r) {
     startingPrice: r.starting_price, pricePerPax: r.price_per_pax,
     gallery: r.gallery || [], priceTiers: r.price_tiers || [],
     meetingPointPrices: r.meeting_point_prices || [],
+    hidden: r.hidden || false,
   };
 }
 function rowToGlamping(r) {
@@ -95,6 +97,7 @@ export function tripToRow(t) {
     description: t.description,
     highlights: t.highlights || [], includes: t.includes || [], gallery: t.gallery || [],
     addons: t.addons || [], meeting_points: t.meetingPoints || [],
+    hidden: t.hidden || false,
   };
 }
 export function inquiryToRow(i) {
@@ -115,6 +118,7 @@ export function privateToRow(p) {
     starting_price: p.startingPrice, price_per_pax: p.pricePerPax,
     gallery: p.gallery || [], price_tiers: p.priceTiers || [],
     meeting_point_prices: p.meetingPointPrices || [],
+    hidden: p.hidden || false,
   };
 }
 export function glampingToRow(g) {
