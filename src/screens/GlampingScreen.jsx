@@ -9,10 +9,11 @@ export default function GlampingScreen() {
   const { glampings } = useData();
   const [filter, setFilter] = useState('Semua');
 
-  const cities = ['Semua', ...new Set(glampings.map(g => g.location.split(',')[0].trim()))];
+  const visible = glampings.filter(g => !g.hidden);
+  const cities = ['Semua', ...new Set(visible.map(g => g.location.split(',')[0].trim()))];
   const filtered = filter === 'Semua'
-    ? glampings
-    : glampings.filter(g => g.location.split(',')[0].trim() === filter);
+    ? visible
+    : visible.filter(g => g.location.split(',')[0].trim() === filter);
 
   return (
     <>

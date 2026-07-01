@@ -8,7 +8,7 @@ const BLANK = {
   id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
   price: '', pricePerNight: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
   closedDays: [], tagline: '', description: '', amenities: [], notIncluded: [], gallery: [], addons: [],
-  priceTiers: [],
+  priceTiers: [], hidden: false,
 };
 
 function AddonEditor({ addons, onChange }) {
@@ -139,6 +139,10 @@ export default function AdminGlamping() {
     await setGlampings(next);
   };
 
+  const toggleHidden = async (g) => {
+    await setGlampings(glampings.map(x => x.id === g.id ? { ...x, hidden: !x.hidden } : x));
+  };
+
   return (
     <div style={{ padding: '32px 36px', maxWidth: 1100 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
@@ -170,12 +174,13 @@ export default function AdminGlamping() {
                   <td style={S.td}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {g.cover
-                        ? <img src={g.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
-                        : <span style={{ fontSize: 20 }}>{g.emoji}</span>
+                        ? <img src={g.cover} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', flexShrink: 0, opacity: g.hidden ? 0.4 : 1 }} />
+                        : <span style={{ fontSize: 20, opacity: g.hidden ? 0.4 : 1 }}>{g.emoji}</span>
                       }
                       <div>
-                        <div style={{ fontWeight: 600 }}>{g.name}</div>
-                        {g.tag && <span style={{ ...S.badge, background: '#fef9c3', color: '#854d0e' }}>{g.tag}</span>}
+                        <div style={{ fontWeight: 600, color: g.hidden ? '#9ca3af' : undefined }}>{g.name}</div>
+                        {g.hidden && <span style={{ ...S.badge, background: '#f3f4f6', color: '#6b7280' }}>Disembunyikan</span>}
+                        {!g.hidden && g.tag && <span style={{ ...S.badge, background: '#fef9c3', color: '#854d0e' }}>{g.tag}</span>}
                       </div>
                     </div>
                   </td>
@@ -190,6 +195,13 @@ export default function AdminGlamping() {
                   <td style={S.td}>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <ReorderButtons index={idx} total={glampings.length} onMove={dir => reorder(idx, dir)} />
+                      <button
+                        onClick={() => toggleHidden(g)}
+                        style={{ ...S.btn, padding: '5px 12px', background: g.hidden ? '#f0fdf4' : '#f3f4f6', color: g.hidden ? '#16a34a' : '#6b7280' }}
+                        title={g.hidden ? 'Tampilkan ke user' : 'Sembunyikan dari user'}
+                      >
+                        {g.hidden ? '👁 Tampilkan' : '🙈 Sembunyikan'}
+                      </button>
                       <button onClick={() => openEdit(g)} style={{ ...S.btn, background: '#f0f9ff', color: '#0369a1', padding: '5px 12px' }}>Edit</button>
                       <button onClick={() => setDeleteId(g.id)} style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '5px 12px' }}>Hapus</button>
                     </div>
@@ -207,6 +219,14 @@ export default function AdminGlamping() {
             <AField label="ID (unik)" half><AInput value={draft.id} onChange={v => set('id', v)} placeholder="gl-senggani" /></AField>
             <AField label="Emoji (fallback)" half><AInput value={draft.emoji} onChange={v => set('emoji', v)} placeholder="🏕️" /></AField>
           </div>
+          <AField label="Visibilitas">
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '10px 14px', background: draft.hidden ? '#f3f4f6' : '#f0fdf4', borderRadius: 10, border: `1.5px solid ${draft.hidden ? '#e5e7eb' : '#86efac'}` }}>
+              <input type="checkbox" checked={!draft.hidden} onChange={e => set('hidden', !e.target.checked)} style={{ width: 16, height: 16, accentColor: '#16a34a' }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: draft.hidden ? '#6b7280' : '#15803d' }}>
+                {draft.hidden ? '🙈 Disembunyikan dari user site' : '👁 Tampil di user site'}
+              </span>
+            </label>
+          </AField>
           <AField label="Cover foto" hint="Upload atau paste URL gambar.">
             <ImageField value={draft.cover} onChange={v => set('cover', v)} folder="covers" />
           </AField>

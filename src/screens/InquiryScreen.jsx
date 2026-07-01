@@ -735,8 +735,9 @@ export default function InquiryScreen({ onSubmit }) {
 
   const initialPrivateDest = ctx.dest || privateDestinations[0]?.id;
   const initialDestData = privateDestinations.find(d => d.id === initialPrivateDest) || privateDestinations[0];
-  const initialGlampId = ctx.glampId || glampings[0]?.id;
-  const initialGlamp = glampings.find(g => g.id === initialGlampId);
+  const visibleGlampings = glampings.filter(g => !g.hidden);
+  const initialGlampId = ctx.glampId || visibleGlampings[0]?.id;
+  const initialGlamp = visibleGlampings.find(g => g.id === initialGlampId);
 
   const [form, setForm] = useState({
     name: '', email: '', wa: '',
@@ -823,7 +824,7 @@ export default function InquiryScreen({ onSubmit }) {
       <div className="form">
         {kind === 'open'     && <OpenTripFields state={form} set={set} openTrips={openTrips} />}
         {kind === 'private'  && <PrivateFields state={form} set={set} privateDestinations={privateDestinations} />}
-        {kind === 'glamping' && <GlampingFields state={form} set={set} glampings={glampings} />}
+        {kind === 'glamping' && <GlampingFields state={form} set={set} glampings={visibleGlampings} />}
 
         {kind !== 'corporate' && (
           <ReferralField

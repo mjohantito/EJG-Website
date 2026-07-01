@@ -19,7 +19,7 @@ export default function GlampDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { glampings } = useData();
-  const g = glampings.find(x => x.id === id) || glampings[0];
+  const g = glampings.find(x => x.id === id && !x.hidden) || glampings.find(x => !x.hidden);
 
   return (
     <>

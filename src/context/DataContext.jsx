@@ -64,6 +64,7 @@ function rowToGlamping(r) {
     amenities: r.amenities || [], notIncluded: r.not_included || [],
     gallery: r.gallery || [], addons: r.addons || [],
     priceTiers: r.price_tiers || [],
+    hidden: r.hidden || false,
   };
 }
 function rowToReferral(r) {
@@ -127,6 +128,7 @@ export function glampingToRow(g) {
     amenities: g.amenities || [], not_included: g.notIncluded || [],
     gallery: g.gallery || [], addons: g.addons || [],
     price_tiers: g.priceTiers || [],
+    hidden: g.hidden || false,
   };
 }
 export function referralToRow(r) {
