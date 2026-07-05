@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 
 import TopBar from './components/TopBar';
 import Drawer from './components/Drawer';
@@ -125,6 +126,8 @@ export default function App() {
       {showFab && <WAFab />}
 
       {!isAdmin && toast && <Toast message={toast} onDone={() => setToast(null)} />}
+      
+      <Analytics />
     </div>
   );
 }
