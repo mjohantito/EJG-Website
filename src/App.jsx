@@ -21,6 +21,7 @@ import EventsScreen from './screens/EventsScreen';
 import EventDetailScreen from './screens/EventDetailScreen';
 import EventInquiryScreen from './screens/EventInquiryScreen';
 import FeedbackScreen from './screens/FeedbackScreen';
+import PhotosScreen from './screens/PhotosScreen';
 import AdminApp from './admin/index';
 
 function getBackLabel(pathname) {
@@ -119,6 +120,7 @@ export default function App() {
         <Route path="/events/:id" element={<EventDetailScreen />} />
         <Route path="/events/:id/inquiry" element={<EventInquiryScreen />} />
         <Route path="/feedback" element={<FeedbackScreen />} />
+        <Route path="/photos" element={<PhotosScreen />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
 
