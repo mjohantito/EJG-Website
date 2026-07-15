@@ -24,6 +24,7 @@ export default function AdminPhotoAlbums() {
   const [driveUrl, setDriveUrl] = useState('');
   const [deleteId, setDeleteId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [copied, setCopied] = useState(null);
 
   useEffect(() => {
@@ -34,12 +35,14 @@ export default function AdminPhotoAlbums() {
   const openAdd = () => {
     setDraft({ ...BLANK });
     setDriveUrl('');
+    setSaveError('');
     setPanel({ mode: 'add' });
   };
 
   const openEdit = (a) => {
     setDraft({ ...a });
     setDriveUrl(`https://drive.google.com/drive/folders/${a.drive_folder_id}`);
+    setSaveError('');
     setPanel({ mode: 'edit', id: a.id });
   };
 
@@ -56,7 +59,12 @@ export default function AdminPhotoAlbums() {
   };
 
   const save = async () => {
+    if (!draft.title.trim()) { setSaveError('Judul album wajib diisi.'); return; }
+    if (!draft.slug.trim())  { setSaveError('Slug wajib diisi.'); return; }
+    if (!draft.drive_folder_id.trim()) { setSaveError('Google Drive URL wajib diisi.'); return; }
+
     setSaving(true);
+    setSaveError('');
     const row = {
       slug: draft.slug,
       title: draft.title,
@@ -65,10 +73,12 @@ export default function AdminPhotoAlbums() {
       active: draft.active,
     };
     if (panel.mode === 'add') {
-      const { data } = await supabase.from('photo_albums').insert(row).select().single();
+      const { data, error } = await supabase.from('photo_albums').insert(row).select().single();
+      if (error) { setSaveError(`Gagal simpan: ${error.message}`); setSaving(false); return; }
       if (data) setAlbums(p => [data, ...p]);
     } else {
-      const { data } = await supabase.from('photo_albums').update(row).eq('id', panel.id).select().single();
+      const { data, error } = await supabase.from('photo_albums').update(row).eq('id', panel.id).select().single();
+      if (error) { setSaveError(`Gagal simpan: ${error.message}`); setSaving(false); return; }
       if (data) setAlbums(p => p.map(a => a.id === panel.id ? data : a));
     }
     setSaving(false);
@@ -201,6 +211,12 @@ export default function AdminPhotoAlbums() {
               </div>
             )}
           </AField>
+
+          {saveError && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#dc2626' }}>
+              {saveError}
+            </div>
+          )}
 
           <AField label="Status">
             <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '10px 14px', background: draft.active ? '#f0fdf4' : '#f3f4f6', borderRadius: 10, border: `1.5px solid ${draft.active ? '#86efac' : '#e5e7eb'}` }}>
