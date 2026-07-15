@@ -37,7 +37,7 @@ function StarRating({ value, onChange }) {
 
 export default function PhotosScreen() {
   const navigate = useNavigate();
-  const [form, setForm]       = useState({ name: '', rating: 0, message: '' });
+  const [form, setForm]       = useState({ name: '', instagram: '', rating: 0, message: '' });
   const [submitting, setSub]  = useState(false);
   const [done, setDone]       = useState(false);
   const [error, setError]     = useState('');
@@ -49,10 +49,14 @@ export default function PhotosScreen() {
   const handleSubmit = async () => {
     setSub(true);
     setError('');
+    const instagram = form.instagram.trim().replace(/^@/, '');
+    const messageBody = instagram
+      ? `${form.message.trim()}\n\n— Instagram: @${instagram}`
+      : form.message.trim();
     const { error: err } = await supabase.from('feedback').insert({
       name: form.name.trim() || null,
       rating: form.rating,
-      message: form.message.trim(),
+      message: messageBody,
       category: 'Foto Trip',
     });
     setSub(false);
@@ -172,6 +176,27 @@ export default function PhotosScreen() {
             onChange={e => set('name', e.target.value)}
             placeholder="Nama kamu"
           />
+        </div>
+
+        {/* Instagram */}
+        <div className="field">
+          <label>
+            Instagram{' '}
+            <span className="hint" style={{ marginLeft: 4 }}>(opsional — biar kita bisa tag kamu!)</span>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <span style={{
+              position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
+              fontSize: 14, color: 'var(--fg-3)', fontFamily: 'var(--font-display)', fontWeight: 700,
+              pointerEvents: 'none', userSelect: 'none',
+            }}>@</span>
+            <input
+              value={form.instagram}
+              onChange={e => set('instagram', e.target.value.replace(/^@/, ''))}
+              placeholder="username"
+              style={{ paddingLeft: 28 }}
+            />
+          </div>
         </div>
 
         {error && (
