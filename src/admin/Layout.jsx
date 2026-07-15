@@ -11,6 +11,7 @@ const NAV = [
   { path: '/admin/feedback',     label: 'Feedback',        icon: '💬' },
   { path: '/admin/referrals',    label: 'Referral Codes',  icon: '🎟️' },
   { path: '/admin/settings',         label: 'Settings',        icon: '⚙️' },
+  { path: '/admin/photo-albums',    label: 'Photo Albums',    icon: '📷' },
   { path: '/admin/optimize-images', label: 'Optimize Images', icon: '🗜️' },
 ];
 

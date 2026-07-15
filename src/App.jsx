@@ -120,7 +120,7 @@ export default function App() {
         <Route path="/events/:id" element={<EventDetailScreen />} />
         <Route path="/events/:id/inquiry" element={<EventInquiryScreen />} />
         <Route path="/feedback" element={<FeedbackScreen />} />
-        <Route path="/photos" element={<PhotosScreen />} />
+        <Route path="/photos/:slug" element={<PhotosScreen />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
 
