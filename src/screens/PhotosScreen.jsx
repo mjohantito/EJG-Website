@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Footer from '../components/Footer';
+import NpsSelector from '../components/NpsSelector';
 
 const RATING_LABELS = { 1: 'Sangat kecewa', 2: 'Kurang puas', 3: 'Cukup oke', 4: 'Puas banget', 5: 'Luar biasa!' };
 
@@ -37,7 +38,7 @@ export default function PhotosScreen() {
   const [albumLoading, setAlbumLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  const [form, setForm]         = useState({ name: '', instagram: '', rating: 0, message: '' });
+  const [form, setForm]         = useState({ name: '', instagram: '', rating: 0, message: '', nps: null });
   const [submitting, setSub]    = useState(false);
   const [done, setDone]         = useState(false);
   const [error, setError]       = useState('');
@@ -67,6 +68,7 @@ export default function PhotosScreen() {
       rating: form.rating,
       message: messageBody,
       category: `Foto: ${album?.title || slug}`,
+      nps_score: form.nps ?? null,
     });
     setSub(false);
     if (err) { setError('Gagal mengirim. Coba lagi ya.'); return; }
@@ -185,6 +187,11 @@ export default function PhotosScreen() {
               {RATING_LABELS[form.rating]}
             </span>
           )}
+        </div>
+
+        <div className="field">
+          <label>Seberapa besar kemungkinan kamu rekomendasiin EJG ke teman atau keluarga?</label>
+          <NpsSelector value={form.nps} onChange={v => set('nps', v)} />
         </div>
 
         <div className="field">

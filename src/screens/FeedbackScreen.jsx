@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Footer from '../components/Footer';
+import NpsSelector from '../components/NpsSelector';
 
 const CATEGORIES = ['Glamping', 'Open Trip', 'Private Trip', 'Pelayanan & Tim', 'Lainnya'];
 
@@ -36,7 +37,7 @@ const RATING_LABELS = { 1: 'Sangat kecewa', 2: 'Kurang puas', 3: 'Cukup oke', 4:
 
 export default function FeedbackScreen() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', rating: 0, category: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', rating: 0, category: '', message: '', nps: null });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
@@ -54,6 +55,7 @@ export default function FeedbackScreen() {
       rating: form.rating,
       category: form.category || null,
       message: form.message.trim(),
+      nps_score: form.nps ?? null,
     });
     setSubmitting(false);
     if (err) { setError('Gagal mengirim feedback. Coba lagi ya.'); return; }
@@ -70,7 +72,7 @@ export default function FeedbackScreen() {
         </div>
         <div style={{ padding: '0 20px 32px', display: 'flex', gap: 10, flexDirection: 'column' }}>
           <button className="btn btn-pri btn-block" onClick={() => navigate('/')}>Balik ke beranda →</button>
-          <button className="btn btn-sec btn-block" onClick={() => { setDone(false); setForm({ name: '', email: '', rating: 0, category: '', message: '' }); }}>
+          <button className="btn btn-sec btn-block" onClick={() => { setDone(false); setForm({ name: '', email: '', rating: 0, category: '', message: '', nps: null }); }}>
             Kirim feedback lagi
           </button>
         </div>
@@ -100,6 +102,12 @@ export default function FeedbackScreen() {
               {RATING_LABELS[form.rating]}
             </span>
           )}
+        </div>
+
+        {/* NPS */}
+        <div className="field">
+          <label>Seberapa besar kemungkinan kamu rekomendasiin EJG ke teman atau keluarga?</label>
+          <NpsSelector value={form.nps} onChange={v => set('nps', v)} />
         </div>
 
         {/* Category */}
