@@ -22,6 +22,7 @@ import EventDetailScreen from './screens/EventDetailScreen';
 import EventInquiryScreen from './screens/EventInquiryScreen';
 import FeedbackScreen from './screens/FeedbackScreen';
 import PhotosScreen from './screens/PhotosScreen';
+import JoyToTheWoodsScreen from './screens/JoyToTheWoodsScreen';
 import AdminApp from './admin/index';
 
 function getBackLabel(pathname) {
@@ -65,9 +66,10 @@ export default function App() {
 
   const { pathname } = location;
   const isAdmin = pathname.startsWith('/admin');
+  const isFullscreen = pathname === '/joytothewoods';
   const backLabel = getBackLabel(pathname);
   const activeNav = getActiveNav(pathname);
-  const showFab = !isAdmin && pathname !== '/bookingform' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
+  const showFab = !isAdmin && !isFullscreen && pathname !== '/bookingform' && pathname !== '/thanks' && !/^\/events\/.+\/inquiry$/.test(pathname);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -84,7 +86,7 @@ export default function App() {
 
   return (
     <div className={isAdmin ? '' : 'app playful'}>
-      {!isAdmin && (
+      {!isAdmin && !isFullscreen && (
         <TopBar
           onHome={() => navigate('/')}
           onMenu={() => setDrawerOpen(true)}
@@ -95,7 +97,7 @@ export default function App() {
         />
       )}
 
-      {!isAdmin && (
+      {!isAdmin && !isFullscreen && (
         <Drawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
@@ -121,6 +123,7 @@ export default function App() {
         <Route path="/events/:id/inquiry" element={<EventInquiryScreen />} />
         <Route path="/feedback" element={<FeedbackScreen />} />
         <Route path="/photos/:slug" element={<PhotosScreen />} />
+        <Route path="/joytothewoods" element={<JoyToTheWoodsScreen />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
 
