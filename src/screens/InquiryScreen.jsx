@@ -557,12 +557,10 @@ function GlampingFields({ state, set, glampings }) {
 
   const singleTentCap = activeTentTier?.capacity ?? 4;
   const singleTentMax = activeTentTier?.maxCapacity ?? 6;
-  const tentCount = state.pax > singleTentMax ? 2 : 1;
-  const extraBeds = tentCount === 1
-    ? Math.max(0, state.pax - singleTentCap)
-    : Math.max(0, state.pax - singleTentCap * 2);
+  const tentCount = Math.max(1, Math.ceil(state.pax / singleTentMax));
+  const extraBeds = Math.max(0, state.pax - singleTentCap * tentCount);
   const extraBedTotal = extraBeds > 0 ? extraBeds * (activeTentTier?.extraBedPrice || 0) * state.nights : 0;
-  const maxPax = singleTentMax * 2;
+  const maxPax = 20;
 
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);
@@ -583,11 +581,7 @@ function GlampingFields({ state, set, glampings }) {
   };
 
   const handleTentChange = (tentId) => {
-    const newTier = tentTiers.find(t => t.id === tentId);
     set('tentType', tentId);
-    if (newTier?.maxCapacity && state.pax > newTier.maxCapacity) {
-      set('pax', newTier.maxCapacity);
-    }
   };
 
   return (
