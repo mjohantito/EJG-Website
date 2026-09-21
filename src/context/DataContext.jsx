@@ -66,6 +66,7 @@ function rowToGlamping(r) {
     amenities: r.amenities || [], notIncluded: r.not_included || [],
     gallery: r.gallery || [], addons: r.addons || [],
     priceTiers: r.price_tiers || [],
+    maxGuests: r.max_guests ?? null,
     hidden: r.hidden || false,
   };
 }
@@ -132,6 +133,7 @@ export function glampingToRow(g) {
     amenities: g.amenities || [], not_included: g.notIncluded || [],
     gallery: g.gallery || [], addons: g.addons || [],
     price_tiers: g.priceTiers || [],
+    max_guests: g.maxGuests || null,
     hidden: g.hidden || false,
   };
 }

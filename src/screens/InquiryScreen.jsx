@@ -560,7 +560,7 @@ function GlampingFields({ state, set, glampings }) {
   const tentCount = Math.max(1, Math.ceil(state.pax / singleTentMax));
   const extraBeds = Math.max(0, state.pax - singleTentCap * tentCount);
   const extraBedTotal = extraBeds > 0 ? extraBeds * (activeTentTier?.extraBedPrice || 0) * state.nights : 0;
-  const maxPax = 20;
+  const maxPax = glamp?.maxGuests || 20;
 
   const addonsTotal = glamp?.addons ? (state.addons || []).reduce((sum, id) => {
     const a = glamp.addons.find(x => x.id === id);

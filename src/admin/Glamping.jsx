@@ -8,7 +8,7 @@ const BLANK = {
   id: '', name: '', location: '', palette: 'forest', emoji: '', cover: '', tag: '',
   price: '', pricePerNight: 0, unit: 'malam', cap: '', availability: 'Buka setiap hari',
   closedDays: [], tagline: '', description: '', amenities: [], notIncluded: [], gallery: [], addons: [],
-  priceTiers: [], hidden: false,
+  priceTiers: [], maxGuests: '', hidden: false,
 };
 
 function AddonEditor({ addons, onChange }) {
@@ -258,6 +258,9 @@ export default function AdminGlamping() {
           </AField>
           <AField label="Tipe tenda & harga" hint="Harga weekday: Senin–Kamis. Harga weekend/libur/H-1: Jumat–Minggu, hari libur nasional, dan H-1 sebelum libur nasional. Tamu pilih tenda saat inquiry.">
             <TentTypePriceEditor tiers={draft.priceTiers || []} onChange={v => set('priceTiers', v)} />
+          </AField>
+          <AField label="Maks. total tamu per booking" hint="Batas jumlah tamu di form inquiry, berapa pun jumlah tenda yang dibutuhkan. Kosongkan untuk pakai default (20).">
+            <AInput value={draft.maxGuests} onChange={v => set('maxGuests', v)} type="number" min={1} placeholder="20" />
           </AField>
           <AField label="Add-on"><AddonEditor addons={draft.addons || []} onChange={v => set('addons', v)} /></AField>
         </Panel>
