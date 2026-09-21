@@ -795,11 +795,11 @@ export default function InquiryScreen({ onSubmit }) {
   return (
     <>
       <div className="page-header">
-        <span className="eyebrow">Booking Form · Langkah pertama ke petualanganmu</span>
+        <span className="eyebrow">Booking Form</span>
         <h1 style={{ marginTop: 6 }}>
           Kamu selangkah lebih dekat<span className="q-stamp">.</span>
         </h1>
-        <p className="lead">Isi form ini — tim kita balas dalam hitungan jam, bukan hari.</p>
+        <p className="lead">Isi form ini — kita re-confirm langsung lewat WhatsApp kamu.</p>
       </div>
 
       <div style={{ padding: '0 20px 14px' }}>
