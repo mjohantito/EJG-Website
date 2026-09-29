@@ -197,42 +197,6 @@ export default function CorporateScreen() {
         </div>
       </div>
 
-      {/* Gallery */}
-      <div style={{ padding: '0 20px 20px' }}>
-        <div style={{
-          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
-          color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em',
-          marginBottom: 14,
-        }}>
-          Galeri corporate trip
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {[
-            { palette: 'ph-ink',    label: 'Bromo Company Outing' },
-            { palette: 'ph-forest', label: 'Team Building Senggani' },
-            { palette: 'ph-dusk',   label: 'Ijen Night Trek' },
-            { palette: 'ph-warm',   label: 'Gathering Malang' },
-          ].map(item => (
-            <div
-              key={item.label}
-              className={item.palette}
-              style={{
-                borderRadius: 14, aspectRatio: '4/3',
-                display: 'flex', alignItems: 'flex-end', padding: 10, overflow: 'hidden',
-              }}
-            >
-              <span style={{
-                fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 10,
-                color: 'rgba(255,255,255,0.8)', letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-              }}>
-                {item.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Destinations */}
       <div style={{ padding: '0 20px 20px' }}>
         <div style={{
