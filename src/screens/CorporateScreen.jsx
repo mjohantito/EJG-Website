@@ -39,10 +39,6 @@ const TESTIMONIES = [
   },
 ];
 
-const CLIENT_LOGOS = [
-  'Perusahaan A', 'Startup B', 'PT. C Group', 'Brand D', 'Yayasan E', 'PT. F Tbk.',
-];
-
 function ServiceCard({ emoji, title, desc }) {
   return (
     <div style={{
@@ -171,29 +167,6 @@ export default function CorporateScreen() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {SERVICES.map(s => <ServiceCard key={s.title} {...s} />)}
-        </div>
-      </div>
-
-      {/* Client logos */}
-      <div style={{ padding: '0 20px 20px' }}>
-        <div style={{
-          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13,
-          color: 'var(--ejg-ink)', textTransform: 'uppercase', letterSpacing: '0.1em',
-          marginBottom: 14,
-        }}>
-          Dipercaya oleh
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-          {CLIENT_LOGOS.map(name => (
-            <div key={name} style={{
-              background: 'var(--ejg-kertas-2)', border: '1px solid var(--border)',
-              borderRadius: 12, padding: '12px 8px', textAlign: 'center',
-              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 11,
-              color: 'var(--fg-3)', letterSpacing: '0.02em',
-            }}>
-              {name}
-            </div>
-          ))}
         </div>
       </div>
 
