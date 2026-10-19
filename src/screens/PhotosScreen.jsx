@@ -38,7 +38,7 @@ export default function PhotosScreen() {
   const [albumLoading, setAlbumLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  const [form, setForm]         = useState({ name: '', instagram: '', rating: 0, message: '', nps: null });
+  const [form, setForm]         = useState({ name: '', instagram: '', rating: 0, message: '', nps: null, socialConsent: false });
   const [submitting, setSub]    = useState(false);
   const [done, setDone]         = useState(false);
   const [error, setError]       = useState('');
@@ -69,6 +69,7 @@ export default function PhotosScreen() {
       message: messageBody,
       category: `Foto: ${album?.title || slug}`,
       nps_score: form.nps ?? null,
+      social_consent: form.socialConsent,
     });
     setSub(false);
     if (err) { setError('Gagal mengirim. Coba lagi ya.'); return; }
@@ -228,6 +229,16 @@ export default function PhotosScreen() {
             />
           </div>
         </div>
+
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'var(--ejg-ink)', cursor: 'pointer', lineHeight: 1.45 }}>
+          <input
+            type="checkbox"
+            checked={form.socialConsent}
+            onChange={e => set('socialConsent', e.target.checked)}
+            style={{ width: 18, height: 18, marginTop: 1, flexShrink: 0, accentColor: 'var(--ejg-ink)', cursor: 'pointer' }}
+          />
+          <span>Berkenan jika foto atau video diupload di sosial media kami</span>
+        </label>
 
         {error && (
           <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#dc2626' }}>

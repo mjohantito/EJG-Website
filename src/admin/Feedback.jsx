@@ -79,6 +79,7 @@ export default function AdminFeedback() {
                 <th style={S.th}>Feedback</th>
                 <th style={S.th}>Nama</th>
                 <th style={S.th}>Kontak</th>
+                <th style={S.th}>Izin Sosmed</th>
               </tr>
             </thead>
             <tbody>
@@ -107,6 +108,13 @@ export default function AdminFeedback() {
                     </td>
                     <td style={{ ...S.td, fontSize: 13 }}>{f.name || <span style={{ color: '#d1d5db' }}>–</span>}</td>
                     <td style={{ ...S.td, fontSize: 12, color: '#6b7280', wordBreak: 'break-all' }}>{f.email || <span style={{ color: '#d1d5db' }}>–</span>}</td>
+                    <td style={{ ...S.td, whiteSpace: 'nowrap' }}>
+                      {f.socialConsent === true
+                        ? <span style={{ ...S.badge, background: '#f0fdf4', color: '#16a34a' }}>✓ Boleh</span>
+                        : f.socialConsent === false && f.category?.startsWith('Foto:')
+                          ? <span style={{ ...S.badge, background: '#fef2f2', color: '#dc2626' }}>✗ Tidak</span>
+                          : <span style={{ color: '#d1d5db' }}>–</span>}
+                    </td>
                   </tr>
                 );
               })}

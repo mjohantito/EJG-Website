@@ -101,3 +101,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON inquiries TO anon;
 
 -- ── meeting_points column for open_trips ─────────────────────
 ALTER TABLE open_trips ADD COLUMN IF NOT EXISTS meeting_points JSONB DEFAULT '[]';
+
+-- ── Social media consent on photo-album feedback ─────────────
+ALTER TABLE feedback ADD COLUMN IF NOT EXISTS social_consent BOOLEAN;  -- NULL = not asked (older entries)

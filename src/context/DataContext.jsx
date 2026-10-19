@@ -193,6 +193,7 @@ export function DataProvider({ children }) {
       if (fbs.data)      setFeedbacksState(fbs.data.map(r => ({
         id: r.id, name: r.name, email: r.email, rating: r.rating,
         category: r.category, message: r.message, createdAt: r.created_at,
+        socialConsent: r.social_consent,
       })));
       const settingsMap = {};
       settings.data?.forEach(s => { settingsMap[s.key] = s.value; });
