@@ -20,6 +20,17 @@ function dueDateStr(days = 7) {
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(`${iso}T00:00:00`);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function paidTotal(inv) {
+  return (inv.deposit || 0) + (inv.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+}
+
 function autoNum() {
   const n = new Date();
   return `${n.getFullYear()}${String(n.getMonth() + 1).padStart(2, '0')}${String(n.getDate()).padStart(2, '0')}`;
@@ -108,7 +119,9 @@ function esc(s) {
 
 function generateHtml(inv, st = {}) {
   const subtotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
-  const total = Math.max(0, subtotal - (inv.deposit || 0));
+  const total = Math.max(0, subtotal - paidTotal(inv));
+  const payments = inv.payments || [];
+  const isPaid = subtotal > 0 && total === 0;
 
   const tdL = `style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0;border-bottom:1px dashed #EEEAE2"`;
   const tdR = `style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0;border-bottom:1px dashed #EEEAE2;text-align:right"`;
@@ -234,10 +247,18 @@ a{color:inherit;text-decoration:none}
             <td style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0">DP yang sudah dibayar</td>
             <td style="font-size:13px;padding:7px 0;text-align:right;${inv.deposit > 0 ? 'color:#2B8A3E;font-weight:600' : 'color:rgba(37,37,37,.6)'}">${inv.deposit > 0 ? `− ${fmtRp(inv.deposit)}` : '−'}</td>
           </tr>
+          ${payments.map((p, i) => `
+          <tr>
+            <td style="font-size:13px;color:rgba(37,37,37,.6);padding:7px 0">
+              ${esc(p.label || `Termin ${i + 1}`)}
+              ${p.date ? `<div style="font-size:11px;color:rgba(37,37,37,.4);margin-top:1px">${esc(fmtDate(p.date))}</div>` : ''}
+            </td>
+            <td style="font-size:13px;padding:7px 0;text-align:right;vertical-align:top;color:#2B8A3E;font-weight:600">− ${fmtRp(p.amount)}</td>
+          </tr>`).join('')}
           <tr>
             <td colspan="2" style="padding-top:10px">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#252525;border-radius:12px"><tr>
-                <td style="padding:16px 18px;font-size:12px;color:rgba(255,255,255,.55);font-weight:500;vertical-align:middle">Total Tagihan</td>
+                <td style="padding:16px 18px;font-size:12px;color:rgba(255,255,255,.55);font-weight:500;vertical-align:middle">Total Tagihan${isPaid ? ' <span style="background:#2B8A3E;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.5px;margin-left:6px">LUNAS</span>' : ''}</td>
                 <td style="padding:16px 18px;font-size:22px;font-weight:800;color:#F3D543;letter-spacing:-.5px;text-align:right;vertical-align:middle">${fmtRp(total)}</td>
               </tr></table>
             </td>
@@ -336,6 +357,7 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
       bookingId: `#EJG-${(inq.id || '').slice(-8).toUpperCase()}`,
       items: buildItems(inq, openTrips, glampings, privateDestinations),
       deposit: 0,
+      payments: [],
       notes: 'Mohon konfirmasi pembayaran via WhatsApp dengan mengirimkan bukti transfer. Invoice ini berlaku sebagai bukti pemesanan resmi. Pembayaran setelah batas waktu dapat menyebabkan pembatalan booking.',
       issuerName: siteSettings?.issuer_name || '',
     };
@@ -370,6 +392,24 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
 
   const removeItem = (id) => setInv(p => ({ ...p, items: p.items.filter(i => i.id !== id) }));
 
+  const payments = inv.payments || [];
+
+  const addPayment = () => setInv(p => {
+    const list = p.payments || [];
+    const due = Math.max(0, p.items.reduce((s, i) => s + (i.total || 0), 0) - paidTotal(p));
+    return {
+      ...p,
+      payments: [...list, { id: `p-${Date.now()}`, label: `Termin ${list.length + 1}`, date: new Date().toISOString().slice(0, 10), amount: due }],
+    };
+  });
+
+  const updatePayment = (id, key, val) => setInv(p => ({
+    ...p,
+    payments: (p.payments || []).map(x => x.id === id ? { ...x, [key]: key === 'amount' ? Number(val) : val } : x),
+  }));
+
+  const removePayment = (id) => setInv(p => ({ ...p, payments: (p.payments || []).filter(x => x.id !== id) }));
+
   const handleGlampCheckIn = (newDate) => {
     setGlampCheckIn(newDate);
     if (!tentTierForCalc) return;
@@ -395,7 +435,7 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
   };
 
   const subtotal = inv.items.reduce((s, i) => s + (i.total || 0), 0);
-  const total = Math.max(0, subtotal - (inv.deposit || 0));
+  const total = Math.max(0, subtotal - paidTotal(inv));
 
   const handlePrint = () => {
     const html = generateHtml({ ...inv, subtotal, total }, siteSettings);
@@ -630,8 +670,42 @@ export default function InvoiceModal({ inquiry: inq, onClose }) {
                 style={{ ...S.input, width: 160, fontSize: 13 }}
               />
             </div>
+            {payments.map(p => (
+              <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <input
+                  value={p.label}
+                  onChange={e => updatePayment(p.id, 'label', e.target.value)}
+                  placeholder="Termin 1"
+                  style={{ ...S.input, width: 130, fontSize: 13 }}
+                />
+                <input
+                  type="date"
+                  value={p.date}
+                  onChange={e => updatePayment(p.id, 'date', e.target.value)}
+                  style={{ ...S.input, width: 150, fontSize: 13 }}
+                />
+                <input
+                  type="number" min={0}
+                  value={p.amount}
+                  onChange={e => updatePayment(p.id, 'amount', e.target.value)}
+                  style={{ ...S.input, width: 160, fontSize: 13 }}
+                />
+                <button
+                  onClick={() => removePayment(p.id)}
+                  style={{ ...S.btn, background: '#fef2f2', color: '#dc2626', padding: '4px 8px', fontSize: 13 }}
+                >×</button>
+              </div>
+            ))}
+            <button onClick={addPayment} style={{ ...S.btn, background: '#f0fdf4', color: '#16a34a', fontSize: 12, marginBottom: 12 }}>
+              + Tambah pembayaran termin
+            </button>
             <div style={{ display: 'flex', justifyContent: 'space-between', background: '#252525', borderRadius: 10, padding: '14px 18px' }}>
-              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Total Tagihan</span>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                Total Tagihan
+                {subtotal > 0 && total === 0 && (
+                  <span style={{ marginLeft: 8, background: '#16a34a', color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 10 }}>LUNAS</span>
+                )}
+              </span>
               <span style={{ fontWeight: 800, fontSize: 20, color: '#F3D543', letterSpacing: '-0.03em' }}>{fmtRp(total)}</span>
             </div>
           </div>
