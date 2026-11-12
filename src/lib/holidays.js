@@ -65,6 +65,7 @@ export function isHoliday(dateStr) {
 /**
  * True if weekend pricing should apply:
  * - Friday, Saturday, or Sunday
+ * - 31 December (New Year's Eve)
  * - Public holiday
  * - Day before a public holiday (D-1)
  */
@@ -73,6 +74,7 @@ export function isPeakDay(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const day = new Date(y, m - 1, d).getDay();
   if (day === 0 || day === 5 || day === 6) return true; // Sun / Fri / Sat
+  if (m === 12 && d === 31) return true;                // Malam Tahun Baru, every year
   if (HOLIDAYS.has(dateStr)) return true;
   if (HOLIDAYS.has(nextDayStr(dateStr))) return true;    // D-1 before holiday
   return false;
