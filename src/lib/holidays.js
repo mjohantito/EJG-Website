@@ -1,4 +1,4 @@
-// Indonesian national holidays + cuti bersama 2025–2026
+// Indonesian national holidays + cuti bersama 2025–2027
 // Islamic holiday dates are approximate (±1 day depending on moon sighting)
 const HOLIDAYS = new Set([
   // ── 2025 ──────────────────────────────────────────────────────────────────
@@ -49,6 +49,34 @@ const HOLIDAYS = new Set([
   '2026-08-26', // Maulid Nabi Muhammad SAW 1448H
   '2026-12-25', // Hari Raya Natal
   '2026-12-26', // Cuti Bersama Natal
+
+  // ── 2027 (SKB 3 Menteri No. 1205/2026, 3/2026, 2/2026) ────────────────────
+  '2027-01-01', // Tahun Baru Masehi
+  '2027-01-05', // Isra Mi'raj Nabi Muhammad 1448H
+  '2027-02-05', // Cuti Bersama Imlek
+  '2027-02-06', // Tahun Baru Imlek 2578
+  '2027-03-08', // Hari Raya Nyepi - Tahun Baru Saka 1949
+  '2027-03-09', // Cuti Bersama Idul Fitri
+  '2027-03-10', // Idul Fitri 1 Syawal 1448H
+  '2027-03-11', // Idul Fitri 2 Syawal 1448H
+  '2027-03-12', // Cuti Bersama Idul Fitri
+  '2027-03-15', // Cuti Bersama Idul Fitri
+  '2027-03-25', // Cuti Bersama Wafat Yesus Kristus
+  '2027-03-26', // Wafat Yesus Kristus
+  '2027-03-28', // Paskah
+  '2027-05-01', // Hari Buruh Internasional
+  '2027-05-06', // Kenaikan Yesus Kristus
+  '2027-05-17', // Idul Adha 10 Dzulhijjah 1448H
+  '2027-05-18', // Cuti Bersama Idul Adha
+  '2027-05-19', // Cuti Bersama Waisak
+  '2027-05-20', // Hari Raya Waisak 2571 BE
+  '2027-06-01', // Hari Lahir Pancasila
+  '2027-06-06', // Tahun Baru Islam 1449H
+  '2027-08-15', // Maulid Nabi Muhammad SAW
+  '2027-08-17', // HUT RI ke-82
+  '2027-12-24', // Cuti Bersama Natal
+  '2027-12-25', // Hari Raya Natal
+  '2027-12-26', // Isra Mi'raj Nabi Muhammad 1449H
 ]);
 
 function nextDayStr(dateStr) {
